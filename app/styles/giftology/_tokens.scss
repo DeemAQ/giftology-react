@@ -5,7 +5,8 @@
    Component styles live in _home.scss and _plist.scss.
    ============================================================ */
 
-/* Brand fonts (Amiri, Aref Ruqaa, Tajawal) are linked from app/routes/__root.tsx. */
+/* Brand fonts (Amiri, Aref Ruqaa, Tajawal): the theme's own files, declared in _fonts.scss. */
+@import './fonts';
 
 :root {
   /* ---- Theme variables, locked to the brand ----

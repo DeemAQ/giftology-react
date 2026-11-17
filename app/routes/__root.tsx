@@ -10,6 +10,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import themeTranslations from 'virtual:twilight/theme-translations';
 import devSchema from 'virtual:twilight/schema';
+import { FontPreloads } from '../components/giftology/FontPreloads';
 import { ThemeLayout } from '../components/layout/ThemeLayout';
 import { HOME_ROUTE_ID, PRODUCT_ROUTE_ID } from '../lib/routeIds';
 import appCssUrl from '../styles/app.css?url';
@@ -24,9 +25,6 @@ const DevSettingsWidget = import.meta.env.DEV
       import('@salla.sa/twilight-theme-engine/dev').then((m) => ({ default: m.DevSettingsWidget }))
     )
   : null;
-
-const BRAND_FONTS_URL =
-  'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@300;400;500;700;800&display=swap';
 
 export const Route = createTwilightRootRoute()({
   shellComponent: RootComponent,
@@ -48,10 +46,8 @@ function RootComponent() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Home and product paint from inline critical CSS; `bootClient` adds the full sheet once
             their first screen has painted. Other routes: the full sheet blocks, as before. */}
-        {/* Brand fonts: Amiri (display), Aref Ruqaa (script accent), Tajawal (body). */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="stylesheet" href={BRAND_FONTS_URL} />
+        {/* Brand fonts are the theme's own files (styles/giftology/_fonts.scss). */}
+        <FontPreloads locale={ctx.locale} />
         <ThemeStylesheet href={appCssUrl} critical={CRITICAL_CSS} />
         <ThemeHeadContent />
       </head>
