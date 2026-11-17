@@ -5,7 +5,13 @@ import { category } from '@salla.sa/twilight-theme-engine/api/category';
 import type { Category } from '@salla.sa/twilight-theme-engine/types';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
 import { useScrollLock } from '../../hooks/useScrollLock';
-import { categoryTiles, homeAnchor, settingOn, settingText } from '../../lib/giftology';
+import {
+  categoryTiles,
+  homeAnchor,
+  menuLabel,
+  settingOn,
+  settingText,
+} from '../../lib/giftology';
 import { ChevronDownIcon, CloseIcon } from './icons';
 import { enabledSections } from './navItems';
 import { TILE_ICONS } from './tileIcons';
@@ -15,12 +21,6 @@ interface GlyMobileMenuProps {
   open: boolean;
   onClose: () => void;
 }
-
-/**
- * The store's menu names a few built-in entries by translation key
- * (`blocks.header.offers`) instead of by a title.
- */
-const TRANSLATION_KEY = /^[a-z_]+(\.[a-z_]+)+$/;
 
 /** One category in the drawer; a parent expands to "All" plus its children. */
 function CategoryNode({
@@ -35,7 +35,7 @@ function CategoryNode({
   const { t } = useGly();
   const [open, setOpen] = useState(false);
   const children = node.sub_categories ?? node.items ?? [];
-  const name = TRANSLATION_KEY.test(node.name) ? t(node.name) : node.name;
+  const name = menuLabel(node.name, t);
 
   if (!children.length) {
     return (

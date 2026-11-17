@@ -45,6 +45,10 @@ app/assets/images/          logos, watermark pattern, category icons
 - Every merchant setting starts with `gly_`. Their ids match the Twig theme; do not rename them.
 - Brand colours and the body font are locked in `app/styles/giftology/_tokens.scss`.
 - Phones keep the starter's bottom nav and page-title bar. Its Menu tab opens `GlyMobileMenu`.
+- Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and
+  `{whatsapp}` in their text; `page/PageSingle.tsx` fills them from the store's details.
+- The footer's "important links" are the store's footer menu (the pages the merchant adds in
+  Salla), and its registration numbers come from the store's settings. Neither is a theme setting.
 
 ## Layout
 

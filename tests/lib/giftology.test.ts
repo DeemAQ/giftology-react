@@ -3,6 +3,7 @@ import {
   allProductsUrl,
   categoryIdFromUrl,
   categoryTiles,
+  fillStoreDetails,
   homeAnchor,
   resolveCategoryUrl,
   settingChoice,
@@ -105,6 +106,46 @@ describe('link helpers', () => {
   it('anchors a section on the home page', () => {
     expect(homeAnchor('https://shop.test/ar/', 'gly-cats')).toBe('https://shop.test/ar/#gly-cats');
     expect(homeAnchor('https://shop.test/ar', 'gly-cats')).toBe('https://shop.test/ar/#gly-cats');
+  });
+});
+
+describe('fillStoreDetails', () => {
+  const details = {
+    storeName: 'Giftology',
+    commercialNumber: '1010123456',
+    email: 'hello@giftology.test',
+    whatsapp: '966551112222',
+  };
+
+  it('fills each placeholder, linking the email and the WhatsApp number', () => {
+    expect(fillStoreDetails('<p>{store_name} ({commercial_number})</p>', details)).toBe(
+      '<p>Giftology (<span dir="ltr">1010123456</span>)</p>'
+    );
+    expect(fillStoreDetails('{email}', details)).toBe(
+      '<a href="mailto:hello@giftology.test" dir="ltr">hello@giftology.test</a>'
+    );
+    expect(fillStoreDetails('{whatsapp}', details)).toBe(
+      '<a href="https://wa.me/966551112222" dir="ltr" target="_blank" rel="noopener">+966551112222</a>'
+    );
+  });
+
+  it('accepts spaces inside the braces and fills every occurrence', () => {
+    expect(fillStoreDetails('{ store_name } and {store_name}', details)).toBe(
+      'Giftology and Giftology'
+    );
+  });
+
+  it('empties a placeholder the store has no value for, and leaves other braces alone', () => {
+    expect(fillStoreDetails('CR: {commercial_number}.', { storeName: 'Giftology' })).toBe('CR: .');
+    expect(fillStoreDetails('{constructor} {Store_Name} {not_a_detail} {}', details)).toBe(
+      '{constructor} {Store_Name} {not_a_detail} {}'
+    );
+  });
+
+  it("escapes a store name so it can't inject markup", () => {
+    expect(fillStoreDetails('{store_name}', { storeName: 'Gifts <b>&</b> "Co"' })).toBe(
+      'Gifts &lt;b&gt;&amp;&lt;/b&gt; &quot;Co&quot;'
+    );
   });
 });
 

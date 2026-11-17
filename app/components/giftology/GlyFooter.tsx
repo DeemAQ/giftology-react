@@ -1,6 +1,9 @@
+import { useQuery } from '@tanstack/react-query';
+import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
+import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
 import logo from '../../assets/images/white_logo_trim.png';
-import { settingOn, settingText } from '../../lib/giftology';
+import { menuLabel, settingOn, settingText } from '../../lib/giftology';
 import { InstagramIcon, MailIcon, WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
 
@@ -19,15 +22,29 @@ const PAYMENTS = [
 const plainText = (html: string | undefined) => (html ?? '').replace(/<[^>]*>/g, ' ').trim();
 
 /**
- * Giftology footer: logo and about text, one contact column (email, WhatsApp,
- * Instagram), then the copyright line and the payment badges.
+ * Giftology footer: logo and about text, the store's "important links", one contact
+ * column (email, WhatsApp, Instagram), then the copyright line, the store's
+ * registration numbers and the payment badges.
+ *
+ * Important links are the store's footer menu, which the merchant fills in Salla
+ * with the policy and information pages. The column appears once it has entries.
+ * The commercial registration and tax numbers come from the store's settings and
+ * show when the store has them.
  *
  * About text: `gly_footer_about`, else the store description, else the locale
  * default. Email: `gly_email`, else the store's. Instagram: the store's, else
  * `gly_instagram`. The `footer:start` / `footer:end` slots are kept for apps.
  */
 export function GlyFooter() {
-  const { store, settings, t, whatsappGeneral } = useGly();
+  const { store, settings, t, locale, whatsappGeneral } = useGly();
+  // The same cache entry the starter's own footer reads (`layout/Footer.tsx`).
+  const { data: links = [] } = useQuery({
+    queryKey: ['menus', 'footer', locale],
+    queryFn: () => menu.footer(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const commercialNumber = store?.settings?.commercial_number;
+  const taxNumber = store?.settings?.tax?.number;
   const about =
     settingText(settings, 'gly_footer_about') ||
     plainText(store?.description) ||
@@ -41,11 +58,28 @@ export function GlyFooter() {
       <HookSlot name="footer:start" />
       <div className="gly-footer__deco" aria-hidden="true" />
       <div className="gly-wrap">
-        <div className="gly-fgrid">
+        <div className={`gly-fgrid${links.length ? ' gly-fgrid--links' : ''}`}>
           <div className="gly-fbrand">
             <img src={logo} alt={store?.name || 'Giftology'} width={77} height={46} loading="lazy" />
             <p>{about}</p>
           </div>
+
+          {links.length > 0 && (
+            <nav aria-labelledby="gly-flinks-head">
+              <h2 className="gly-fhead" id="gly-flinks-head">
+                {t('blocks.footer.important_links')}
+              </h2>
+              <ul className="gly-flinks">
+                {links.map((item) => (
+                  <li key={item.id}>
+                    <Link to={item.url} target={item.target === '_blank' ? '_blank' : undefined}>
+                      {menuLabel(item.title, t)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
 
           <div>
             <h2 className="gly-fhead">{t('blocks.gly.footer.contact')}</h2>
@@ -79,9 +113,25 @@ export function GlyFooter() {
         </div>
 
         <div className="gly-fbottom">
-          <span>
-            © {new Date().getFullYear()} {store?.name} · {t('blocks.gly.footer.rights')}
-          </span>
+          <div className="gly-flegal">
+            <span>
+              © {new Date().getFullYear()} {store?.name} · {t('blocks.gly.footer.rights')}
+            </span>
+            {(commercialNumber || taxNumber) && (
+              <span className="gly-flegal__ids">
+                {commercialNumber && (
+                  <span>
+                    {t('blocks.gly.footer.commercial_number')}: <bdi dir="ltr">{commercialNumber}</bdi>
+                  </span>
+                )}
+                {taxNumber && (
+                  <span>
+                    {t('blocks.gly.footer.tax_number')}: <bdi dir="ltr">{taxNumber}</bdi>
+                  </span>
+                )}
+              </span>
+            )}
+          </div>
           {payments.length > 0 && (
             <div className="gly-pays">
               {payments.map(([id, label]) => (
