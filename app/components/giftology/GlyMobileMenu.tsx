@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { category } from '@salla.sa/twilight-theme-engine/api/category';
 import type { Category } from '@salla.sa/twilight-theme-engine/types';
+import { useDialogFocus } from '../../hooks/useDialogFocus';
+import { useScrollLock } from '../../hooks/useScrollLock';
 import { categoryTiles, homeAnchor, settingOn, settingText } from '../../lib/giftology';
 import { ChevronDownIcon, CloseIcon } from './icons';
 import { enabledSections } from './navItems';
@@ -14,6 +16,12 @@ interface GlyMobileMenuProps {
   onClose: () => void;
 }
 
+/**
+ * The store's menu names a few built-in entries by translation key
+ * (`blocks.header.offers`) instead of by a title.
+ */
+const TRANSLATION_KEY = /^[a-z_]+(\.[a-z_]+)+$/;
+
 /** One category in the drawer; a parent expands to "All" plus its children. */
 function CategoryNode({
   node,
@@ -24,14 +32,16 @@ function CategoryNode({
   allLabel: string;
   onNavigate: () => void;
 }) {
+  const { t } = useGly();
   const [open, setOpen] = useState(false);
   const children = node.sub_categories ?? node.items ?? [];
+  const name = TRANSLATION_KEY.test(node.name) ? t(node.name) : node.name;
 
   if (!children.length) {
     return (
       <li className="gly-catitem">
         <Link to={node.url} onClick={onNavigate}>
-          {node.name}
+          {name}
         </Link>
       </li>
     );
@@ -45,7 +55,7 @@ function CategoryNode({
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <span>{node.name}</span>
+        <span>{name}</span>
         <ChevronDownIcon className="gly-catchev" />
       </button>
       <ul className="gly-subcatlist">
@@ -68,19 +78,25 @@ function CategoryNode({
  *
  * The accordion lists the store's real category tree, fetched the first time the
  * menu opens. Until it arrives (or if it fails) the curated category tiles stand in.
+ *
+ * While open it behaves as a modal dialog: the page behind doesn't scroll, Tab stays
+ * inside it, Escape closes it, and focus returns to the button that opened it.
  */
 export function GlyMobileMenu({ open, onClose }: GlyMobileMenuProps) {
   const { settings, t, homeUrl, locale } = useGly();
   const [sectionsOpen, setSectionsOpen] = useState(false);
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   // Once opened, the tree stays loaded for later openings.
   const [wanted, setWanted] = useState(false);
   const { data: categories } = useQuery({ ...category.queries.list(), enabled: wanted });
 
+  useScrollLock(open);
+  // Focuses the close button (the first control) on open, and the opener again on close.
+  useDialogFocus(menuRef, open);
+
   useEffect(() => {
     if (!open) return;
     setWanted(true);
-    closeRef.current?.focus();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
@@ -96,6 +112,8 @@ export function GlyMobileMenu({ open, onClose }: GlyMobileMenuProps) {
 
   return (
     <div
+      ref={menuRef}
+      tabIndex={-1}
       className={`gly-mmenu${open ? ' open' : ''}`}
       id="gly-mmenu"
       role="dialog"
@@ -105,7 +123,6 @@ export function GlyMobileMenu({ open, onClose }: GlyMobileMenuProps) {
       inert={!open}
     >
       <button
-        ref={closeRef}
         type="button"
         className="gly-mclose"
         id="gly-mclose"
