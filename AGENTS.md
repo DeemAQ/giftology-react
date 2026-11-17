@@ -41,7 +41,10 @@ app/assets/images/          logos, watermark pattern, category icons
 ```
 
 - The home page is a fixed sequence of sections (`GiftologyHome.tsx`), each behind a
-  `gly_show_*` switch. Merchant home blocks are not rendered.
+  `gly_show_*` switch. The blocks a merchant adds in the theme editor are drawn together by
+  the engine's `Home.Component`, at the place `gly_blocks_position` names (under the hero by
+  default). The engine's no-blocks fallback is registered as an empty component in
+  `app/router.tsx`: Giftology has its own latest-products section.
 - Every merchant setting starts with `gly_`. Their ids match the Twig theme; do not rename them.
 - Brand colours and the body font are locked in `app/styles/giftology/_tokens.scss`.
 - Phones keep the starter's bottom nav and page-title bar. Its Menu tab opens `GlyMobileMenu`.

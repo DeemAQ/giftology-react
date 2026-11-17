@@ -93,6 +93,17 @@ export function allProductsUrl(homeUrl: string | undefined): string {
 
 const TRANSLATION_KEY = /^[a-z_]+(\.[a-z_]+)+$/;
 
+/** Where the merchant's home blocks sit among the Giftology sections. */
+export type BlocksPosition = 'top' | 'after_hero' | 'after_latest' | 'bottom';
+
+const BLOCKS_POSITIONS: readonly BlocksPosition[] = ['top', 'after_hero', 'after_latest', 'bottom'];
+
+/** `gly_blocks_position`; under the hero until the merchant picks another place. */
+export function blocksPosition(settings: GlySettings): BlocksPosition {
+  const chosen = settingChoice(settings, 'gly_blocks_position') as BlocksPosition;
+  return BLOCKS_POSITIONS.includes(chosen) ? chosen : 'after_hero';
+}
+
 /**
  * The label of a store menu entry. Salla names a few built-in entries by translation
  * key (`blocks.header.offers`) instead of by a title; those are translated.

@@ -15,7 +15,6 @@ import {
   FeaturedProducts,
   featuredProductsConfig,
   FixedProducts,
-  LatestProducts,
   MainLinks,
   PhotosSlider,
   ProductsSlider,
@@ -40,6 +39,10 @@ registerThemeHooks();
 
 registry.register('product:list-page', ProductListPage);
 registry.register('product:list-skeleton', ProductListSkeleton);
+
+function NoBlock() {
+  return null;
+}
 
 registerHomeComponents({
   ...DefaultHomeComponents,
@@ -72,8 +75,9 @@ registerHomeComponents({
   'featured-products-special-product': FeaturedProductsWithSpecialProduct,
   // Fork of the engine block so its grid renders the theme's ProductCard wrapper.
   'fixed-products': FixedProducts,
-  // Fork of the engine's no-blocks fallback, for the same reason.
-  'latest-products': LatestProducts,
+  // The engine shows this block when the merchant placed none. Giftology has its
+  // own latest-products section (`giftology/LatestProducts.tsx`), so it draws nothing.
+  'latest-products': NoBlock,
   'slider-products-with-header': SliderProductsWithHeader,
   'enhanced-square-banners': EnhancedSquareBanners,
   blog: Blog,
@@ -83,6 +87,8 @@ registerHomeComponents({
 // the literal `styleN` values; this covers the semantic `view_style`s too.
 // `custom-testimonials` gets `s-block--full-bg` so the gray band runs edge-to-edge.
 registerHomeComponentConfig({
+  // The fallback's wrapper takes no room either.
+  'latest-products': { className: 'hidden', height: '0px' },
   'featured-products': featuredProductsConfig,
   'featured-products-special-offer': featuredProductsConfig,
   'featured-products-special-product': featuredProductsConfig,

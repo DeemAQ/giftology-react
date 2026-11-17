@@ -28,6 +28,14 @@ vi.mock('@salla.sa/twilight-theme-engine/i18n', () => ({
   }),
 }));
 vi.mock('@salla.sa/twilight-theme-engine/hooks', () => ({ HookSlot: () => null }));
+// The engine's home page: the merchant's blocks, with its own slots around them.
+vi.mock('@salla.sa/twilight-theme-engine/routes/home', () => ({
+  Home: {
+    Component: ({ components = [] }: { components?: { path: string }[] }) => (
+      <div id="merchant-blocks">{components.map((block) => block.path).join(',')}</div>
+    ),
+  },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
   Link: ({ to, children, ...props }: { to?: string; children?: ReactNode }) => (
     <a href={to} {...props}>
@@ -276,6 +284,37 @@ describe('GiftologyHome', () => {
     expect(container.querySelector('#gly-finder')).toBeNull();
     expect(container.querySelector('a[href="#gly-latest"]')).toBeNull();
     expect(container.querySelector('#gly-cats')).not.toBeNull();
+  });
+
+  /** The page's top-level blocks in order, by id (the hero has none: "hero"). */
+  const pageOrder = (container: HTMLElement) =>
+    Array.from(container.children, (el) => el.id || (el.querySelector('h1') ? 'hero' : el.tagName));
+
+  it("shows the merchant's blocks under the hero by default", () => {
+    const { container } = renderWithQuery(
+      <GiftologyHome components={[{ path: 'brands' }, { path: 'blog' }]} />
+    );
+    expect(container.querySelector('#merchant-blocks')?.textContent).toBe('brands,blog');
+    expect(pageOrder(container).slice(0, 3)).toEqual(['hero', 'merchant-blocks', 'gly-latest']);
+  });
+
+  it.each([
+    ['top', 0],
+    ['after_hero', 1],
+    ['after_latest', 2],
+    ['bottom', 7],
+  ])('moves them with the position setting: %s', (position, index) => {
+    state.settings = { gly_blocks_position: position };
+    const { container } = renderWithQuery(<GiftologyHome components={[{ path: 'brands' }]} />);
+    const order = pageOrder(container);
+    expect(order.indexOf('merchant-blocks')).toBe(index);
+    expect(order).toHaveLength(8);
+  });
+
+  it('keeps their place when the section before them is switched off', () => {
+    state.settings = { gly_show_hero: false };
+    const { container } = renderWithQuery(<GiftologyHome components={[{ path: 'brands' }]} />);
+    expect(pageOrder(container).slice(0, 2)).toEqual(['merchant-blocks', 'gly-latest']);
   });
 });
 

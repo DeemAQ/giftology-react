@@ -7,6 +7,7 @@ import {
   homeAnchor,
   resolveCategoryUrl,
   settingChoice,
+  blocksPosition,
   settingOn,
   settingText,
   storePage,
@@ -34,6 +35,18 @@ describe('setting readers', () => {
     expect(settingChoice({ x: 'cake' }, 'x')).toBe('cake');
     expect(settingChoice({ x: [{ value: 'baby', label: 'Baby' }] }, 'x')).toBe('baby');
     expect(settingChoice({}, 'x')).toBe('');
+  });
+});
+
+describe('blocksPosition', () => {
+  it("reads the merchant's choice", () => {
+    expect(blocksPosition({ gly_blocks_position: 'bottom' })).toBe('bottom');
+    expect(blocksPosition({ gly_blocks_position: [{ value: 'top', label: 'Top' }] })).toBe('top');
+  });
+
+  it('puts the blocks under the hero when unset or unknown', () => {
+    expect(blocksPosition({})).toBe('after_hero');
+    expect(blocksPosition({ gly_blocks_position: 'sideways' })).toBe('after_hero');
   });
 });
 

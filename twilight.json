@@ -666,6 +666,45 @@
             "selected": true
         },
         {
+            "type": "items",
+            "format": "dropdown-list",
+            "icon": "sicon-layout-grid-rearrange",
+            "label": "مكان عناصر الصفحة الرئيسية",
+            "description": "العناصر التي تضيفها من تبويب «الصفحة الرئيسية» في محرّر الثيم (صور متحركة، منتجات مميزة، ماركات…) تظهر مجتمعةً في هذا المكان بين أقسام جيفتولوجي.",
+            "id": "gly_blocks_position",
+            "source": "Manual",
+            "required": false,
+            "selected": [
+                {
+                    "label": "بعد قسم البطل (Hero)",
+                    "value": "after_hero",
+                    "key": "gly-blocks-after-hero"
+                }
+            ],
+            "options": [
+                {
+                    "label": "أعلى الصفحة، قبل قسم البطل (Hero)",
+                    "value": "top",
+                    "key": "gly-blocks-top"
+                },
+                {
+                    "label": "بعد قسم البطل (Hero)",
+                    "value": "after_hero",
+                    "key": "gly-blocks-after-hero"
+                },
+                {
+                    "label": "بعد أحدث المنتجات",
+                    "value": "after_latest",
+                    "key": "gly-blocks-after-latest"
+                },
+                {
+                    "label": "آخر الصفحة",
+                    "value": "bottom",
+                    "key": "gly-blocks-bottom"
+                }
+            ]
+        },
+        {
             "type": "static",
             "id": "gly-label-latest",
             "format": "title",

@@ -18,7 +18,6 @@ upstream change the fork might have taken in, not proof that it was synced then.
 | `cart/CartItem.tsx`           | `components/cart/CartItem.tsx`                | `CartPage`                                         | 1.0.64 | Flat row, no "Total:" label, trash icon at row end, React quantity stepper; options in the collapsible `common/ProductOptionsPanel.tsx`                                 |
 | `page/PageSingle.tsx`         | `routes/page/PageSingle.tsx`                  | `app/routes/$slug.page-$id.tsx`                    | 1.0.78 | `customised` pages render only the `information_page.information_page` hook; the page is keyed by its id, so comments reload between pages; `{store_name}`, `{commercial_number}`, `{email}` and `{whatsapp}` in the page text are filled from the store's details (`lib/giftology.ts` `fillStoreDetails`)                                |
 | `home/FixedProducts.tsx`      | `components/home/FixedProducts.tsx`           | `registerHomeComponents` in `app/router.tsx`       | 1.0.47 | Same markup, uses the theme `ProductCard`, shows the block's `limit` products instead of always 4, a store-wide horizontal `product_card_layout` beats `vertical_fixed_products`, which beats the block's `isVertical` (the engine reads `isVertical` first)        |
-| `home/LatestProducts.tsx`     | `components/home/LatestProducts.tsx`          | `registerHomeComponents` in `app/router.tsx`       | 1.0.139 | Same markup, uses the theme `ProductCard` (the no-blocks home fallback)                                     |
 | `layout/PageAdvertisements.tsx` | `components/layout/PageAdvertisements.tsx` | `giftology/GlyHeader.tsx` | 1.0.139 | The theme editor preview keeps each ad's pages (the engine shows every ad on every page there); page slug read from the router matches |
 | `layout/Footer.tsx` | `components/layout/Footer.tsx` | `layout/MobileAccountSheet.tsx` only (the page footer is `giftology/GlyFooter.tsx`) | 1.0.139 | Columns layout: a "Contact us" column (`<salla-contacts>` list) replaces the phone / email row under the description; the "Important links" column hides when the footer menu is empty; the lazy tax-certificate `ImageModal` has its own `<Suspense>`, which `ThemeLayout` needs because it renders the footer outside any boundary |
 
@@ -26,7 +25,7 @@ upstream change the fork might have taken in, not proof that it was synced then.
 
 | Route file | Engine route | What differs |
 | ---------- | ------------ | ------------ |
-| `app/routes/index.tsx` | `routes/home` (`Home`) | Keeps the engine's head; renders `giftology/GiftologyHome.tsx` (fixed curated sections) instead of the merchant's home blocks, and skips the engine's home loader. Its own loader fetches the latest products so they are in the server HTML. The `home:start` / `home:content` / `home:end` slots are still rendered. |
+| `app/routes/index.tsx` | `routes/home` (`Home`) | Keeps the engine's loader and head. Renders `giftology/GiftologyHome.tsx`: the curated Giftology sections, with the engine's `Home.Component` (the merchant's blocks, the `home:*` slots, the "order again" row) placed among them by `gly_blocks_position`. The loader also fetches the latest products so they are in the server HTML, and returns empty blocks if the blocks request fails. |
 
 ## Upgrading the engine
 
