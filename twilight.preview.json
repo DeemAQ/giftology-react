@@ -1,5 +1,5 @@
 {
-  "enabled": false,
+  "enabled": true,
   "settings": {
     "product_card_layout": "vertical",
     "product_card_img_ratio": "auto",
@@ -90,9 +90,257 @@
     "gly_pay_applepay": true,
     "gly_pay_visa": true,
     "gly_pay_mastercard": true,
-    "gly_pay_tabby": true,
+    "gly_pay_tabby": false,
     "gly_pay_tamara": false,
     "gly_pay_stcpay": true
   },
-  "layout": null
+  "layout": [
+    {
+      "id": "b-6ed75fa57d18",
+      "path": "enhanced-slider",
+      "fields": {
+        "key": "186b3f4f-25cf-4d3c-abca-cef7eed6f0ab",
+        "in_container": false,
+        "auto_play": true,
+        "slides": [
+          {
+            "image": "https://cdn.salla.sa/ZrBEO/MopzhoqpTkDObcKc8Q8n77AuydanfsGXdZO7iinH.jpg",
+            "title": "روِّج لمنتجاتك كصور متحركة",
+            "description": "اعرض المنتجات التي تود إبرازها لزوّار متجرك في هذه المساحة",
+            "without_overlay": false
+          },
+          {
+            "image": "https://cdn.salla.sa/ZrBEO/3gOhYSaIhaHxhH2IHWxJYDl9JHwxP6dGKiZFSq4K.jpg",
+            "title": "شجّع زوار متجرك على الشراء عبر عروض خاصة",
+            "description": "اعرض المنتجات التي تود إبرازها لزوّار متجرك في هذه المساحة",
+            "without_overlay": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "b-6f4e11b4c52d",
+      "path": "photos-slider-with-text",
+      "fields": {
+        "key": "7b65ae0b-e4d0-49d0-b723-7bf3547d5deb",
+        "in_container": false,
+        "auto_play": true,
+        "slides": [
+          {
+            "image": "https://cdn.salla.sa/ZrBEO/MopzhoqpTkDObcKc8Q8n77AuydanfsGXdZO7iinH.jpg",
+            "title": "روِّج لمنتجاتك كصور متحركة",
+            "description": "اعرض المنتجات التي تود إبرازها لزوّار متجرك في هذه المساحة",
+            "without_overlay": false
+          },
+          {
+            "image": "https://cdn.salla.sa/ZrBEO/3gOhYSaIhaHxhH2IHWxJYDl9JHwxP6dGKiZFSq4K.jpg",
+            "title": "شجّع زوار متجرك على الشراء عبر عروض خاصة",
+            "description": "اعرض المنتجات التي تود إبرازها لزوّار متجرك في هذه المساحة",
+            "without_overlay": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "b-c47bdc50089b",
+      "path": "main-links",
+      "fields": {
+        "key": "2b1b130b-5b37-422a-9683-e0fd367460c0",
+        "title": "",
+        "merge_with_top_component": false,
+        "show_controls": true,
+        "show_cats": false,
+        "categories": [],
+        "links": [
+          {
+            "icon": "sicon-packed-box",
+            "title": "منتج جاهز",
+            "url__type": "offers_link"
+          },
+          {
+            "icon": "sicon-fabric-swatch",
+            "title": "خدمة حسب الطلب",
+            "url__type": "offers_link"
+          },
+          {
+            "icon": "sicon-cake",
+            "title": "أكل ومشروبات",
+            "url__type": "offers_link"
+          },
+          {
+            "icon": "sicon-game-controller-alt",
+            "title": "منتج رقمي",
+            "url__type": "offers_link"
+          },
+          {
+            "icon": "sicon-barcode-scan",
+            "title": "بطاقة رقمية",
+            "url__type": "offers_link"
+          },
+          {
+            "icon": "sicon-inbox-full",
+            "title": "مجموعة منتجات",
+            "url__type": "offers_link"
+          },
+          {
+            "icon": "sicon-calendar-date",
+            "title": "حجوزات",
+            "url__type": "offers_link"
+          }
+        ]
+      }
+    },
+    {
+      "id": "b-812f15410c4e",
+      "path": "featured-products",
+      "fields": {
+        "key": "6a73e723-1357-43a3-ac70-de94a15280ef",
+        "items": [
+          {
+            "name": "أحدث المنتجات",
+            "type": "latest_products",
+            "category": "",
+            "chosen_products": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "b-f63ebf649de3",
+      "path": "featured-products-special-offer",
+      "fields": {
+        "key": "5534e3c8-4c3c-480c-b547-d2f74d50f39e",
+        "main_product_title": "",
+        "main_product": [],
+        "items": [
+          {
+            "name": "أحدث المنتجات",
+            "type": "latest_products",
+            "category": "",
+            "chosen_products": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "b-44482a9d324d",
+      "path": "featured-products-special-product",
+      "fields": {
+        "key": "88cd8243-20fb-43df-be65-6a8bee601ea8",
+        "items": [
+          {
+            "name": "أحدث المنتجات",
+            "type": "latest_products",
+            "category": "",
+            "chosen_products": null,
+            "special_product": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "b-36d84f49653d",
+      "path": "slider-products-with-header",
+      "fields": {
+        "key": "9a758d20-2ce4-4782-91fe-c04466464588",
+        "background": "https://cdn.salla.sa/form-builder/D7bG3pgSit43TheOejBOZV7LIfG1y1Cj0hWLmgIh.jpg",
+        "title": "",
+        "description": "",
+        "products": [],
+        "display_all_url": ""
+      }
+    },
+    {
+      "id": "b-760d7f477744",
+      "path": "enhanced-square-banners",
+      "fields": {
+        "key": "b89edc4a-ce0b-468f-8323-2da48147bb32",
+        "banners": [
+          {
+            "image": "https://cdn.salla.sa/mQgZlG/pzOCEw10wCfXeVSpKnL0Ifd1O9ZkTfnZ17RkE14R.jpg",
+            "url": null,
+            "title": "تصفَّح حسب التصنيف",
+            "description": "سهِّل تجربة التسوُّق والوصول لمنتجاتك"
+          },
+          {
+            "image": "https://cdn.salla.sa/mQgZlG/lkyDjYwvWJNmAQoGnLALLcUkm66rCCDbTyVlSGdH.jpg",
+            "url": null,
+            "title": "تصفَّح حسب التصنيف",
+            "description": "سهِّل تجربة التسوُّق والوصول لمنتجاتك"
+          },
+          {
+            "image": "https://cdn.salla.sa/mQgZlG/lkyDjYwvWJNmAQoGnLALLcUkm66rCCDbTyVlSGdH.jpg",
+            "url": null,
+            "title": "تصفَّح حسب التصنيف",
+            "description": "سهِّل تجربة التسوُّق والوصول لمنتجاتك"
+          },
+          {
+            "image": "https://cdn.salla.sa/mQgZlG/lkyDjYwvWJNmAQoGnLALLcUkm66rCCDbTyVlSGdH.jpg",
+            "url": null,
+            "title": "تصفَّح حسب التصنيف",
+            "description": "سهِّل تجربة التسوُّق والوصول لمنتجاتك"
+          },
+          {
+            "image": "https://cdn.salla.sa/mQgZlG/lkyDjYwvWJNmAQoGnLALLcUkm66rCCDbTyVlSGdH.jpg",
+            "url": null,
+            "title": "تصفَّح حسب التصنيف",
+            "description": "سهِّل تجربة التسوُّق والوصول لمنتجاتك"
+          }
+        ]
+      }
+    },
+    {
+      "id": "b-f05c43022805",
+      "path": "brands",
+      "fields": {
+        "key": "25f6cf26-a53f-4954-9b32-739b311b32c7",
+        "title": "تصفح من خلال العلامات التجارية",
+        "brands": []
+      }
+    },
+    {
+      "id": "b-218da7e3f8b9",
+      "path": "custom-testimonials",
+      "fields": {
+        "key": "541cc423-90c7-4230-8a33-a0342cfde4ad",
+        "items": [
+          {
+            "name": "ندى الحسيني",
+            "avatar": "https://cdn.assets.salla.network/prod/stores/themes/default/assets/images/avatar_female.png",
+            "stars": 5,
+            "text": "وصلتني اليوم  وطلعت جميلة متحمسة أجربها ❤️"
+          },
+          {
+            "name": "خالد الأحمد",
+            "avatar": "https://cdn.assets.salla.network/prod/stores/themes/default/assets/images/avatar_male.png",
+            "stars": 5,
+            "text": "اشتريت من هنا لعيالي وصراحة شئ لا يعلى عليه 👏"
+          },
+          {
+            "name": "خالد المسعودي",
+            "avatar": "https://cdn.assets.salla.network/prod/stores/themes/default/assets/images/avatar_male.png",
+            "stars": 5,
+            "text": "رهيبين يفكون أزمة. 👌"
+          },
+          {
+            "name": "عبدالعزيز اليامي",
+            "avatar": "https://cdn.assets.salla.network/prod/stores/themes/default/assets/images/avatar_male.png",
+            "stars": 5,
+            "text": "أحب هذا المتجر وتعاملهم الراقي مع العملاء ❤️"
+          }
+        ]
+      }
+    },
+    {
+      "id": "b-8f275f696c6f",
+      "path": "blog",
+      "fields": {
+        "key": "f3372a16-2ec0-4345-b03f-867f443f628e",
+        "title": "المدونة",
+        "description": "",
+        "background_color": "#f9fafb",
+        "posts": []
+      }
+    }
+  ]
 }
