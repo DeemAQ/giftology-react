@@ -26,7 +26,7 @@ upstream change the fork might have taken in, not proof that it was synced then.
 
 | Route file | Engine route | What differs |
 | ---------- | ------------ | ------------ |
-| `app/routes/index.tsx` | `routes/home` (`Home`) | Keeps the engine's head; renders `giftology/GiftologyHome.tsx` (fixed curated sections) instead of the merchant's home blocks, and skips the engine's home loader. The `home:start` / `home:content` / `home:end` slots are still rendered. |
+| `app/routes/index.tsx` | `routes/home` (`Home`) | Keeps the engine's head; renders `giftology/GiftologyHome.tsx` (fixed curated sections) instead of the merchant's home blocks, and skips the engine's home loader. Its own loader fetches the latest products so they are in the server HTML. The `home:start` / `home:content` / `home:end` slots are still rendered. |
 
 ## Upgrading the engine
 

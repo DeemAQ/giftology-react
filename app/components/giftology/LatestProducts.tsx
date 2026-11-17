@@ -13,6 +13,12 @@ const LIMIT = 8;
 const PLACEHOLDERS = Array.from({ length: 4 }, (_, index) => index);
 
 /**
+ * The section's query. The home route's loader fetches the same one first
+ * (`app/routes/index.tsx`), so the products are already there when this renders.
+ */
+export const latestProductsQuery = () => product.queries.list({ source: 'latest', perPage: LIMIT });
+
+/**
  * Latest products: the store's 8 newest, under a brand heading, with a "view all"
  * button to `gly_latest_url` (the store's latest-products page when unset). `id="gly-latest"` is the
  * target of the hero button and the menu link.
@@ -20,7 +26,7 @@ const PLACEHOLDERS = Array.from({ length: 4 }, (_, index) => index);
 export function LatestProducts() {
   const { settings, t, homeUrl } = useGly();
   const reveal = useReveal();
-  const { data, isLoading } = useQuery(product.queries.list({ source: 'latest', perPage: LIMIT }));
+  const { data, isLoading } = useQuery(latestProductsQuery());
   const products = (data?.items ?? []).slice(0, LIMIT);
 
   return (
