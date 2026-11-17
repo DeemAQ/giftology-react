@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
-import logo from '../../assets/images/white_logo_trim.png';
+import logo from '../../assets/images/white_logo_trim.webp';
 import { menuLabel, settingOn, settingText } from '../../lib/giftology';
 import { InstagramIcon, MailIcon, WhatsAppIcon } from './icons';
 import { useGly } from './useGly';

@@ -8,8 +8,14 @@ const LATEST = { queryKey: ['products', 'list', 'latest'] };
 vi.mock('@tanstack/react-router', () => ({
   createFileRoute: () => (options: unknown) => options,
 }));
-vi.mock('@salla.sa/twilight-theme-engine/routes/home', () => ({ Home: {} }));
-vi.mock('@salla.sa/twilight-theme-engine/tanstack', () => ({ withHead: () => () => ({}) }));
+vi.mock('@salla.sa/twilight-theme-engine/routes/home', () => ({ Home: { id: 'index' } }));
+// `withHead(route, extend)`: the route's head is the engine's, passed through `extend`.
+vi.mock('@salla.sa/twilight-theme-engine/tanstack', () => ({
+  withHead:
+    (_route: unknown, extend: (head: Record<string, unknown>) => Record<string, unknown>) => () =>
+      extend({ title: 'Home', links: [{ rel: 'canonical', href: 'https://shop.test/ar' }] }),
+}));
+vi.mock('../../app/assets/images/teal_pattern_with_bg.webp', () => ({ default: '/assets/pattern.webp' }));
 vi.mock('../../app/components/giftology/GiftologyHome', () => ({ GiftologyHome: () => null }));
 vi.mock('../../app/components/giftology/LatestProducts', () => ({
   latestProductsQuery: () => LATEST,
@@ -35,8 +41,7 @@ describe('home route loader', () => {
       await Promise.resolve();
       finished = true;
     });
-    const result = loaderWith(prefetchQuery);
-    await result;
+    await loaderWith(prefetchQuery);
     expect(prefetchQuery).toHaveBeenCalledWith(LATEST);
     expect(finished).toBe(true);
   });
@@ -44,7 +49,35 @@ describe('home route loader', () => {
   it('starts the request in the browser without holding the page back', async () => {
     vi.stubEnv('SSR', false);
     const prefetchQuery = vi.fn(() => new Promise<void>(() => {}));
-    expect(await loaderWith(prefetchQuery)).toBeUndefined();
+    // Resolves although the request never finishes.
+    await loaderWith(prefetchQuery);
     expect(prefetchQuery).toHaveBeenCalledWith(LATEST);
+  });
+
+  it('returns loader data either way, because `withHead` skips the head without it', async () => {
+    for (const ssr of [true, false]) {
+      vi.stubEnv('SSR', ssr);
+      expect(await loaderWith(async () => {})).toEqual({ page: { slug: 'index' } });
+    }
+  });
+});
+
+describe('home route head', () => {
+  it("keeps the engine's head and preloads the hero pattern on wide screens", async () => {
+    const { Route } = await import('../../app/routes/index');
+    const head = (Route as unknown as { head: () => { title: string; links: Record<string, string>[] } }).head();
+
+    expect(head.title).toBe('Home');
+    expect(head.links).toEqual([
+      { rel: 'canonical', href: 'https://shop.test/ar' },
+      {
+        rel: 'preload',
+        as: 'image',
+        type: 'image/webp',
+        href: '/assets/pattern.webp',
+        media: '(min-width: 768px)',
+        fetchPriority: 'high',
+      },
+    ]);
   });
 });

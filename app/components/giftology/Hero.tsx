@@ -1,4 +1,4 @@
-import bow from '../../assets/images/white_logo.png';
+import bow from '../../assets/images/white_logo.webp';
 import { settingOn } from '../../lib/giftology';
 import { ArrowDownIcon, ArrowIcon, SparkIcon, StarIcon } from './icons';
 import { useGly } from './useGly';
@@ -62,7 +62,8 @@ export function Hero() {
           <div className="gly-blob teal" />
           <div className="gly-hero__pattern" />
           <div className="gly-blob peach" />
-          <img className="gly-bow" src={bow} alt="" width={240} height={240} fetchPriority="high" />
+          {/* Lazy: phones hide the bow (`_home.scss`), and a hidden lazy image is never fetched. */}
+          <img className="gly-bow" src={bow} alt="" width={240} height={240} loading="lazy" decoding="async" />
           <StarIcon
             className="gly-sparkle"
             style={{ top: 30, insetInlineStart: 60, width: 26 }}

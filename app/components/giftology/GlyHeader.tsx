@@ -5,7 +5,7 @@ import { SallaUserMenu } from '@salla.sa/twilight-components-react/user-menu';
 import { SallaCartSummary } from '@salla.sa/twilight-components-react/cart-summary';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
-import logo from '../../assets/images/teal_logo_trim.png';
+import logo from '../../assets/images/teal_logo_trim.webp';
 import { homeAnchor } from '../../lib/giftology';
 import { HOME_ROUTE_ID } from '../../lib/routeIds';
 import { ShoppingBagIcon } from '../icons';
