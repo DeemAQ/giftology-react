@@ -8,6 +8,7 @@ import { settingText, whatsappLink, whatsappNumber, type GlySettings } from '../
  *
  * The WhatsApp number is `gly_whatsapp`, else the store's own WhatsApp or mobile
  * number. With none, both links are empty and the WhatsApp buttons don't render.
+ * `whatsappNumber` is that number as digits, for showing it in text.
  */
 export function useGly() {
   const { store, theme } = useTwilight();
@@ -26,6 +27,7 @@ export function useGly() {
     locale,
     t: translate,
     homeUrl: store?.url || '/',
+    whatsappNumber: number,
     whatsappGeneral: whatsappLink(number, translate('blocks.gly.wa.general_msg')),
     whatsappCustom: whatsappLink(number, translate('blocks.gly.wa.custom_msg')),
   };

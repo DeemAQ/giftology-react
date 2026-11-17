@@ -91,6 +91,55 @@ export function allProductsUrl(homeUrl: string | undefined): string {
   return storePage(homeUrl, 'products');
 }
 
+/** Store details a merchant can drop into a page's text as `{placeholder}`s. */
+export interface StoreDetails {
+  storeName?: string | null;
+  commercialNumber?: string | null;
+  email?: string | null;
+  /** Digits only, as `whatsappNumber` returns them. */
+  whatsapp?: string | null;
+}
+
+const HTML_ESCAPES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
+
+/**
+ * Fill the store-detail placeholders in merchant-written page HTML, so a policy
+ * page never carries a number typed by hand:
+ *
+ *   {store_name}  {commercial_number}  {email}  {whatsapp}
+ *
+ * The email and the WhatsApp number become links. A placeholder whose detail the
+ * store hasn't set becomes empty; any other text in braces is left as it is.
+ */
+export function fillStoreDetails(html: string, details: StoreDetails): string {
+  const { storeName, commercialNumber, email, whatsapp } = details;
+  const values = new Map<string, string>([
+    ['store_name', storeName ? escapeHtml(storeName) : ''],
+    [
+      'commercial_number',
+      commercialNumber ? `<span dir="ltr">${escapeHtml(String(commercialNumber))}</span>` : '',
+    ],
+    [
+      'email',
+      email ? `<a href="mailto:${escapeHtml(email)}" dir="ltr">${escapeHtml(email)}</a>` : '',
+    ],
+    [
+      'whatsapp',
+      whatsapp
+        ? `<a href="https://wa.me/${escapeHtml(whatsapp)}" dir="ltr" target="_blank" rel="noopener">+${escapeHtml(whatsapp)}</a>`
+        : '',
+    ],
+  ]);
+  return html.replace(/\{\s*([a-z_]+)\s*\}/g, (match, key: string) => values.get(key) ?? match);
+}
+
 /** The home page URL plus a section anchor, e.g. `https://store/ar/#gly-cats`. */
 export function homeAnchor(homeUrl: string | undefined, id: string): string {
   return `${(homeUrl || '').replace(/\/+$/, '')}/#${id}`;

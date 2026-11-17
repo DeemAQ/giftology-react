@@ -3,7 +3,9 @@ import { SallaComments } from '@salla.sa/twilight-components-react/comments';
 import type { StaticPage } from '@salla.sa/twilight-theme-engine/routes/page';
 import { Breadcrumb } from '@salla.sa/twilight-theme-engine/common';
 import { useComments } from '@salla.sa/twilight-theme-engine/hooks/useComments';
+import { fillStoreDetails, settingText } from '../../lib/giftology';
 import { BlockHookSlot } from '../common';
+import { useGly } from '../giftology/useGly';
 
 /** Engine `StaticPage` plus the `type` our forked loader threads through. */
 export type PageWithType = StaticPage & { type?: string };
@@ -21,15 +23,32 @@ export interface PageSingleProps {
  * engine's breadcrumb + article + comments layout, keyed by the page id so
  * moving from one page to another loads the new page's comments.
  *
+ * Giftology: `{store_name}`, `{commercial_number}`, `{email}` and `{whatsapp}` in
+ * the page text are filled from the store's own details (`fillStoreDetails`), so
+ * the policy pages never carry a number typed by hand.
+ *
  * Upgrade notes: `FORKS.md`.
  */
 export function PageSingle({ page }: PageSingleProps) {
   const { commentsKey } = useComments();
+  const { store, settings, whatsappNumber } = useGly();
+  const storeName = store?.name;
+  const commercialNumber = store?.settings?.commercial_number;
+  // The same email the footer shows.
+  const email = settingText(settings, 'gly_email') || store?.contacts?.email;
 
   // Matches the engine: strip `&nbsp;` from the merchant-authored HTML.
   const cleanContent = useMemo(
-    () => (page.content ? page.content.replace(/&nbsp;/g, ' ') : ''),
-    [page.content]
+    () =>
+      page.content
+        ? fillStoreDetails(page.content.replace(/&nbsp;/g, ' '), {
+            storeName,
+            commercialNumber,
+            email,
+            whatsapp: whatsappNumber,
+          })
+        : '',
+    [page.content, storeName, commercialNumber, email, whatsappNumber]
   );
 
   if (page.type === 'customised') {

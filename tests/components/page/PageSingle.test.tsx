@@ -48,6 +48,15 @@ vi.mock('../../../app/components/common/BlockHookSlot', () => ({
   ),
 }));
 
+// What the store has set; `whatsappNumber` is already resolved to digits by `useGly`.
+const gly = vi.hoisted(() => ({
+  store: {} as Record<string, unknown>,
+  settings: {} as Record<string, unknown>,
+  whatsappNumber: '',
+}));
+
+vi.mock('../../../app/components/giftology/useGly', () => ({ useGly: () => gly }));
+
 function makePage(overrides: Partial<PageWithType> = {}): PageWithType {
   return {
     slug: 'about-us',
@@ -93,6 +102,40 @@ describe('PageSingle', () => {
 
       const comments = container.querySelector('.salla-comments');
       expect(comments?.getAttribute('data-item-id')).toBe('42');
+    });
+
+    it("fills the store-detail placeholders from the store's own details", () => {
+      gly.store = {
+        name: 'Giftology',
+        contacts: { email: 'store@shop.test' },
+        settings: { commercial_number: '1010123456' },
+      };
+      gly.whatsappNumber = '966551112222';
+      const { container } = render(
+        <PageSingle
+          page={makePage({
+            content:
+              '<p>{store_name} · CR {commercial_number}</p><p>{email} / {whatsapp}</p><p>{unknown}</p>',
+          })}
+        />
+      );
+      const content = container.querySelector('.content-entry')!;
+      expect(content.textContent).toBe(
+        'Giftology · CR 1010123456store@shop.test / +966551112222{unknown}'
+      );
+      expect(content.querySelector('a[href="mailto:store@shop.test"]')).toBeTruthy();
+      expect(content.querySelector('a[href="https://wa.me/966551112222"]')).toBeTruthy();
+      gly.store = {};
+      gly.whatsappNumber = '';
+    });
+
+    it("prefers the theme's contact email, as the footer does", () => {
+      gly.store = { contacts: { email: 'store@shop.test' } };
+      gly.settings = { gly_email: 'hello@giftology.test' };
+      const { container } = render(<PageSingle page={makePage({ content: '<p>{email}</p>' })} />);
+      expect(container.querySelector('.content-entry')?.textContent).toBe('hello@giftology.test');
+      gly.store = {};
+      gly.settings = {};
     });
 
     it('omits the content block when the page has no content', () => {
