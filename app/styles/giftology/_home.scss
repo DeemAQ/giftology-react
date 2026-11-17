@@ -379,3 +379,21 @@
   /* one promo phrase, so the bar stays one line */
   .gly-topbar__phrase:not(.gly-topbar__phrase--main),.gly-topbar__phrase--main .gly-topbar__sep{display:none}
 }
+
+/* ============================================================
+   Footer: important links and registration numbers
+   ============================================================ */
+/* With the store's footer menu the grid gains a middle column. */
+.gly-fgrid--links{grid-template-columns:1.6fr 1fr 1fr}
+.gly-flegal{display:flex;flex-direction:column;gap:.3rem}
+.gly-flegal__ids{display:flex;flex-wrap:wrap;gap:.2rem 1.1rem}
+@media(max-width:920px){
+  /* brand on its own row, then links beside contact */
+  .gly-fgrid--links{grid-template-columns:1fr 1fr}
+  .gly-fgrid--links .gly-fbrand{grid-column:1/-1}
+}
+@media(max-width:560px){
+  .gly-fgrid--links{grid-template-columns:1fr}
+  /* a taller tap area for each link without moving the rows */
+  .gly-flinks a{display:inline-block;padding-block:.35rem;margin-block:-.35rem}
+}

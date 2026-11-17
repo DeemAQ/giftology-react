@@ -15,6 +15,7 @@ const state = {
   settings: {} as Record<string, unknown>,
   products: [] as { id: number; name: string }[],
   listCalls: [] as Record<string, unknown>[],
+  footerMenu: [] as { id: number | string; title: string; url: string; target?: string }[],
 };
 
 vi.mock('@salla.sa/twilight-theme-engine/providers', () => ({
@@ -46,6 +47,9 @@ vi.mock('@salla.sa/twilight-theme-engine/api/product', () => ({
       }),
     },
   },
+}));
+vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
+  menu: { footer: async () => state.footerMenu },
 }));
 vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
   category: {
@@ -79,6 +83,7 @@ function renderWithQuery(ui: ReactNode) {
 
 beforeEach(() => {
   state.store = { name: 'Giftology', url: 'https://shop.test/en' };
+  state.footerMenu = [];
   state.settings = {};
   state.products = [];
   state.listCalls = [];
@@ -129,7 +134,7 @@ describe('GlyFooter', () => {
       social: { instagram: 'https://instagram.com/giftology' },
     };
     state.settings = { gly_email: 'hello@giftology.test', gly_pay_visa: false };
-    render(<GlyFooter />);
+    renderWithQuery(<GlyFooter />);
     expect(screen.getByText('hello@giftology.test').closest('a')?.getAttribute('href')).toBe('mailto:hello@giftology.test');
     expect(screen.getByText('Store description')).toBeTruthy();
     expect(screen.getByText('Mastercard')).toBeTruthy();
@@ -137,6 +142,42 @@ describe('GlyFooter', () => {
     // Tamara is off until the merchant turns it on.
     expect(screen.queryByText('تمارا')).toBeNull();
     expect(screen.getByText(en['blocks.gly.footer.instagram']).closest('a')?.getAttribute('href')).toBe('https://instagram.com/giftology');
+  });
+
+  it("lists the store's footer menu as important links, translating key-named entries", async () => {
+    state.footerMenu = [
+      { id: 1, title: 'Return policy', url: 'https://shop.test/en/returns/page-1' },
+      { id: 'blog', title: 'blocks.gly.nav.latest', url: 'https://shop.test/en/blog', target: '_blank' },
+    ];
+    renderWithQuery(<GlyFooter />);
+    const policy = await screen.findByText('Return policy');
+    expect(policy.getAttribute('href')).toBe('https://shop.test/en/returns/page-1');
+    expect(policy.closest('nav')?.querySelector('h2')?.textContent).toBe(en['blocks.footer.important_links']);
+    const keyed = screen.getByText(en['blocks.gly.nav.latest'], { selector: '.gly-flinks a' });
+    expect(keyed.getAttribute('target')).toBe('_blank');
+  });
+
+  it('shows no links column while the footer menu is empty', async () => {
+    const { container } = renderWithQuery(<GlyFooter />);
+    await waitFor(() => expect(container.querySelector('.gly-fcontact')).toBeTruthy());
+    expect(container.querySelector('.gly-flinks')).toBeNull();
+    expect(container.querySelector('.gly-fgrid--links')).toBeNull();
+  });
+
+  it("shows the store's registration numbers when it has them", () => {
+    state.store = {
+      ...state.store,
+      settings: { commercial_number: '1010123456', tax: { number: '300000000000003' } },
+    };
+    const { container } = renderWithQuery(<GlyFooter />);
+    const ids = container.querySelector('.gly-flegal__ids');
+    expect(ids?.textContent).toContain(`${en['blocks.gly.footer.commercial_number']}: 1010123456`);
+    expect(ids?.textContent).toContain(`${en['blocks.gly.footer.tax_number']}: 300000000000003`);
+  });
+
+  it('shows no registration line for a store without the numbers', () => {
+    const { container } = renderWithQuery(<GlyFooter />);
+    expect(container.querySelector('.gly-flegal__ids')).toBeNull();
   });
 });
 
@@ -154,7 +195,7 @@ describe('WhatsApp buttons', () => {
     expect(float.container.querySelector('a')).toBeNull();
     float.unmount();
 
-    render(<GlyFooter />);
+    renderWithQuery(<GlyFooter />);
     expect(screen.queryByText(en['blocks.gly.footer.whatsapp'])).toBeNull();
   });
 });

@@ -91,6 +91,16 @@ export function allProductsUrl(homeUrl: string | undefined): string {
   return storePage(homeUrl, 'products');
 }
 
+const TRANSLATION_KEY = /^[a-z_]+(\.[a-z_]+)+$/;
+
+/**
+ * The label of a store menu entry. Salla names a few built-in entries by translation
+ * key (`blocks.header.offers`) instead of by a title; those are translated.
+ */
+export function menuLabel(name: string, t: (key: string) => string): string {
+  return TRANSLATION_KEY.test(name) ? t(name) : name;
+}
+
 /** Store details a merchant can drop into a page's text as `{placeholder}`s. */
 export interface StoreDetails {
   storeName?: string | null;
