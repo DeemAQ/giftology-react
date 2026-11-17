@@ -70,8 +70,9 @@ export function GlyFooter() {
                 {t('blocks.footer.important_links')}
               </h2>
               <ul className="gly-flinks">
+                {/* Salla's own entries (the blog link) come without an id. */}
                 {links.map((item) => (
-                  <li key={item.id}>
+                  <li key={item.id ?? item.url}>
                     <Link to={item.url} target={item.target === '_blank' ? '_blank' : undefined}>
                       {menuLabel(item.title, t)}
                     </Link>

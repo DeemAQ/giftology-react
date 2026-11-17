@@ -15,7 +15,7 @@ const state = {
   settings: {} as Record<string, unknown>,
   products: [] as { id: number; name: string }[],
   listCalls: [] as Record<string, unknown>[],
-  footerMenu: [] as { id: number | string; title: string; url: string; target?: string }[],
+  footerMenu: [] as { id?: number | string; title: string; url: string; target?: string }[],
 };
 
 vi.mock('@salla.sa/twilight-theme-engine/providers', () => ({
@@ -147,14 +147,19 @@ describe('GlyFooter', () => {
   it("lists the store's footer menu as important links, translating key-named entries", async () => {
     state.footerMenu = [
       { id: 1, title: 'Return policy', url: 'https://shop.test/en/returns/page-1' },
-      { id: 'blog', title: 'blocks.gly.nav.latest', url: 'https://shop.test/en/blog', target: '_blank' },
+      // Salla's built-in entries have no id.
+      { title: 'blocks.gly.nav.latest', url: 'https://shop.test/en/blog', target: '_blank' },
+      { title: 'Brands', url: 'https://shop.test/en/brands' },
     ];
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
     renderWithQuery(<GlyFooter />);
     const policy = await screen.findByText('Return policy');
     expect(policy.getAttribute('href')).toBe('https://shop.test/en/returns/page-1');
     expect(policy.closest('nav')?.querySelector('h2')?.textContent).toBe(en['blocks.footer.important_links']);
     const keyed = screen.getByText(en['blocks.gly.nav.latest'], { selector: '.gly-flinks a' });
     expect(keyed.getAttribute('target')).toBe('_blank');
+    expect(errors.mock.calls.filter(([message]) => String(message).includes('unique "key"'))).toEqual([]);
+    errors.mockRestore();
   });
 
   it('shows no links column while the footer menu is empty', async () => {
