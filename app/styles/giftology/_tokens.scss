@@ -1,0 +1,47 @@
+/* ============================================================
+   Giftology — brand tokens layer
+   File: app/styles/giftology/_tokens.scss
+   Fonts + design tokens + Raed theme-variable overrides.
+   Component styles live in _home.scss and _plist.scss.
+   ============================================================ */
+
+/* Brand fonts (Amiri, Aref Ruqaa, Tajawal) are linked from app/routes/__root.tsx. */
+
+:root {
+  /* ---- Theme variables, locked to the brand ----
+     The engine writes the dashboard colour and font as inline styles on <html>,
+     so these need !important to win. Remove it to make them dashboard-driven. */
+  --color-primary: #35837d !important;          /* darker Tiffany: legible white text on buttons */
+  --color-primary-dark: #25605c !important;
+  --color-primary-light: #61c5bf !important;    /* exact Tiffany as the light accent */
+  --color-primary-reverse: #ffffff !important;
+  --font-main: 'Tajawal', sans-serif !important;
+
+  /* ---- Giftology design tokens (used by all gly- components) ---- */
+  --gly-teal:#61c5bf; --gly-teal-deep:#35837d; --gly-teal-ink:#25605c; --gly-teal-wash:#e7f5f3;
+  --gly-ink:#33302b; --gly-soft:#6b645c; --gly-line:#4a3f35;
+  --gly-gold:#c8a24a; --gly-gold-soft:#e7d39a;
+  --gly-peach:#f9e6da; --gly-peach-deep:#f4c9b3;
+  --gly-cream:#fdf9f3; --gly-paper:#ffffff;
+
+  --gly-shadow-sm:0 4px 18px rgba(74,63,53,.08);
+  --gly-shadow-md:0 16px 44px rgba(74,63,53,.14);
+  --gly-shadow-teal:0 18px 40px rgba(63,156,150,.28);
+
+  --gly-font-display:'Amiri',Georgia,serif;
+  --gly-font-body:'Tajawal',system-ui,-apple-system,sans-serif;
+  --gly-font-script:'Aref Ruqaa','Amiri',serif;
+  --gly-r:18px;
+
+  /* watermark pattern (hero blob, custom-gift band, footer) */
+  --gly-pat:url('../../assets/images/teal_pattern_with_bg.jpg');
+}
+
+/* warm peach → cream page background (overall), like the reference mockup */
+body {
+  background: linear-gradient(200deg, var(--gly-cream) 0%, #fcf2ea 48%, var(--gly-peach) 100%);
+  background-attachment: fixed;
+}
+
+/* The starter paints .app-inner white; let the page gradient show through. */
+body .app-inner { background: transparent; }

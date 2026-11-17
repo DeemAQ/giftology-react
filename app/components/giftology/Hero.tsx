@@ -1,0 +1,105 @@
+import bow from '../../assets/images/white_logo.png';
+import { settingOn } from '../../lib/giftology';
+import { ArrowDownIcon, ArrowIcon, SparkIcon, StarIcon } from './icons';
+import { useGly } from './useGly';
+
+/**
+ * Home hero: headline, the calls to action (jump to the categories, the custom
+ * gift and the latest products sections), the four stats, and the decorative art.
+ * First screen, so it is visible in the server HTML with no reveal animation, and
+ * its headline is the home page's `<h1>`.
+ */
+export function Hero() {
+  const { settings, t } = useGly();
+  const h = (key: string) => t(`blocks.gly.hero.${key}`);
+
+  return (
+    <section className="gly-section gly-hero">
+      <div className="gly-wrap gly-hero__grid">
+        <div className="gly-reveal in">
+          <span className="gly-eyebrow">{h('eyebrow')}</span>
+          <h1>
+            {h('title_pre')} <span className="gly-accent">{h('title_em')}</span> {h('title_post')}
+          </h1>
+          <p className="gly-lede">{h('lede')}</p>
+          <div className="gly-cta-row">
+            <a href="#gly-cats" className="gly-btn gly-btn-primary">
+              {h('cta_shop')}
+              <ArrowIcon className="gly-arr" />
+            </a>
+            <a href="#gly-custom" className="gly-btn gly-btn-ghost">
+              <SparkIcon />
+              {h('cta_custom')}
+            </a>
+            {settingOn(settings, 'gly_show_latest') && (
+              <a href="#gly-latest" className="gly-btn gly-btn-ghost">
+                {h('cta_latest')}
+                <ArrowDownIcon />
+              </a>
+            )}
+          </div>
+          <div className="gly-hero-stats">
+            <div>
+              <b>+12 {h('stat_k')}</b>
+              <span>{h('stat_gifts')}</span>
+            </div>
+            <div>
+              <b>+40</b>
+              <span>{h('stat_occasions')}</span>
+            </div>
+            <div>
+              <b>4.9★</b>
+              <span>{h('stat_rating')}</span>
+            </div>
+            <div>
+              <b>2018</b>
+              <span>{h('stat_since')}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="gly-hero__art gly-reveal in" aria-hidden="true">
+          <div className="gly-blob teal" />
+          <div className="gly-hero__pattern" />
+          <div className="gly-blob peach" />
+          <img className="gly-bow" src={bow} alt="" width={240} height={240} fetchPriority="high" />
+          <StarIcon
+            className="gly-sparkle"
+            style={{ top: 30, insetInlineStart: 60, width: 26 }}
+          />
+          <StarIcon
+            className="gly-sparkle"
+            style={{ bottom: 90, insetInlineEnd: 30, width: 18, animationDelay: '1s' }}
+          />
+          <div className="gly-fcard fc1">
+            <div className="gly-fcard__ph" style={{ background: 'var(--gly-gold)' }}>
+              🎀
+            </div>
+            <div>
+              <b>{h('mini_wrap_t')}</b>
+              <small>{h('mini_wrap_d')}</small>
+            </div>
+          </div>
+          <div className="gly-fcard fc2">
+            <div className="gly-fcard__ph" style={{ background: 'var(--gly-teal-deep)' }}>
+              🚚
+            </div>
+            <div>
+              <b>{h('mini_fast_t')}</b>
+              <small>{h('mini_fast_d')}</small>
+            </div>
+          </div>
+          <div className="gly-fcard fc3">
+            <div className="gly-fcard__ph" style={{ background: '#e2715f' }}>
+              💌
+            </div>
+            <div>
+              <b>{h('mini_card_t')}</b>
+              <small>{h('mini_card_d')}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
