@@ -6,6 +6,7 @@ import en from '../../../locales/en.json';
 import { GiftFinder } from '../../../app/components/giftology/GiftFinder';
 import { GiftologyHome } from '../../../app/components/giftology/GiftologyHome';
 import { GlyFooter } from '../../../app/components/giftology/GlyFooter';
+import { WhatsAppFloat } from '../../../app/components/giftology/WhatsAppFloat';
 import { PromoBar } from '../../../app/components/giftology/PromoBar';
 import { SubcategoryPills } from '../../../app/components/giftology/SubcategoryPills';
 
@@ -124,6 +125,25 @@ describe('GlyFooter', () => {
   });
 });
 
+describe('WhatsApp buttons', () => {
+  it("uses the store's own number when the setting still holds its default", () => {
+    state.store = { ...state.store, contacts: { mobile: '+966 55 111 2222' } };
+    state.settings = { gly_whatsapp: '966500000000' };
+    render(<WhatsAppFloat />);
+    expect(screen.getByRole('link').getAttribute('href')).toContain('https://wa.me/966551112222?text=');
+  });
+
+  it('hides them when there is no number to chat with', () => {
+    state.settings = { gly_whatsapp: '966500000000' };
+    const float = render(<WhatsAppFloat />);
+    expect(float.container.querySelector('a')).toBeNull();
+    float.unmount();
+
+    render(<GlyFooter />);
+    expect(screen.queryByText(en['blocks.gly.footer.whatsapp'])).toBeNull();
+  });
+});
+
 describe('GiftFinder', () => {
   const pick = (label: keyof typeof en) => fireEvent.click(screen.getByText(en[label]));
 
@@ -165,12 +185,20 @@ describe('GiftFinder', () => {
     pick('blocks.gly.finder.q1_anyone');
     pick('blocks.gly.finder.q2_general');
     pick('blocks.gly.finder.q3_ready');
-    expect(await screen.findByText(en['blocks.gly.finder.shop'])).toBeTruthy();
+    const shop = await screen.findByText(en['blocks.gly.finder.shop']);
     expect(state.listCalls).toHaveLength(0);
+    // No category link set: all products, not the home page the visitor is already on.
+    expect(shop.closest('a')?.getAttribute('href')).toBe('https://shop.test/en/products');
   });
 });
 
 describe('GiftologyHome', () => {
+  it('sends "view all" to the latest-products page until the merchant sets a link', () => {
+    renderWithQuery(<GiftologyHome />);
+    const viewAll = () => screen.getByText(en['blocks.gly.latest.view_all']).closest('a');
+    expect(viewAll()?.getAttribute('href')).toBe('https://shop.test/en/latest-products');
+  });
+
   it('renders every section by default, the hero headline as the h1', () => {
     const { container } = renderWithQuery(<GiftologyHome />);
     expect(screen.getByRole('heading', { level: 1 })?.textContent).toContain(en['blocks.gly.hero.title_em']);

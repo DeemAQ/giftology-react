@@ -37,6 +37,10 @@ vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
   },
 }));
 
+// The real hook needs the engine's document-class provider; the menu only has to call it.
+const scrollLock = vi.hoisted(() => vi.fn());
+vi.mock('../../../app/hooks/useScrollLock', () => ({ useScrollLock: scrollLock }));
+
 function renderMenu(open: boolean, onClose = () => {}) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
@@ -92,5 +96,53 @@ describe('GlyMobileMenu', () => {
     fireEvent.click(finder);
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(closed).toBe(2);
+  });
+
+  it("translates a store menu entry that is named by a translation key", async () => {
+    state.categories = [
+      { id: 1, name: 'blocks.gly.nav.latest', url: '/offers' },
+      { id: 2, name: 'Cards', url: '/cards/c3' },
+    ];
+    renderMenu(true);
+    const entry = await screen.findByText(en['blocks.gly.nav.latest'], { selector: '.gly-catitem a' });
+    expect(entry.getAttribute('href')).toBe('/offers');
+    expect(screen.queryByText('blocks.gly.nav.latest')).toBeNull();
+  });
+
+  it('moves focus into the menu when it opens and back to the opener when it closes', () => {
+    const opener = document.createElement('button');
+    document.body.append(opener);
+    opener.focus();
+
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const tree = (open: boolean) => (
+      <QueryClientProvider client={client}>
+        <GlyMobileMenu open={open} onClose={() => {}} />
+      </QueryClientProvider>
+    );
+    const { container, rerender } = render(tree(false));
+    expect(document.activeElement).toBe(opener);
+
+    rerender(tree(true));
+    expect(document.activeElement).toBe(container.querySelector('#gly-mclose'));
+
+    rerender(tree(false));
+    expect(document.activeElement).toBe(opener);
+    opener.remove();
+  });
+
+  it('locks page scroll only while it is open', () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const tree = (open: boolean) => (
+      <QueryClientProvider client={client}>
+        <GlyMobileMenu open={open} onClose={() => {}} />
+      </QueryClientProvider>
+    );
+    const { rerender } = render(tree(false));
+    expect(scrollLock).toHaveBeenLastCalledWith(false);
+    rerender(tree(true));
+    expect(scrollLock).toHaveBeenLastCalledWith(true);
+    rerender(tree(false));
+    expect(scrollLock).toHaveBeenLastCalledWith(false);
   });
 });

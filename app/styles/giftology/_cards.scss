@@ -1,0 +1,37 @@
+/* ============================================================
+   Giftology — product cards (the grid card: home, category pages, sliders)
+   File: app/styles/giftology/_cards.scss
+   ============================================================ */
+
+/* The starter's card is flat on a white page, so its text and buttons run edge to
+   edge. On Giftology's cream page the card is a white box, so they need padding. */
+.s-product-card.s-product-card-vertical .s-product-card-content{padding:1rem .75rem .75rem}
+
+/* The footer measures itself, so the rules below follow the card's own width. */
+.s-product-card.s-product-card-vertical .s-product-card-content-footer{container-type:inline-size}
+
+/* A narrow card: trim the button's side padding, which gives its label back the
+   room the card padding above took. */
+@container (max-width:199px){
+  salla-add-product-button .s-button-btn{padding-inline:.75rem}
+}
+
+/* Phones only, and only when the card is too narrow for the label (two cards per
+   row leave under 100px for the button, which cut it: "أضف إلى ال…"). The button
+   shows an icon instead and keeps its label for screen readers: a bag for "add to
+   cart", a bell for "notify me". Buttons with another label (sold out, book now,
+   donate) keep their text, and so does every card on tablets and desktops. */
+@media (max-width:767px){
+  @container (max-width:199px){
+    salla-add-product-button[product-status="sale"]:not([product-type="booking"]):not([product-type="donating"]):not([product-type="financial_support"]),
+    salla-add-product-button[product-status="out-and-notify"]{
+      .s-button-btn{position:relative;justify-content:center;padding-inline:0}
+      .s-button-btn::before{content:"";flex:none;width:1.25rem;height:1.25rem;background:currentColor;-webkit-mask:var(--gly-card-ico) center/contain no-repeat;mask:var(--gly-card-ico) center/contain no-repeat}
+      .s-button-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+      /* while the add request runs the button shows its spinner alone */
+      .s-button-wrap[loading] .s-button-btn::before{opacity:0}
+    }
+    salla-add-product-button[product-status="sale"]{--gly-card-ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 7H16C17.8856 7 18.8284 7 19.4142 7.58579C20 8.17157 20 9.11438 20 11V15C20 18.2998 20 19.9497 18.9749 20.9749C17.9497 22 16.2998 22 13 22H11C7.70017 22 6.05025 22 5.02513 20.9749C4 19.9497 4 18.2998 4 15V11C4 9.11438 4 8.17157 4.58579 7.58579C5.17157 7 6.11438 7 8 7Z'/%3E%3Cpath d='M16 9.5C16 5.63401 14.2091 2 12 2C9.79086 2 8 5.63401 8 9.5'/%3E%3Cpath d='M12 12.5V17.5M9.5 15H14.5'/%3E%3C/svg%3E")}
+    salla-add-product-button[product-status="out-and-notify"]{--gly-card-ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8.4C18 4.87 15.31 2 12 2C8.69 2 6 4.87 6 8.4C6 15.33 3 17.31 3 17.31H21C21 17.31 18 15.33 18 8.4Z'/%3E%3Cpath d='M13.73 21.31C13.55 21.62 13.29 21.87 12.98 22.05C12.68 22.22 12.33 22.31 11.97 22.31C11.62 22.31 11.27 22.22 10.96 22.05C10.66 21.87 10.4 21.62 10.22 21.31'/%3E%3C/svg%3E")}
+  }
+}

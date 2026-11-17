@@ -36,7 +36,7 @@ This theme is the React version of the Giftology Twig theme. Its custom layer:
 app/components/giftology/   header, full-screen menu, footer, promo bar, WhatsApp button,
                             the home sections, gift finder, subcategory pills
 app/lib/giftology.ts        gly_* setting readers, category-link and WhatsApp helpers
-app/styles/giftology/       brand tokens, section styles, category-page styles
+app/styles/giftology/       brand tokens, section styles, category-page styles, product-card styles
 app/assets/images/          logos, watermark pattern, category icons
 ```
 

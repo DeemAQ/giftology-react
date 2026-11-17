@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useReveal } from '../../hooks/useReveal';
-import { categoryIdFromUrl, resolveCategoryUrl } from '../../lib/giftology';
+import { allProductsUrl, categoryIdFromUrl, resolveCategoryUrl } from '../../lib/giftology';
 import { ProductCard } from '../product';
 import { useGly } from './useGly';
 
@@ -62,10 +62,10 @@ const POOL = 24;
 function CategoryResult({ outcome, seed }: { outcome: Category; seed: number }) {
   const { settings, t, homeUrl, locale } = useGly();
   const result = RESULTS[outcome];
-  // The finder's own link setting, else the matching category tile's, else the home page.
+  // The finder's own link setting, else the matching category tile's, else the all-products page.
   const url = resolveCategoryUrl(
     settings?.[result.setting] || settings?.[`gly_tile${result.tile}_link`],
-    homeUrl,
+    allProductsUrl(homeUrl),
     locale
   );
   const categoryId = categoryIdFromUrl(url);
@@ -179,14 +179,16 @@ export function GiftFinder() {
                     </div>
                     <b>{f('custom_title')}</b>
                     <p>{f('r_custom')}</p>
-                    <a
-                      className="gly-btn gly-btn-wa gly-btn-block"
-                      href={whatsappCustom}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      {t('blocks.gly.custom.card_btn')}
-                    </a>
+                    {whatsappCustom && (
+                      <a
+                        className="gly-btn gly-btn-wa gly-btn-block"
+                        href={whatsappCustom}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        {t('blocks.gly.custom.card_btn')}
+                      </a>
+                    )}
                   </>
                 ) : (
                   <CategoryResult outcome={winner} seed={seed} />
