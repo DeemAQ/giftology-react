@@ -55,3 +55,14 @@ describe('reviews section', () => {
     expect(decl(inner.rule, 'flex-direction')).toBe('column');
   });
 });
+
+describe('reveal on scroll', () => {
+  it('animates only the reveal, so hiding a block below the screen is instant', () => {
+    const [hidden] = rulesFor('.gly-reveal');
+    const [shown] = rulesFor('.gly-reveal.in');
+    expect(decl(hidden.rule, 'opacity')).toBe('0');
+    expect(decl(hidden.rule, 'transition')).toBeUndefined();
+    expect(decl(shown.rule, 'opacity')).toBe('1');
+    expect(decl(shown.rule, 'transition')).toBeDefined();
+  });
+});
