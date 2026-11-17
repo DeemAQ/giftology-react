@@ -3,7 +3,7 @@ import { ProductCardSkeleton } from '@salla.sa/twilight-components-react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useReveal } from '../../hooks/useReveal';
-import { settingText } from '../../lib/giftology';
+import { settingText, storePage } from '../../lib/giftology';
 import { ProductCard } from '../product';
 import { ArrowIcon } from './icons';
 import { SectionHead } from './SectionHead';
@@ -14,7 +14,7 @@ const PLACEHOLDERS = Array.from({ length: 4 }, (_, index) => index);
 
 /**
  * Latest products: the store's 8 newest, under a brand heading, with a "view all"
- * button to `gly_latest_url` (the home page when unset). `id="gly-latest"` is the
+ * button to `gly_latest_url` (the store's latest-products page when unset). `id="gly-latest"` is the
  * target of the hero button and the menu link.
  */
 export function LatestProducts() {
@@ -41,7 +41,7 @@ export function LatestProducts() {
         </div>
 
         <div ref={reveal.ref} className={`gly-latest-more ${reveal.className}`}>
-          <Link className="gly-btn gly-btn-primary" to={settingText(settings, 'gly_latest_url') || homeUrl}>
+          <Link className="gly-btn gly-btn-primary" to={settingText(settings, 'gly_latest_url') || storePage(homeUrl, 'latest-products')}>
             {t('blocks.gly.latest.view_all')}
             <ArrowIcon className="gly-arr" />
           </Link>

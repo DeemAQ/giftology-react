@@ -58,12 +58,14 @@ export function GlyFooter() {
                   </a>
                 </li>
               )}
-              <li>
-                <a href={whatsappGeneral} target="_blank" rel="noopener">
-                  <WhatsAppIcon />
-                  <span>{t('blocks.gly.footer.whatsapp')}</span>
-                </a>
-              </li>
+              {whatsappGeneral && (
+                <li>
+                  <a href={whatsappGeneral} target="_blank" rel="noopener">
+                    <WhatsAppIcon />
+                    <span>{t('blocks.gly.footer.whatsapp')}</span>
+                  </a>
+                </li>
+              )}
               {instagram && (
                 <li>
                   <a href={instagram} target="_blank" rel="noopener">

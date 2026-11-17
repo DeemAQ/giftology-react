@@ -43,10 +43,12 @@ export function CustomGift() {
           <span className="gly-badge-soft">{c('card_badge')}</span>
           <h3>{c('card_title')}</h3>
           <p>{c('card_desc')}</p>
-          <a className="gly-btn gly-btn-wa" href={whatsappCustom} target="_blank" rel="noopener">
-            <WhatsAppIcon />
-            {c('card_btn')}
-          </a>
+          {whatsappCustom && (
+            <a className="gly-btn gly-btn-wa" href={whatsappCustom} target="_blank" rel="noopener">
+              <WhatsAppIcon />
+              {c('card_btn')}
+            </a>
+          )}
         </div>
       </div>
     </section>

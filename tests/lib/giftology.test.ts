@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  allProductsUrl,
   categoryIdFromUrl,
   categoryTiles,
   homeAnchor,
@@ -7,7 +8,10 @@ import {
   settingChoice,
   settingOn,
   settingText,
+  storePage,
+  WA_PLACEHOLDER,
   whatsappLink,
+  whatsappNumber,
 } from '../../app/lib/giftology';
 
 const t = (key: string) => `t:${key}`;
@@ -71,11 +75,31 @@ describe('link helpers', () => {
     expect(categoryIdFromUrl(undefined)).toBeNull();
   });
 
-  it('builds a WhatsApp link, with the placeholder number when unset', () => {
+  it('builds a WhatsApp link, and none without a number', () => {
     expect(whatsappLink('966551234567', 'hi there')).toBe(
       'https://wa.me/966551234567?text=hi%20there'
     );
-    expect(whatsappLink('', 'x')).toBe('https://wa.me/966500000000?text=x');
+    expect(whatsappLink('', 'x')).toBe('');
+  });
+
+  it('takes the first real number: the setting, then the store contacts', () => {
+    expect(whatsappNumber('966551234567', '966500000001')).toBe('966551234567');
+    // A link or a formatted number is reduced to its digits.
+    expect(whatsappNumber('', 'https://wa.me/966551112222')).toBe('966551112222');
+    expect(whatsappNumber(undefined, null, '+966 55 111 2222')).toBe('966551112222');
+  });
+
+  it("treats the setting's default number as unset, so it never reaches a stranger", () => {
+    expect(whatsappNumber(WA_PLACEHOLDER)).toBe('');
+    expect(whatsappNumber(WA_PLACEHOLDER, '966551112222')).toBe('966551112222');
+    expect(whatsappNumber('', undefined, 'n/a')).toBe('');
+  });
+
+  it('builds a store page URL under the home URL', () => {
+    expect(storePage('https://shop.test/ar/', 'latest-products')).toBe(
+      'https://shop.test/ar/latest-products'
+    );
+    expect(allProductsUrl('https://shop.test/ar')).toBe('https://shop.test/ar/products');
   });
 
   it('anchors a section on the home page', () => {
@@ -90,12 +114,18 @@ describe('categoryTiles', () => {
   it('shows the six curated tiles by default, 7 and 8 off', () => {
     const tiles = categoryTiles({}, t, home, 'ar', ICONS);
     expect(tiles).toHaveLength(6);
+    // No link set yet: the tile opens all products, not the page it is already on.
     expect(tiles[0]).toEqual({
       name: 't:blocks.gly.cats.newborn',
-      url: home,
+      url: 'https://shop.test/ar/products',
       image: '',
       icon: 'baby',
     });
+  });
+
+  it('keeps an unlinked tile in the visitor language', () => {
+    const [tile] = categoryTiles({}, t, home, 'en', ICONS);
+    expect(tile.url).toBe('https://shop.test/en/products');
   });
 
   it('applies the merchant name, icon, image and link, and hides a disabled tile', () => {

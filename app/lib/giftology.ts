@@ -5,7 +5,7 @@
 
 export type GlySettings = Record<string, unknown> | undefined | null;
 
-/** Fallback WhatsApp number until the merchant sets `gly_whatsapp`. */
+/** The `gly_whatsapp` setting's default in `twilight.json`: nobody's number, so it counts as unset. */
 export const WA_PLACEHOLDER = '966500000000';
 
 /** A boolean setting; an unsaved one (`undefined`) takes `fallback`. */
@@ -61,9 +61,34 @@ export function categoryIdFromUrl(url: string | null | undefined): number | null
   return match ? Number(match[1]) : null;
 }
 
-/** A `wa.me` chat link with a prefilled message. */
+/**
+ * The first candidate that holds a real phone number, as digits; empty when none does.
+ * Pass the `gly_whatsapp` setting first, then the store's own contact numbers.
+ */
+export function whatsappNumber(...candidates: unknown[]): string {
+  for (const candidate of candidates) {
+    const digits = typeof candidate === 'string' ? candidate.replace(/\D/g, '') : '';
+    if (digits.length >= 8 && digits !== WA_PLACEHOLDER) return digits;
+  }
+  return '';
+}
+
+/** A `wa.me` chat link with a prefilled message; empty without a number, so the button can hide. */
 export function whatsappLink(number: string, message: string): string {
-  return `https://wa.me/${number || WA_PLACEHOLDER}?text=${encodeURIComponent(message)}`;
+  return number ? `https://wa.me/${number}?text=${encodeURIComponent(message)}` : '';
+}
+
+/** A page of the store under its home URL: `storePage('https://store/ar', 'latest-products')`. */
+export function storePage(homeUrl: string | undefined, path: string): string {
+  return `${(homeUrl || '').replace(/\/+$/, '')}/${path}`;
+}
+
+/**
+ * The store's all-products page. A category link the merchant hasn't set yet leads
+ * here, so it still opens something to shop instead of looping back to the home page.
+ */
+export function allProductsUrl(homeUrl: string | undefined): string {
+  return storePage(homeUrl, 'products');
 }
 
 /** The home page URL plus a section anchor, e.g. `https://store/ar/#gly-cats`. */
@@ -111,7 +136,7 @@ export function categoryTiles(
     const chosen = settingChoice(settings, `gly_tile${i}_icon`);
     const icon = icons[chosen] ? chosen : (preset?.icon ?? 'gift');
     if (!name && !link && !image) continue;
-    tiles.push({ name, url: resolveCategoryUrl(link, homeUrl, lang), image, icon });
+    tiles.push({ name, url: resolveCategoryUrl(link, allProductsUrl(homeUrl), lang), image, icon });
   }
   return tiles;
 }
