@@ -355,3 +355,27 @@
   .gly-reviews .s-reviews-container .swiper-slide-active .s-reviews-testimonial__inner{flex-direction:column;text-align:center}
   .gly-reviews .s-reviews-container .swiper-slide-active .s-reviews-testimonial__avatar{margin:0 0 1rem}
 }
+
+/* ============================================================
+   Phone hero
+   ============================================================ */
+/* Phones open on the message: the artwork becomes a faint backdrop behind the text
+   (its bow, cards and sparkles are for wider screens), so the headline and the
+   buttons are on the first screen and the products follow sooner. */
+@media (max-width:767px){
+  .gly-hero{padding:1.4rem 0 2.2rem}
+  .gly-hero__grid{position:relative;gap:0}
+  .gly-hero__grid>:first-child{position:relative;z-index:1}
+  .gly-hero__grid .gly-hero__art.gly-reveal{position:absolute;inset:0;height:auto;margin:0;order:0;opacity:.16;pointer-events:none}
+  .gly-hero__art>:not(.gly-blob.teal):not(.gly-hero__pattern){display:none}
+  .gly-hero__art .gly-blob.teal,.gly-hero__art .gly-hero__pattern{width:300px;height:300px;top:1.5rem;inset-inline-end:-90px}
+  .gly-hero .gly-lede{margin:.8rem 0 1.3rem;font-size:1.05rem;max-width:none}
+  .gly-cta-row{gap:.6rem}
+  .gly-cta-row .gly-btn{padding:.75rem 1.15rem;font-size:.95rem}
+  /* the four stats share one row */
+  .gly-hero-stats{margin-top:1.5rem;gap:.8rem .5rem;justify-content:space-between}
+  .gly-hero-stats b{font-size:1.3rem}
+  .gly-hero-stats span{font-size:.72rem}
+  /* one promo phrase, so the bar stays one line */
+  .gly-topbar__phrase:not(.gly-topbar__phrase--main),.gly-topbar__phrase--main .gly-topbar__sep{display:none}
+}

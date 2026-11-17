@@ -11,6 +11,7 @@ const PROMO_DEFAULTS = [
 /**
  * Top promo bar. Shows the phrases the merchant filled in (`gly_promo_1..3`), or
  * the three curated ones when all are empty; the last of several is emphasised.
+ * A phone shows only that last phrase, so the bar stays one line.
  * `gly_show_promo` turns it off.
  */
 export function PromoBar() {
@@ -23,12 +24,23 @@ export function PromoBar() {
   return (
     <div className="gly-topbar" role="note">
       <span aria-hidden="true">✦&nbsp;</span>
-      {phrases.map((phrase, index) => (
-        <span key={phrase}>
-          {index > 0 && <span aria-hidden="true"> &nbsp;·&nbsp; </span>}
-          {phrases.length > 1 && index === phrases.length - 1 ? <b>{phrase}</b> : phrase}
-        </span>
-      ))}
+      {phrases.map((phrase, index) => {
+        const last = index === phrases.length - 1;
+        return (
+          <span
+            key={phrase}
+            className={`gly-topbar__phrase${last ? ' gly-topbar__phrase--main' : ''}`}
+          >
+            {index > 0 && (
+              <span className="gly-topbar__sep" aria-hidden="true">
+                {' '}
+                &nbsp;·&nbsp;{' '}
+              </span>
+            )}
+            {phrases.length > 1 && last ? <b>{phrase}</b> : phrase}
+          </span>
+        );
+      })}
       <span aria-hidden="true">&nbsp;✦</span>
     </div>
   );

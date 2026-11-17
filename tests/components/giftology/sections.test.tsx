@@ -98,6 +98,21 @@ describe('PromoBar', () => {
     expect(container.querySelector('b')?.textContent).toContain('Ships today');
   });
 
+  it('marks the last phrase as the one a phone keeps', () => {
+    state.settings = { gly_promo_1: 'Free wrap', gly_promo_3: 'Ships today' };
+    const { container } = render(<PromoBar />);
+    const phrases = [...container.querySelectorAll('.gly-topbar__phrase')];
+    expect(phrases).toHaveLength(2);
+    expect(container.querySelector('.gly-topbar__phrase--main')?.textContent).toContain('Ships today');
+    expect(phrases[0].classList.contains('gly-topbar__phrase--main')).toBe(false);
+  });
+
+  it('keeps a single phrase visible on a phone', () => {
+    state.settings = { gly_promo_2: 'Only one' };
+    const { container } = render(<PromoBar />);
+    expect(container.querySelector('.gly-topbar__phrase--main')?.textContent).toBe('Only one');
+  });
+
   it('is off when gly_show_promo is off', () => {
     state.settings = { gly_show_promo: false };
     const { container } = render(<PromoBar />);
