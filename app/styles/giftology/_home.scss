@@ -331,3 +331,27 @@
   .gly-wa{bottom:calc(88px + var(--safe-bottom, 0px))}
   .gly-mmenu{padding-bottom:calc(96px + var(--safe-bottom, 0px));overflow-y:auto}
 }
+
+/* ============================================================
+   Launch fixes
+   ============================================================ */
+/* Product page on a phone: once the sticky add-to-cart bar slides in (`.hydrated`,
+   as in product.scss), the WhatsApp button moves above it (nav + bar = 190px)
+   instead of sitting on top of its button. */
+@media (max-width:640px){
+  .hydrated .is-sticky-product-bar.product-single .gly-wa{bottom:calc(200px + var(--safe-bottom, 0px))}
+}
+/* The footer's last row keeps clear of the WhatsApp button, which rests over the
+   page's bottom-right corner in both directions (hence the physical side). */
+.gly-fbottom{padding-right:11rem}
+@media(max-width:560px){.gly-fbottom{padding-right:5rem}}
+
+/* Reviews: <salla-reviews> prints its own "Customer reviews" <h1> and has no prop
+   to turn it off. The section already has a heading, and the page one <h1>. */
+.gly-reviews .s-reviews-header-wrapper{display:none}
+/* Phones: the open review card lays its photo beside the text, but the star row
+   can't shrink, so the text ran off the card's edge. Stack them, as the closed cards do. */
+@media(max-width:640px){
+  .gly-reviews .s-reviews-container .swiper-slide-active .s-reviews-testimonial__inner{flex-direction:column;text-align:center}
+  .gly-reviews .s-reviews-container .swiper-slide-active .s-reviews-testimonial__avatar{margin:0 0 1rem}
+}
