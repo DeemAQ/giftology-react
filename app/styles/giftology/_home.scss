@@ -191,7 +191,7 @@
 .gly-how{padding:1rem 0 3.4rem;text-align:center}
 .gly-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;margin-top:1rem}
 .gly-step{padding:1.4rem 1rem;position:relative}
-.gly-step__num{font-family:var(--gly-font-display);font-size:1rem;color:var(--gly-gold);font-weight:700}
+.gly-step__num{font-family:var(--gly-font-display);font-size:1rem;color:var(--gly-gold-ink);font-weight:700}
 .gly-step__ic{width:80px;height:80px;margin:.7rem auto 1rem;border-radius:24px;background:var(--gly-teal-wash);display:grid;place-items:center;transition:.3s;transform:rotate(-4deg)}
 .gly-step:hover .gly-step__ic{transform:rotate(4deg) scale(1.05);background:var(--gly-teal-deep)}
 .gly-step:hover .gly-step__ic svg{color:#fff}
