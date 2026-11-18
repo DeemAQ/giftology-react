@@ -156,6 +156,13 @@ describe('GlyFooter', () => {
     expect(screen.getByText(en['blocks.gly.footer.instagram']).closest('a')?.getAttribute('href')).toBe('https://instagram.com/giftology');
   });
 
+  it('uses the Instagram link typed in the editor before the one saved in the store', () => {
+    state.store = { ...state.store, social: { instagram: 'https://instagram.com/store' } };
+    state.settings = { gly_instagram: 'https://instagram.com/typed' };
+    renderWithQuery(<GlyFooter />);
+    expect(screen.getByText(en['blocks.gly.footer.instagram']).closest('a')?.getAttribute('href')).toBe('https://instagram.com/typed');
+  });
+
   it("names the payment methods in the page's language", () => {
     state.settings = { gly_pay_tamara: true };
     const english = renderWithQuery(<GlyFooter />);

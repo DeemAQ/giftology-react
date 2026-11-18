@@ -46,6 +46,12 @@ app/assets/images/          logos, watermark pattern, category icons
   default). The engine's no-blocks fallback is registered as an empty component in
   `app/router.tsx`: Giftology has its own latest-products section.
 - Every merchant setting starts with `gly_`. Their ids match the Twig theme; do not rename them.
+- The theme editor's list (`settings` in `twilight.json`) is ordered the way a shop owner works:
+  contact, top bar, the home sections in page order, product card, product page, footer. A
+  section's own fields carry `conditions` on its `gly_show_*` switch, so they hide while the
+  section is off. Write each label so it makes sense without its heading: the local editor
+  (`/__twilight/editor`) does not draw the `static` headings. A setting nothing reads does not
+  belong in the list; `tests/manifest/settings.test.ts` checks these rules.
 - Brand colours and the body font are locked in `app/styles/giftology/_tokens.scss`.
 - Phones keep the starter's bottom nav and page-title bar. Its Menu tab opens `GlyMobileMenu`.
 - Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and

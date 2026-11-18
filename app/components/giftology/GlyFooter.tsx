@@ -35,8 +35,8 @@ const plainText = (html: string | undefined) => (html ?? '').replace(/<[^>]*>/g,
  * show when the store has them.
  *
  * About text: `gly_footer_about`, else the store description, else the locale
- * default. Email: `gly_email`, else the store's. Instagram: the store's, else
- * `gly_instagram`. The `footer:start` / `footer:end` slots are kept for apps.
+ * default. Email: `gly_email`, else the store's. Instagram: `gly_instagram`, else
+ * the store's. The `footer:start` / `footer:end` slots are kept for apps.
  */
 export function GlyFooter() {
   const { store, settings, t, locale, whatsappGeneral } = useGly();
@@ -53,7 +53,7 @@ export function GlyFooter() {
     plainText(store?.description) ||
     t('blocks.gly.footer.about');
   const email = settingText(settings, 'gly_email') || store?.contacts?.email;
-  const instagram = store?.social?.instagram || settingText(settings, 'gly_instagram');
+  const instagram = settingText(settings, 'gly_instagram') || store?.social?.instagram;
   const payments = PAYMENTS.filter(([id, , , fallback]) => settingOn(settings, id, fallback));
 
   return (

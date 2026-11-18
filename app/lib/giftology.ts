@@ -5,7 +5,10 @@
 
 export type GlySettings = Record<string, unknown> | undefined | null;
 
-/** The `gly_whatsapp` setting's default in `twilight.json`: nobody's number, so it counts as unset. */
+/**
+ * The `gly_whatsapp` setting's former default in `twilight.json`. A store that saved its
+ * settings back then still holds it; it is nobody's number, so it counts as unset.
+ */
 export const WA_PLACEHOLDER = '966500000000';
 
 /** A boolean setting; an unsaved one (`undefined`) takes `fallback`. */
