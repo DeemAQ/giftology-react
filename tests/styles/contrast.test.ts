@@ -61,3 +61,29 @@ describe('brand colour contrast', () => {
     expect(textRules.filter((selector) => !decorative.test(selector))).toEqual([]);
   });
 });
+
+describe('footer contrast', () => {
+  const home = readFileSync(
+    fileURLToPath(new URL('../../app/styles/giftology/_home.scss', import.meta.url)),
+    'utf8'
+  ).replace(/\/\*[\s\S]*?\*\//g, '');
+  /** The declarations of every rule whose selector is exactly `selector`. */
+  const declarations = (selector: string) =>
+    [...home.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .filter((m) => m[1].trim().split(',').some((part) => part.trim() === selector))
+      .map((m) => m[2])
+      .join(';');
+
+  it('keeps the pattern faint behind the footer text', () => {
+    const opacity = Number(/opacity:([\d.]+)/.exec(declarations('.gly-footer__deco'))?.[1]);
+    expect(opacity).toBeGreaterThan(0);
+    // At .22 the text reads at about 6.4:1; at the old .5 it was 3.5:1.
+    expect(opacity).toBeLessThanOrEqual(0.25);
+  });
+
+  it.each(['.gly-fbrand p', '.gly-footer ul a', '.gly-fbottom'])('does not dim %s with opacity', (selector) => {
+    expect(declarations(selector)).not.toBe('');
+    expect(declarations(selector)).not.toMatch(/opacity/);
+  });
+});
+

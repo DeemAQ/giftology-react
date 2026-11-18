@@ -252,18 +252,20 @@
    Footer (§5.9)
    ============================================================ */
 .gly-footer{background:#22302d;color:#cfe2df;padding:2.6rem 0 1.4rem;position:relative;overflow:hidden;margin-top:1rem;font-family:var(--gly-font-body)}
-.gly-footer__deco{position:absolute;inset:0;background-image:var(--gly-pat);background-size:420px;opacity:.5}
+/* The pattern stays faint so the text over it reads at 6:1 or better. Footer text is
+   never dimmed with opacity: on this background that drops it under 4.5:1. */
+.gly-footer__deco{position:absolute;inset:0;background-image:var(--gly-pat);background-size:420px;opacity:.22}
 .gly-fgrid{display:grid;grid-template-columns:1.6fr 1fr;gap:2rem;position:relative}
 .gly-fcontact a{display:flex;align-items:center;gap:.55rem}
 .gly-fcontact svg{width:18px;height:18px;flex:0 0 auto;color:var(--gly-gold-soft)}
 .gly-fcontact span{direction:ltr;unicode-bidi:plaintext;text-align:start}
 .gly-fbrand img{height:46px;width:auto;opacity:.95}
-.gly-fbrand p{margin:.7rem 0 0;opacity:.72;font-size:.94rem;max-width:36ch;line-height:1.65}
+.gly-fbrand p{margin:.7rem 0 0;font-size:.94rem;max-width:36ch;line-height:1.65}
 .gly-footer h5,.gly-footer .gly-fhead{font-family:var(--gly-font-display);color:#fff;font-size:1.15rem;margin-bottom:.7rem;font-weight:700}
 .gly-footer ul{list-style:none;display:flex;flex-direction:column;gap:.55rem;margin:0;padding:0}
-.gly-footer ul a{opacity:.74;font-size:.94rem;transition:.2s}
-.gly-footer ul a:hover{opacity:1;color:var(--gly-gold-soft);padding-inline-start:4px}
-.gly-fbottom{position:relative;margin-top:1.8rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.86rem;opacity:.78}
+.gly-footer ul a{font-size:.94rem;transition:.2s}
+.gly-footer ul a:hover{color:var(--gly-gold-soft);padding-inline-start:4px}
+.gly-fbottom{position:relative;margin-top:1.8rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.86rem}
 .gly-pays{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
 .gly-pays span{background:rgba(255,255,255,.92);color:#22302d;font-weight:800;font-size:.68rem;padding:.3rem .55rem;border-radius:6px}
 
