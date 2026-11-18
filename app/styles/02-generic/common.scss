@@ -2,6 +2,13 @@ html {
   scroll-behavior: smooth;
 }
 
+// Jump straight to the place for visitors who asked for less motion.
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 // using salla.document.onClick(...), become effective when all children are none pointer events.
 .cursor-pointer * {
   pointer-events: none;
