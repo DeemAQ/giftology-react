@@ -8,33 +8,48 @@ import { CustomGift } from './CustomGift';
 import { GiftFinder } from './GiftFinder';
 import { Hero } from './Hero';
 import { HowItWorks } from './HowItWorks';
+import { HomeSectionsProvider, SECTION_BLOCKS, SECTION_KINDS } from './homeSections';
+import type { SectionKind } from './homeSections';
 import { LatestProducts } from './LatestProducts';
 import { Testimonials } from './Testimonials';
 import { useGly } from './useGly';
 
-/** The home page's sections in order, each behind its merchant switch. */
-const SECTIONS: [setting: string, Section: ComponentType][] = [
-  ['gly_show_hero', Hero],
-  ['gly_show_latest', LatestProducts],
-  ['gly_show_categories', Categories],
-  ['gly_show_custom', CustomGift],
-  ['gly_show_finder', GiftFinder],
-  ['gly_show_how', HowItWorks],
-  ['gly_show_testimonials', Testimonials],
-];
+/** The home page's built-in sections in order. */
+const SECTIONS: Record<SectionKind, ComponentType> = {
+  hero: Hero,
+  latest: LatestProducts,
+  categories: Categories,
+  custom: CustomGift,
+  finder: GiftFinder,
+  how: HowItWorks,
+  testimonials: Testimonials,
+};
 
-/** How many sections come before the merchant's blocks, per `gly_blocks_position`. */
+/** How many built-in sections come before the merchant's blocks, per `gly_blocks_position`. */
 const SECTIONS_BEFORE_BLOCKS: Record<BlocksPosition, number> = {
   top: 0,
   after_hero: 1,
   after_latest: 2,
-  bottom: SECTIONS.length,
+  bottom: SECTION_KINDS.length,
 };
 
+/** The sections the merchant added as home blocks (`home.gly-*`). */
+function sectionsAsBlocks(components: HomePageProps['components']): Set<SectionKind> {
+  const names = new Set((components ?? []).map((block) => String(block.path).replace(/^home\./, '')));
+  return new Set(SECTION_KINDS.filter((kind) => names.has(SECTION_BLOCKS[kind])));
+}
+
 /**
- * Giftology home page: the curated sections in a fixed order, with the blocks the
- * merchant adds in the theme editor shown together at one place among them
- * (`gly_blocks_position`).
+ * Giftology home page.
+ *
+ * With nothing added in the theme editor it is the seven built-in sections in a fixed
+ * order, each behind its `gly_show_*` switch. The blocks the merchant adds in the
+ * editor's home tab show together at one place among them (`gly_blocks_position`).
+ *
+ * Each section is also a home block (`home.gly-*`, `blocks.tsx`). Adding one replaces
+ * the built-in section of that kind: it shows where the merchant put it, with the
+ * texts and lists typed in the block. A home made only of blocks is fully the
+ * merchant's order.
  *
  * The blocks are drawn by the engine's own home page, so the editor's live preview,
  * the `home:start` / `home:content` / `home:end` slots (above and below the blocks)
@@ -44,15 +59,22 @@ const SECTIONS_BEFORE_BLOCKS: Record<BlocksPosition, number> = {
  */
 export function GiftologyHome({ components }: Pick<HomePageProps, 'components'>) {
   const { settings } = useGly();
+  const asBlocks = sectionsAsBlocks(components);
+  const builtIn = (kind: SectionKind) => !asBlocks.has(kind) && settingOn(settings, `gly_show_${kind}`);
+  const shown = new Set(SECTION_KINDS.filter((kind) => asBlocks.has(kind) || builtIn(kind)));
+
   const before = SECTIONS_BEFORE_BLOCKS[blocksPosition(settings)];
-  const sections = (list: typeof SECTIONS) =>
-    list.map(([setting, Section]) => settingOn(settings, setting) && <Section key={setting} />);
+  const sections = (kinds: readonly SectionKind[]) =>
+    kinds.filter(builtIn).map((kind) => {
+      const Section = SECTIONS[kind];
+      return <Section key={kind} />;
+    });
 
   return (
-    <>
-      {sections(SECTIONS.slice(0, before))}
+    <HomeSectionsProvider value={shown}>
+      {sections(SECTION_KINDS.slice(0, before))}
       <Home.Component components={components} />
-      {sections(SECTIONS.slice(before))}
-    </>
+      {sections(SECTION_KINDS.slice(before))}
+    </HomeSectionsProvider>
   );
 }

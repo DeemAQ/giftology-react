@@ -1,4 +1,6 @@
 import { useReveal } from '../../hooks/useReveal';
+import { blockRows, blockText } from '../../lib/giftology';
+import type { BlockData } from '../../lib/giftology';
 import { WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
 
@@ -8,11 +10,18 @@ const STEPS = [1, 2, 3] as const;
  * Custom gift section. A custom gift is ordered by talking to the store first, so
  * the card opens a WhatsApp chat and shows no price or add-to-cart button.
  */
-export function CustomGift() {
-  const { t, whatsappCustom } = useGly();
+export function CustomGift({ data }: { data?: BlockData }) {
+  const { t, whatsappCustom, locale } = useGly();
   const copy = useReveal();
   const card = useReveal();
-  const c = (key: string) => t(`blocks.gly.custom.${key}`);
+  // A block field the merchant filled, else the theme's own text.
+  const c = (key: string) => blockText(data, key, locale) || t(`blocks.gly.custom.${key}`);
+  const ownSteps = blockRows(data, 'steps')
+    .map((row) => ({ title: blockText(row, 'title', locale), text: blockText(row, 'text', locale) }))
+    .filter((step) => step.title);
+  const steps = ownSteps.length
+    ? ownSteps
+    : STEPS.map((step) => ({ title: c(`step${step}_t`), text: c(`step${step}_d`) }));
 
   return (
     <section id="gly-custom" className="gly-section gly-custom">
@@ -25,14 +34,15 @@ export function CustomGift() {
           </h2>
           <p className="gly-custom__lede">{c('lede')}</p>
           <ol className="gly-csteps">
-            {STEPS.map((step) => (
-              <li key={step} className="gly-cstep">
+            {steps.map((step, index) => (
+              // An ordered list with no ids; a step's place is its identity.
+              <li key={index} className="gly-cstep">
                 <div className="gly-cstep__n" aria-hidden="true">
-                  {step}
+                  {index + 1}
                 </div>
                 <div>
-                  <b>{c(`step${step}_t`)}</b>
-                  <small>{c(`step${step}_d`)}</small>
+                  <b>{step.title}</b>
+                  {step.text && <small>{step.text}</small>}
                 </div>
               </li>
             ))}

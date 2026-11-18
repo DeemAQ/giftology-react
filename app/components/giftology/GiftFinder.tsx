@@ -4,6 +4,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useReveal } from '../../hooks/useReveal';
 import { allProductsUrl, categoryIdFromUrl, resolveCategoryUrl } from '../../lib/giftology';
+import type { BlockData } from '../../lib/giftology';
 import { ProductCard } from '../product';
 import { BrandIcon } from './BrandIcon';
 import { SparkIcon } from './icons';
@@ -62,16 +63,28 @@ const ORDER: Category[] = ['newborn', 'kids', 'men', 'occasion', 'favors', 'card
 const POOL = 24;
 
 /** The winning category's result: one random product from it, or a link to the category. */
-function CategoryResult({ outcome, seed }: { outcome: Category; seed: number }) {
+function CategoryResult({
+  outcome,
+  seed,
+  block,
+}: {
+  outcome: Category;
+  seed: number;
+  block?: BlockData;
+}) {
   const { settings, t, homeUrl, locale } = useGly();
   const result = RESULTS[outcome];
-  // The finder's own link setting, else the matching category tile's, else the all-products page.
+  // The category picked in the finder block (its `cat_*` field), else the finder's own
+  // link setting, else the matching category tile's, else the all-products page.
+  const chosen = block?.[result.setting.replace('gly_', '')];
+  const picked = Array.isArray(chosen) ? chosen[0] : chosen;
   const url = resolveCategoryUrl(
-    settings?.[result.setting] || settings?.[`gly_tile${result.tile}_link`],
+    picked || settings?.[result.setting] || settings?.[`gly_tile${result.tile}_link`],
     allProductsUrl(homeUrl),
     locale
   );
-  const categoryId = categoryIdFromUrl(url);
+  const pickedId = Number((picked as { id?: unknown } | null | undefined)?.id);
+  const categoryId = Number.isInteger(pickedId) && pickedId > 0 ? pickedId : categoryIdFromUrl(url);
   const { data, isLoading } = useQuery({
     ...product.queries.list({
       source: 'categories',
@@ -115,7 +128,7 @@ function CategoryResult({ outcome, seed }: { outcome: Category; seed: number }) 
  * or a link to that category when no product can be shown. Choosing "custom gift"
  * at any point ends the quiz with the WhatsApp custom-order result.
  */
-export function GiftFinder() {
+export function GiftFinder({ data }: { data?: BlockData }) {
   const { t, whatsappCustom } = useGly();
   const reveal = useReveal();
   const [answers, setAnswers] = useState<Outcome[]>([]);
@@ -194,7 +207,7 @@ export function GiftFinder() {
                     )}
                   </>
                 ) : (
-                  <CategoryResult outcome={winner} seed={seed} />
+                  <CategoryResult outcome={winner} seed={seed} block={data} />
                 )}
                 <button type="button" className="gly-restart" onClick={() => setAnswers([])}>
                   ↺ {f('restart')}

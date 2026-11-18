@@ -21,6 +21,14 @@ vi.mock('@salla.sa/twilight-theme-engine/routes/home', () => ({
 vi.mock('@salla.sa/twilight-components-react', () => ({ SliderSkeleton: () => null }));
 vi.mock('../app/routeTree.gen', () => ({ routeTree: {} }));
 vi.mock('../app/hooks', () => ({ registerThemeHooks: vi.fn() }));
+// The Giftology blocks are tested with their sections (`components/giftology/blocks.test.tsx`).
+vi.mock('../app/components/giftology/blocks', () => {
+  const names = ['gly-hero', 'gly-latest', 'gly-circles', 'gly-custom', 'gly-finder', 'gly-how', 'gly-testimonials'];
+  return {
+    glyHomeBlocks: Object.fromEntries(names.map((name) => [name, () => null])),
+    glyHomeBlockConfig: Object.fromEntries(names.map((name) => [name, { className: 'gly-block', height: '0px', renderOnMount: true }])),
+  };
+});
 vi.mock('../app/components/product/ProductListSkeleton', () => ({ ProductListSkeleton: () => null }));
 vi.mock('../app/components/home', () => {
   const block = () => null;
@@ -66,5 +74,10 @@ describe('home block registration', () => {
     expect(renderToStaticMarkup(<Fallback data={{ path: 'latest-products' }} />)).toBe('');
     // Its wrapper section takes no room either.
     expect(registered.config['latest-products']).toEqual({ className: 'hidden', height: '0px' });
+  });
+
+  it('registers the Giftology blocks and their wrapper settings', () => {
+    expect(registered.components['gly-circles']).toBeTypeOf('function');
+    expect(registered.config['gly-how']).toMatchObject({ className: 'gly-block' });
   });
 });

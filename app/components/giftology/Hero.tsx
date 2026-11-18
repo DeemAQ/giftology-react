@@ -1,7 +1,10 @@
 import bow from '../../assets/images/white_logo.webp';
-import { settingOn, settingText } from '../../lib/giftology';
+import { Link } from '@salla.sa/twilight-theme-engine/common';
+import { blockLink, blockRows, blockText, settingOn, settingText } from '../../lib/giftology';
+import type { BlockData } from '../../lib/giftology';
 import { BrandIcon } from './BrandIcon';
 import { ArrowDownIcon, ArrowIcon, SparkIcon, StarIcon, TruckIcon } from './icons';
+import { useHomeSections } from './homeSections';
 import { useGly } from './useGly';
 
 /**
@@ -22,41 +25,85 @@ const STATS = [
  * First screen, so it is visible in the server HTML with no reveal animation, and
  * its headline is the home page's `<h1>`.
  */
-export function Hero() {
-  const { settings, t } = useGly();
+export function Hero({ data }: { data?: BlockData }) {
+  const { settings, t, locale } = useGly();
+  const shown = useHomeSections();
   const h = (key: string) => t(`blocks.gly.hero.${key}`);
+  // A block field the merchant filled, else the theme's own text.
+  const own = (key: string) => blockText(data, key, locale) || h(key);
+
+  // The headline is three parts; a merchant who writes any of them replaces all three.
+  const written = ['title_pre', 'title_em', 'title_post'].map((key) => blockText(data, key, locale));
+  const [titlePre, titleEm, titlePost] = written.some(Boolean)
+    ? written
+    : [h('title_pre'), h('title_em'), h('title_post')];
+
+  const shopUrl = blockLink(data?.cta_shop_url);
+  const customUrl = blockLink(data?.cta_custom_url);
+
+  const showStats =
+    typeof data?.show_stats === 'boolean' ? data.show_stats : settingOn(settings, 'gly_show_hero_stats');
+  const ownStats = blockRows(data, 'stats')
+    .map((row) => ({ value: blockText(row, 'value', locale), label: blockText(row, 'label', locale) }))
+    .filter((stat) => stat.value);
+  const stats = ownStats.length
+    ? ownStats
+    : STATS.map(([setting, key]) => ({
+        value: settingText(settings, setting) || h(`${key}_value`),
+        label: h(key),
+      }));
 
   return (
     <section className="gly-section gly-hero">
       <div className="gly-wrap gly-hero__grid">
         <div className="gly-reveal in">
-          <span className="gly-eyebrow">{h('eyebrow')}</span>
+          <span className="gly-eyebrow">{own('eyebrow')}</span>
           <h1>
-            {h('title_pre')} <span className="gly-accent">{h('title_em')}</span> {h('title_post')}
+            {titlePre} {titleEm && <span className="gly-accent">{titleEm}</span>} {titlePost}
           </h1>
-          <p className="gly-lede">{h('lede')}</p>
+          <p className="gly-lede">{own('lede')}</p>
           <div className="gly-cta-row">
-            <a href="#gly-cats" className="gly-btn gly-btn-primary">
-              {h('cta_shop')}
-              <ArrowIcon className="gly-arr" />
-            </a>
-            <a href="#gly-custom" className="gly-btn gly-btn-ghost">
-              <SparkIcon />
-              {h('cta_custom')}
-            </a>
-            {settingOn(settings, 'gly_show_latest') && (
+            {/* Each button goes to the link the merchant picked, else to its section while that section is on the page. */}
+            {shopUrl ? (
+              <Link to={shopUrl} className="gly-btn gly-btn-primary">
+                {own('cta_shop')}
+                <ArrowIcon className="gly-arr" />
+              </Link>
+            ) : (
+              shown.has('categories') && (
+                <a href="#gly-cats" className="gly-btn gly-btn-primary">
+                  {own('cta_shop')}
+                  <ArrowIcon className="gly-arr" />
+                </a>
+              )
+            )}
+            {customUrl ? (
+              <Link to={customUrl} className="gly-btn gly-btn-ghost">
+                <SparkIcon />
+                {own('cta_custom')}
+              </Link>
+            ) : (
+              shown.has('custom') && (
+                <a href="#gly-custom" className="gly-btn gly-btn-ghost">
+                  <SparkIcon />
+                  {own('cta_custom')}
+                </a>
+              )
+            )}
+            {shown.has('latest') && (
               <a href="#gly-latest" className="gly-btn gly-btn-ghost">
                 {h('cta_latest')}
                 <ArrowDownIcon />
               </a>
             )}
           </div>
-          {settingOn(settings, 'gly_show_hero_stats') && (
+          {showStats && (
             <div className="gly-hero-stats">
-              {STATS.map(([setting, key]) => (
-                <div key={setting}>
-                  <b>{settingText(settings, setting) || h(`${key}_value`)}</b>
-                  <span>{h(key)}</span>
+              {stats.map((stat, index) => (
+                // A short fixed list with no id of its own; the slot is its identity.
+                <div key={index}>
+                  <b>{stat.value}</b>
+                  <span>{stat.label}</span>
                 </div>
               ))}
             </div>

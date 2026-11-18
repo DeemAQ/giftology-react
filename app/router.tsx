@@ -27,6 +27,7 @@ import {
   FeaturedProductsWithSpecialProduct,
 } from './components/home/FeaturedProducts';
 import { PhotosSliderWithText } from './components/home/PhotosSliderWithText';
+import { glyHomeBlockConfig, glyHomeBlocks } from './components/giftology/blocks';
 import { registerThemeHooks } from './hooks';
 import { ProductListSkeleton } from './components/product/ProductListSkeleton';
 
@@ -81,12 +82,15 @@ registerHomeComponents({
   'slider-products-with-header': SliderProductsWithHeader,
   'enhanced-square-banners': EnhancedSquareBanners,
   blog: Blog,
+  // The Giftology sections, addable and editable from the editor's home tab.
+  ...glyHomeBlocks,
 });
 
 // Wrapper `<section>` classes for `featured-products` — the engine only styles
 // the literal `styleN` values; this covers the semantic `view_style`s too.
 // `custom-testimonials` gets `s-block--full-bg` so the gray band runs edge-to-edge.
 registerHomeComponentConfig({
+  ...glyHomeBlockConfig,
   // The fallback's wrapper takes no room either.
   'latest-products': { className: 'hidden', height: '0px' },
   'featured-products': featuredProductsConfig,

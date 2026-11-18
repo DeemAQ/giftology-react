@@ -3,7 +3,8 @@ import { ProductCardSkeleton } from '@salla.sa/twilight-components-react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useReveal } from '../../hooks/useReveal';
-import { settingText, storePage } from '../../lib/giftology';
+import { blockLink, blockText, settingText, storePage } from '../../lib/giftology';
+import type { BlockData } from '../../lib/giftology';
 import { ProductCard } from '../product';
 import { ArrowIcon } from './icons';
 import { SectionHead } from './SectionHead';
@@ -23,8 +24,16 @@ export const latestProductsQuery = () => product.queries.list({ source: 'latest'
  * button to `gly_latest_url` (the store's latest-products page when unset). `id="gly-latest"` is the
  * target of the hero button and the menu link.
  */
-export function LatestProducts() {
-  const { settings, t, homeUrl } = useGly();
+export function LatestProducts({ data: block }: { data?: BlockData }) {
+  const { settings, t, homeUrl, locale } = useGly();
+  const title =
+    blockText(block, 'title', locale) ||
+    settingText(settings, 'gly_latest_title') ||
+    t('blocks.gly.latest.title');
+  const viewAll =
+    blockLink(block?.url) ||
+    settingText(settings, 'gly_latest_url') ||
+    storePage(homeUrl, 'latest-products');
   const reveal = useReveal();
   const { data, isLoading } = useQuery(latestProductsQuery());
   const products = (data?.items ?? []).slice(0, LIMIT);
@@ -33,8 +42,8 @@ export function LatestProducts() {
     <section id="gly-latest" className="gly-section gly-latest">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={t('blocks.gly.latest.eyebrow')}
-          title={settingText(settings, 'gly_latest_title') || t('blocks.gly.latest.title')}
+          eyebrow={blockText(block, 'eyebrow', locale) || t('blocks.gly.latest.eyebrow')}
+          title={title}
         />
 
         <div
@@ -47,7 +56,7 @@ export function LatestProducts() {
         </div>
 
         <div ref={reveal.ref} className={`gly-latest-more ${reveal.className}`}>
-          <Link className="gly-btn gly-btn-primary" to={settingText(settings, 'gly_latest_url') || storePage(homeUrl, 'latest-products')}>
+          <Link className="gly-btn gly-btn-primary" to={viewAll}>
             {t('blocks.gly.latest.view_all')}
             <ArrowIcon className="gly-arr" />
           </Link>

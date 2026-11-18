@@ -50,8 +50,6 @@ describe('theme editor settings (twilight.json)', () => {
     const unread = settings
       .map((entry) => entry.id)
       .filter((id) => id.startsWith('gly_'))
-      // The circles are read in a loop, as `gly_tile${i}_name`.
-      .filter((id) => !source.includes(id.replace(/^gly_tile\d_/, 'gly_tile${i}_')))
       .filter((id) => !source.includes(id));
     expect(unread).toEqual([]);
   });
@@ -73,12 +71,14 @@ describe('theme editor settings (twilight.json)', () => {
     expect(under('gly_hero_stat_gifts')).toEqual(['gly_show_hero', 'gly_show_hero_stats']);
     expect(under('gly_latest_title')).toEqual(['gly_show_latest']);
     expect(under('gly_cat_newborn')).toEqual(['gly_show_finder']);
-    for (let i = 1; i <= 8; i++) {
-      expect(under(`gly_tile${i}_enabled`)).toEqual(['gly_show_categories']);
-      for (const field of ['name', 'icon', 'image', 'link']) {
-        expect(under(`gly_tile${i}_${field}`)).toEqual(['gly_show_categories', `gly_tile${i}_enabled`]);
-      }
-    }
+  });
+
+  it('leaves the circles to their home block', () => {
+    expect(settings.filter((entry) => entry.id.startsWith('gly_tile'))).toEqual([]);
+    const circles = (manifest.components as { path: string; fields: Entry[] }[]).find(
+      (block) => block.path === 'home.gly-circles'
+    );
+    expect(circles?.fields.find((field) => field.id === 'circles')?.type).toBe('collection');
   });
 
   it('lists the home sections in the order the page shows them', () => {
