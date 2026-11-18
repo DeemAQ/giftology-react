@@ -1,7 +1,20 @@
 import bow from '../../assets/images/white_logo.webp';
-import { settingOn } from '../../lib/giftology';
-import { ArrowDownIcon, ArrowIcon, SparkIcon, StarIcon } from './icons';
+import { settingOn, settingText } from '../../lib/giftology';
+import { BrandIcon } from './BrandIcon';
+import { ArrowDownIcon, ArrowIcon, SparkIcon, StarIcon, TruckIcon } from './icons';
 import { useGly } from './useGly';
+
+/**
+ * The four figures under the hero text: `[setting, label key]`. The merchant types
+ * each figure in the theme editor; an empty field shows the built-in one
+ * (`blocks.gly.hero.<label key>_value`). `gly_show_hero_stats` hides the row.
+ */
+const STATS = [
+  ['gly_hero_stat_gifts', 'stat_gifts'],
+  ['gly_hero_stat_occasions', 'stat_occasions'],
+  ['gly_hero_stat_rating', 'stat_rating'],
+  ['gly_hero_stat_since', 'stat_since'],
+] as const;
 
 /**
  * Home hero: headline, the calls to action (jump to the categories, the custom
@@ -38,24 +51,16 @@ export function Hero() {
               </a>
             )}
           </div>
-          <div className="gly-hero-stats">
-            <div>
-              <b>+12 {h('stat_k')}</b>
-              <span>{h('stat_gifts')}</span>
+          {settingOn(settings, 'gly_show_hero_stats') && (
+            <div className="gly-hero-stats">
+              {STATS.map(([setting, key]) => (
+                <div key={setting}>
+                  <b>{settingText(settings, setting) || h(`${key}_value`)}</b>
+                  <span>{h(key)}</span>
+                </div>
+              ))}
             </div>
-            <div>
-              <b>+40</b>
-              <span>{h('stat_occasions')}</span>
-            </div>
-            <div>
-              <b>4.9★</b>
-              <span>{h('stat_rating')}</span>
-            </div>
-            <div>
-              <b>2018</b>
-              <span>{h('stat_since')}</span>
-            </div>
-          </div>
+          )}
         </div>
 
         <div className="gly-hero__art gly-reveal in" aria-hidden="true">
@@ -74,7 +79,7 @@ export function Hero() {
           />
           <div className="gly-fcard fc1">
             <div className="gly-fcard__ph" style={{ background: 'var(--gly-gold)' }}>
-              🎀
+              <BrandIcon name="gift" />
             </div>
             <div>
               <b>{h('mini_wrap_t')}</b>
@@ -83,7 +88,7 @@ export function Hero() {
           </div>
           <div className="gly-fcard fc2">
             <div className="gly-fcard__ph" style={{ background: 'var(--gly-teal-deep)' }}>
-              🚚
+              <TruckIcon />
             </div>
             <div>
               <b>{h('mini_fast_t')}</b>
@@ -92,7 +97,7 @@ export function Hero() {
           </div>
           <div className="gly-fcard fc3">
             <div className="gly-fcard__ph" style={{ background: '#e2715f' }}>
-              💌
+              <BrandIcon name="envelope" />
             </div>
             <div>
               <b>{h('mini_card_t')}</b>

@@ -22,7 +22,7 @@ export function PromoBar() {
   const phrases = filled.length ? filled : PROMO_DEFAULTS.map((key) => t(key));
 
   return (
-    <div className="gly-topbar" role="note">
+    <aside className="gly-topbar" aria-label={t('blocks.gly.promo.label')}>
       <span aria-hidden="true">✦&nbsp;</span>
       {phrases.map((phrase, index) => {
         const last = index === phrases.length - 1;
@@ -42,6 +42,6 @@ export function PromoBar() {
         );
       })}
       <span aria-hidden="true">&nbsp;✦</span>
-    </div>
+    </aside>
   );
 }

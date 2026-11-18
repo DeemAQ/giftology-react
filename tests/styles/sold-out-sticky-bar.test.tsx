@@ -8,6 +8,10 @@ import tailwindcss from 'tailwindcss';
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { AddToCartForm } from '../../app/components/product/AddToCartForm';
 
+// Prices are printed as given; the digit style has its own test (tests/hooks/useStoreDigits.test.ts).
+vi.mock('../../app/hooks/useStoreDigits', () => ({
+  useStoreDigits: () => (amount: number | string | null | undefined) => (amount == null ? '' : String(amount)),
+}));
 vi.mock('@salla.sa/twilight-theme-engine/i18n', () => ({
   useTranslation: () => ({
     locale: 'en',

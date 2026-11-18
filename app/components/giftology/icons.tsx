@@ -68,6 +68,15 @@ export const StarIcon = (p: IconProps) => (
   </svg>
 );
 
+export const TruckIcon = (p: IconProps) => (
+  <svg {...stroke(p, 1.7)} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 6h11v10H2z" />
+    <path d="M13 9h4l4 4v3h-8z" />
+    <circle cx="6.5" cy="17.5" r="1.8" />
+    <circle cx="17" cy="17.5" r="1.8" />
+  </svg>
+);
+
 export const MailIcon = (p: IconProps) => (
   <svg {...stroke(p, 1.7)}>
     <rect x="3" y="5" width="18" height="14" rx="2" />

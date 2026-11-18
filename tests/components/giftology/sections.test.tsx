@@ -13,6 +13,7 @@ import { SubcategoryPills } from '../../../app/components/giftology/SubcategoryP
 const state = {
   store: {} as Record<string, unknown>,
   settings: {} as Record<string, unknown>,
+  locale: 'en',
   products: [] as { id: number; name: string }[],
   listCalls: [] as Record<string, unknown>[],
   footerMenu: [] as { id?: number | string; title: string; url: string; target?: string }[],
@@ -23,7 +24,7 @@ vi.mock('@salla.sa/twilight-theme-engine/providers', () => ({
 }));
 vi.mock('@salla.sa/twilight-theme-engine/i18n', () => ({
   useTranslation: () => ({
-    locale: 'en',
+    locale: state.locale,
     t: (key: string, fallback?: string) => (en as Record<string, string>)[key] ?? fallback ?? key,
   }),
 }));
@@ -91,6 +92,7 @@ function renderWithQuery(ui: ReactNode) {
 
 beforeEach(() => {
   state.store = { name: 'Giftology', url: 'https://shop.test/en' };
+  state.locale = 'en';
   state.footerMenu = [];
   state.settings = {};
   state.products = [];
@@ -100,14 +102,16 @@ beforeEach(() => {
 describe('PromoBar', () => {
   it('shows the three curated phrases when the merchant set none', () => {
     render(<PromoBar />);
-    expect(screen.getByRole('note')?.textContent).toContain(en['blocks.gly.promo.shipping']);
+    // A landmark of its own: it sits outside the header, main and footer.
+    const bar = screen.getByRole('complementary', { name: en['blocks.gly.promo.label'] });
+    expect(bar.textContent).toContain(en['blocks.gly.promo.shipping']);
   });
 
   it('shows only the filled phrases, the last one emphasised', () => {
     state.settings = { gly_promo_1: 'Free wrap', gly_promo_3: 'Ships today' };
     const { container } = render(<PromoBar />);
-    expect(screen.getByRole('note')?.textContent).toContain('Free wrap');
-    expect(screen.getByRole('note').textContent).not.toContain(en['blocks.gly.promo.fast']);
+    expect(screen.getByRole('complementary')?.textContent).toContain('Free wrap');
+    expect(screen.getByRole('complementary').textContent).not.toContain(en['blocks.gly.promo.fast']);
     expect(container.querySelector('b')?.textContent).toContain('Ships today');
   });
 
@@ -148,8 +152,20 @@ describe('GlyFooter', () => {
     expect(screen.getByText('Mastercard')).toBeTruthy();
     expect(screen.queryByText('VISA')).toBeNull();
     // Tamara is off until the merchant turns it on.
-    expect(screen.queryByText('تمارا')).toBeNull();
+    expect(screen.queryByText('Tamara')).toBeNull();
     expect(screen.getByText(en['blocks.gly.footer.instagram']).closest('a')?.getAttribute('href')).toBe('https://instagram.com/giftology');
+  });
+
+  it("names the payment methods in the page's language", () => {
+    state.settings = { gly_pay_tamara: true };
+    const english = renderWithQuery(<GlyFooter />);
+    const names = (root: HTMLElement) => [...root.querySelectorAll('.gly-pays span')].map((s) => s.textContent);
+    expect(names(english.container)).toEqual(['mada', 'Apple Pay', 'VISA', 'Mastercard', 'tabby', 'Tamara', 'STC Pay']);
+    english.unmount();
+
+    state.locale = 'ar';
+    const arabic = renderWithQuery(<GlyFooter />);
+    expect(names(arabic.container)).toEqual(['مدى', 'Apple Pay', 'VISA', 'Mastercard', 'tabby', 'تمارا', 'STC Pay']);
   });
 
   it("lists the store's footer menu as important links, translating key-named entries", async () => {
@@ -200,6 +216,13 @@ describe('WhatsApp buttons', () => {
     state.settings = { gly_whatsapp: '966500000000' };
     render(<WhatsAppFloat />);
     expect(screen.getByRole('link').getAttribute('href')).toContain('https://wa.me/966551112222?text=');
+  });
+
+  it('is a landmark of its own, outside the header, main and footer', () => {
+    state.settings = { gly_whatsapp: '966551112222' };
+    render(<WhatsAppFloat />);
+    const landmark = screen.getByRole('complementary', { name: en['blocks.gly.footer.contact'] });
+    expect(landmark.querySelector('a.gly-wa')).not.toBeNull();
   });
 
   it('hides them when there is no number to chat with', () => {
@@ -284,6 +307,40 @@ describe('GiftologyHome', () => {
     expect(container.querySelector('#gly-finder')).toBeNull();
     expect(container.querySelector('a[href="#gly-latest"]')).toBeNull();
     expect(container.querySelector('#gly-cats')).not.toBeNull();
+  });
+
+  const heroStats = (container: HTMLElement) =>
+    [...container.querySelectorAll('.gly-hero-stats > div')].map((stat) => [
+      stat.querySelector('b')?.textContent,
+      stat.querySelector('span')?.textContent,
+    ]);
+
+  it('shows the four built-in hero figures until the merchant types their own', () => {
+    const { container } = renderWithQuery(<GiftologyHome />);
+    expect(heroStats(container)).toEqual([
+      ['+12K', en['blocks.gly.hero.stat_gifts']],
+      ['+40', en['blocks.gly.hero.stat_occasions']],
+      ['4.9★', en['blocks.gly.hero.stat_rating']],
+      ['2018', en['blocks.gly.hero.stat_since']],
+    ]);
+  });
+
+  it("shows the merchant's own figures, and none when the row is switched off", () => {
+    state.settings = { gly_hero_stat_gifts: '+3K', gly_hero_stat_since: ' 2021 ' };
+    const filled = renderWithQuery(<GiftologyHome />);
+    expect(heroStats(filled.container).map(([figure]) => figure)).toEqual(['+3K', '+40', '4.9★', '2021']);
+    filled.unmount();
+
+    state.settings = { gly_show_hero_stats: false };
+    const hidden = renderWithQuery(<GiftologyHome />);
+    expect(hidden.container.querySelector('.gly-hero-stats')).toBeNull();
+  });
+
+  it('draws its icons instead of using emoji, which every device renders differently', () => {
+    const { container } = renderWithQuery(<GiftologyHome />);
+    expect(container.querySelectorAll('.gly-fcard__ph .gly-ico, .gly-fcard__ph svg')).toHaveLength(3);
+    // Pictographs outside the basic symbols; ★ and ✦ are plain text glyphs.
+    expect(container.textContent).not.toMatch(/\p{Extended_Pictographic}(?<![★✦✓])/u);
   });
 
   /** The page's top-level blocks in order, by id (the hero has none: "hero"). */

@@ -54,16 +54,24 @@
 .gly-ibtn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--gly-ink);transition:.25s;position:relative;background:none;border:none}
 .gly-ibtn:hover{background:var(--gly-teal-wash);color:var(--gly-teal-ink)}
 .gly-ibtn svg{width:21px;height:21px}
-/* burger is HIDDEN on the home page (it has the full inline nav) and SHOWN on
-   every other page (.gly-header--inner) + on mobile (≤920px, see media query) */
+/* Wide screens show the inline links on every page. The menu button is hidden on
+   the home page, whose category circles do its job, and shown on every other page
+   (.gly-header--inner), where it is the way to the store's categories. Up to 920px
+   the links give way to the button everywhere (see the media query). */
 .gly-burger{display:none}
-.gly-header--inner .gly-menu{display:none}
 .gly-header--inner .gly-burger{display:grid}
+.gly-menu a{white-space:nowrap}
+/* Up to 1023px an inner page has no room for the links beside the menu button. */
+@media(max-width:1023px){.gly-header--inner .gly-menu{display:none}}
 /* style the Salla cart/user web-components to fit the icon row */
 .gly-icons salla-cart-summary,.gly-icons salla-user-menu{display:inline-flex}
 .gly-icons .sicon-shopping-bag,.gly-icons .sicon-user{font-size:21px}
 /* hide the cart total (keep icon + item count) */
 .gly-icons salla-cart-summary .s-cart-summary-total{display:none!important}
+/* The cart link is drawn at 24px; its tap area matches the 42px of the other header
+   buttons. A larger box would move the count badge, which is placed from its corner. */
+.gly-icons salla-cart-summary .s-cart-summary-wrapper{position:relative}
+.gly-icons salla-cart-summary .s-cart-summary-wrapper::after{content:"";position:absolute;inset:-9px}
 /* round the logged-in account avatar (Salla renders it as a square card) */
 .gly-icons salla-user-menu .s-user-menu-toggler,
 .gly-icons salla-user-menu .s-user-menu-trigger,
@@ -133,7 +141,10 @@
 /* watermark sits exactly on the teal oval (same box + shape as .gly-blob.teal) */
 .gly-hero__pattern{position:absolute;width:430px;height:430px;inset-inline-end:-30px;top:10px;border-radius:46% 54% 60% 40%/52% 48% 52% 48%;background-image:var(--gly-pat);background-size:300px;opacity:.6;mix-blend-mode:overlay;z-index:1;overflow:hidden;animation:gly-morph 12s ease-in-out infinite}
 .gly-fcard{position:absolute;background:#fff;border-radius:16px;box-shadow:var(--gly-shadow-md);padding:.7rem .9rem;display:flex;gap:.6rem;align-items:center;z-index:3;border:1px solid rgba(74,63,53,.06)}
-.gly-fcard__ph{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:1.3rem;flex:0 0 auto}
+.gly-fcard__ph{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:0 0 auto}
+.gly-fcard__ph .gly-ico,.gly-fcard__ph svg{width:24px;height:24px}
+/* a brand icon (`BrandIcon.tsx`): its drawing, filled with the text colour */
+.gly-ico{display:block;background:currentColor;-webkit-mask:var(--gly-ico) center/contain no-repeat;mask:var(--gly-ico) center/contain no-repeat}
 .gly-fcard b{font-size:.92rem;font-family:var(--gly-font-display);font-weight:700}
 .gly-fcard small{font-size:.76rem;color:var(--gly-soft);display:block}
 .gly-fcard.fc1{top:38px;inset-inline-start:-6px;animation:gly-bob 5s ease-in-out infinite}
@@ -218,7 +229,8 @@
 .gly-qopt{padding:.9rem;border-radius:14px;border:1.6px solid rgba(74,63,53,.12);font-weight:700;font-size:.96rem;transition:.2s;text-align:start;background:#fff;font-family:var(--gly-font-body);cursor:pointer;color:var(--gly-ink)}
 .gly-qopt:hover{border-color:var(--gly-teal-deep);background:var(--gly-teal-wash);transform:translateY(-2px)}
 .gly-qresult{text-align:center}
-.gly-qresult .em{font-size:3rem;margin-bottom:.4rem}
+.gly-qresult .em{width:76px;height:76px;margin:0 auto .7rem;border-radius:50%;display:grid;place-items:center;background:var(--gly-teal-wash);color:var(--gly-teal-deep)}
+.gly-qresult .em .gly-ico,.gly-qresult .em svg{width:40px;height:40px}
 .gly-qresult b{font-family:var(--gly-font-display);font-size:1.45rem;display:block;color:var(--gly-teal-ink);margin-bottom:.3rem}
 .gly-qresult p{margin:0 auto 1.1rem;color:var(--gly-soft)}
 /* finder → random-product result */
@@ -324,14 +336,29 @@
 .gly-mmenu.open{visibility:visible;transition:transform .4s}
 /* language / currency button uses the shared icon button */
 .gly-icons .gly-loc{flex:0 0 auto}
-/* latest products: the theme's product cards in the shared grid */
-.gly-latest-grid.s-products-list-wrapper{display:grid}
+/* Latest products: the theme's product cards in the shared grid, always in full
+   rows. Eight cards: 2 across on phones, 4 across from 960px. In between 3 fit, so
+   the last two are left out and the rows stay even. */
+.gly-latest-grid.s-products-list-wrapper{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:640px) and (max-width:959px){
+  .gly-latest-grid.s-products-list-wrapper{grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* !important: each card's wrapper carries an inline `display:contents` */
+  .gly-latest-grid>:nth-child(n+7){display:none!important}
+}
+@media (min-width:960px){
+  .gly-latest-grid.s-products-list-wrapper{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
 
 /* Phones: the starter's bottom nav and page-title bar are kept (product, cart and
    account pages are laid out around them). */
 @media (max-width:767px){
   /* off the home page the title bar is the sticky one, so the header scrolls away */
   .gly-header--inner{position:relative}
+  /* The bottom nav already has search, account, cart and the menu, so the header
+     keeps only the logo and the language button. */
+  .gly-icons>:not(.gly-loc){display:none}
+  /* a full-size tap target */
+  .gly-ibtn{width:44px;height:44px}
   /* the WhatsApp button and the open menu clear the bottom nav */
   .gly-wa{bottom:calc(88px + var(--safe-bottom, 0px))}
   .gly-mmenu{padding-bottom:calc(96px + var(--safe-bottom, 0px));overflow-y:auto}

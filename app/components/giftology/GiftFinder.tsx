@@ -5,6 +5,9 @@ import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useReveal } from '../../hooks/useReveal';
 import { allProductsUrl, categoryIdFromUrl, resolveCategoryUrl } from '../../lib/giftology';
 import { ProductCard } from '../product';
+import { BrandIcon } from './BrandIcon';
+import { SparkIcon } from './icons';
+import type { BrandIconName } from './tileIcons';
 import { useGly } from './useGly';
 
 /** A quiz outcome: six store categories, or a custom gift ordered over WhatsApp. */
@@ -42,14 +45,14 @@ const QUESTIONS: { q: string; options: [label: string, outcome: Outcome][] }[] =
   },
 ];
 
-/** Result card per category: emoji, title key, and the tile whose link it falls back to. */
-const RESULTS: Record<Category, { emoji: string; title: string; setting: string; tile: number }> = {
-  newborn: { emoji: '🧸', title: 'blocks.gly.cats.newborn', setting: 'gly_cat_newborn', tile: 1 },
-  kids: { emoji: '🎈', title: 'blocks.gly.cats.kids', setting: 'gly_cat_kids', tile: 3 },
-  men: { emoji: '🤵', title: 'blocks.gly.cats.men', setting: 'gly_cat_men', tile: 4 },
-  occasion: { emoji: '🎁', title: 'blocks.gly.cats.occasion', setting: 'gly_cat_occasion', tile: 2 },
-  favors: { emoji: '🎀', title: 'blocks.gly.cats.favors', setting: 'gly_cat_favors', tile: 5 },
-  cards: { emoji: '💌', title: 'blocks.gly.cats.cards', setting: 'gly_cat_cards', tile: 6 },
+/** Result card per category: icon, title key, and the tile whose link it falls back to. */
+const RESULTS: Record<Category, { icon: BrandIconName; title: string; setting: string; tile: number }> = {
+  newborn: { icon: 'baby', title: 'blocks.gly.cats.newborn', setting: 'gly_cat_newborn', tile: 1 },
+  kids: { icon: 'cake', title: 'blocks.gly.cats.kids', setting: 'gly_cat_kids', tile: 3 },
+  men: { icon: 'tie', title: 'blocks.gly.cats.men', setting: 'gly_cat_men', tile: 4 },
+  occasion: { icon: 'gift', title: 'blocks.gly.cats.occasion', setting: 'gly_cat_occasion', tile: 2 },
+  favors: { icon: 'tag', title: 'blocks.gly.cats.favors', setting: 'gly_cat_favors', tile: 5 },
+  cards: { icon: 'envelope', title: 'blocks.gly.cats.cards', setting: 'gly_cat_cards', tile: 6 },
 };
 
 /** Breaks scoring ties: the earlier outcome wins. */
@@ -83,7 +86,7 @@ function CategoryResult({ outcome, seed }: { outcome: Category; seed: number }) 
   return (
     <>
       <div className="em" aria-hidden="true">
-        {result.emoji}
+        <BrandIcon name={result.icon} />
       </div>
       <b>{t(result.title)}</b>
       {categoryId !== null && isLoading ? (
@@ -175,7 +178,7 @@ export function GiftFinder() {
                 {custom ? (
                   <>
                     <div className="em" aria-hidden="true">
-                      ✨
+                      <SparkIcon />
                     </div>
                     <b>{f('custom_title')}</b>
                     <p>{f('r_custom')}</p>

@@ -35,3 +35,13 @@
     salla-add-product-button[product-status="out-and-notify"]{--gly-card-ico:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8.4C18 4.87 15.31 2 12 2C8.69 2 6 4.87 6 8.4C6 15.33 3 17.31 3 17.31H21C21 17.31 18 15.33 18 8.4Z'/%3E%3Cpath d='M13.73 21.31C13.55 21.62 13.29 21.87 12.98 22.05C12.68 22.22 12.33 22.31 11.97 22.31C11.62 22.31 11.27 22.22 10.96 22.05C10.66 21.87 10.4 21.62 10.22 21.31'/%3E%3C/svg%3E")}
   }
 }
+
+/* Phones: the wishlist heart is drawn at 36px; its tap area reaches 42px (3px past
+   its border on each side), half of the 6px gap to the add-to-cart button.
+   The heart must be the box the tap area is measured from. product-list.scss sets it
+   to `position:static` with three classes, so this selector carries four: if it lost,
+   the tap area would stretch over the whole card and swallow the add-to-cart button. */
+@media (max-width:767px){
+  .s-product-card.s-product-card-vertical .s-product-card-content-footer .s-product-card-wishlist-btn{position:relative}
+  .s-product-card.s-product-card-vertical .s-product-card-content-footer .s-product-card-wishlist-btn::after{content:"";position:absolute;inset:-4px}
+}

@@ -7,15 +7,18 @@ import { menuLabel, settingOn, settingText } from '../../lib/giftology';
 import { InstagramIcon, MailIcon, WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
 
-/** Payment badges, each behind its own switch (`[setting, label, on by default]`). */
+/**
+ * Payment badges, each behind its own switch: `[setting, name, name in Arabic, on by
+ * default]`. Names are the providers' own; two of them have an Arabic spelling.
+ */
 const PAYMENTS = [
-  ['gly_pay_mada', 'مدى', true],
-  ['gly_pay_applepay', 'Apple Pay', true],
-  ['gly_pay_visa', 'VISA', true],
-  ['gly_pay_mastercard', 'Mastercard', true],
-  ['gly_pay_tabby', 'tabby', true],
-  ['gly_pay_tamara', 'تمارا', false],
-  ['gly_pay_stcpay', 'STC Pay', true],
+  ['gly_pay_mada', 'mada', 'مدى', true],
+  ['gly_pay_applepay', 'Apple Pay', 'Apple Pay', true],
+  ['gly_pay_visa', 'VISA', 'VISA', true],
+  ['gly_pay_mastercard', 'Mastercard', 'Mastercard', true],
+  ['gly_pay_tabby', 'tabby', 'tabby', true],
+  ['gly_pay_tamara', 'Tamara', 'تمارا', false],
+  ['gly_pay_stcpay', 'STC Pay', 'STC Pay', true],
 ] as const;
 
 /** The store description arrives as HTML; the footer prints it as plain text. */
@@ -51,7 +54,7 @@ export function GlyFooter() {
     t('blocks.gly.footer.about');
   const email = settingText(settings, 'gly_email') || store?.contacts?.email;
   const instagram = store?.social?.instagram || settingText(settings, 'gly_instagram');
-  const payments = PAYMENTS.filter(([id, , fallback]) => settingOn(settings, id, fallback));
+  const payments = PAYMENTS.filter(([id, , , fallback]) => settingOn(settings, id, fallback));
 
   return (
     <footer className="gly-footer">
@@ -135,8 +138,8 @@ export function GlyFooter() {
           </div>
           {payments.length > 0 && (
             <div className="gly-pays">
-              {payments.map(([id, label]) => (
-                <span key={id}>{label}</span>
+              {payments.map(([id, name, arabicName]) => (
+                <span key={id}>{locale === 'ar' ? arabicName : name}</span>
               ))}
             </div>
           )}

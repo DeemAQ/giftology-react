@@ -90,6 +90,13 @@
   }
 }
 
+/* A tab is drawn 36px tall inside the 52px bar; its tap area fills the usual 44px. */
+.mobile-bottom-bar__item::after {
+  content: '';
+  position: absolute;
+  inset: -4px -2px;
+}
+
 .mobile-bottom-bar__icon {
   @apply relative flex flex-none items-center justify-center;
   width: 24px;
