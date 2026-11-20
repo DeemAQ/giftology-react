@@ -67,6 +67,12 @@ describe('home hero on a phone', () => {
     expect(rulesFor('.gly-latest-grid[data-phone="all"] > :nth-child(n+5)')).toHaveLength(0);
   });
 
+  it('keeps the custom-gift section centred: no side padding around its 92vw column', () => {
+    const narrow = rulesFor('.gly-custom').filter((found) => found.media.includes('max-width: 560px'));
+    expect(narrow).toHaveLength(1);
+    expect(decl(narrow[0].rule, 'padding')).toBe('2rem 0');
+  });
+
   it("keeps the gift finder's answers two to a row", () => {
     const narrow = rulesFor('.gly-qopts').filter((found) => found.media);
     for (const found of narrow) expect(decl(found.rule, 'grid-template-columns')).toBeUndefined();

@@ -355,7 +355,10 @@
   .gly-fgrid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:560px){
-  .gly-custom,.gly-quiz-box{padding:2rem 1.4rem}
+  .gly-quiz-box{padding:2rem 1.4rem}
+  /* A full-width section: its content already sits in the 92vw column, so it takes no side
+     padding of its own (with some, the column overflowed and sat off centre). */
+  .gly-custom{padding:2rem 0}
   /* the answers stay two to a row, so a question and its answers fit one screen */
   .gly-qopts{gap:.5rem}
   .gly-qopt{padding:.8rem .7rem;font-size:.92rem}
