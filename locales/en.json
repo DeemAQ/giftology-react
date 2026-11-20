@@ -201,6 +201,8 @@
   "blocks.gly.finder.budget_high": "Over {min}",
   "blocks.gly.finder.budget_any": "Any budget",
   "blocks.gly.finder.opt_custom": "A custom gift",
+  "blocks.gly.finder.custom_btn": "Contact via WhatsApp",
+  "blocks.gly.finder.or_custom": "Or order a custom gift",
   "blocks.gly.finder.result_title": "Our picks from {category}",
   "blocks.gly.finder.others": "Show others",
   "blocks.gly.finder.see_all": "See all {category}",

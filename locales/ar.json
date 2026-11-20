@@ -201,6 +201,8 @@
   "blocks.gly.finder.budget_high": "أكثر من {min}",
   "blocks.gly.finder.budget_any": "أي ميزانية",
   "blocks.gly.finder.opt_custom": "هدية مخصّصة",
+  "blocks.gly.finder.custom_btn": "تواصل عبر واتساب",
+  "blocks.gly.finder.or_custom": "أو اطلب هدية مخصّصة",
   "blocks.gly.finder.result_title": "اخترنا لك من {category}",
   "blocks.gly.finder.others": "اقترح غيرها",
   "blocks.gly.finder.see_all": "تصفّح كل {category}",

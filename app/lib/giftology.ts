@@ -83,10 +83,35 @@ export function blockRows(data: BlockData, id: string): Record<string, unknown>[
     .filter((row) => Object.values(row).some((value) => value !== null && value !== '' && value !== false));
 }
 
+/** Whether the page is in Arabic, the language the merchant writes the main text boxes in. */
+const isArabic = (lang: string | undefined) => !lang || lang.toLowerCase().startsWith('ar');
+
 /**
- * A text of a list row. The lists arrive filled with the theme's ready-made rows in
- * Arabic (`glyDefaults.ts`); a text the merchant left as it came is shown in the
- * visitor's language from the locale files, and one they rewrote is shown as written.
+ * A block text in the visitor's language. Every text has two boxes in the editor:
+ * `id` for Arabic and `id_en` for English (shown for every language but Arabic).
+ * Empty when the box for that language is empty, so the caller falls back to the
+ * theme's own wording in that language.
+ */
+export function blockCopy(data: BlockData, id: string, lang?: string): string {
+  if (isArabic(lang)) return blockText(data, id, lang);
+  const english = blockText(data, `${id}_en`, lang);
+  if (english) return english;
+  // A value Salla holds per language (`{ ar, en }`) carries its own English.
+  const main = data?.[id];
+  return main && typeof main === 'object' ? blockText(data, id, lang) : '';
+}
+
+/** A setting's text in the visitor's language: `id` for Arabic, `id_en` otherwise. */
+export function settingCopy(settings: GlySettings, id: string, lang?: string): string {
+  return settingText(settings, isArabic(lang) ? id : `${id}_en`);
+}
+
+/**
+ * A text of a list row, in the visitor's language. A row has an Arabic box and an
+ * English one (`id`, `id_en`). An English page with no English text shows the
+ * theme's own English when the Arabic is still one of the ready-made texts
+ * (`glyDefaults.ts`), and the Arabic as written otherwise: a row the merchant wrote
+ * has no ready-made English to fall back on.
  */
 export function rowText(
   row: BlockData,
@@ -94,9 +119,12 @@ export function rowText(
   lang: string | undefined,
   t: (key: string) => string
 ): string {
-  const text = blockText(row, id, lang);
-  const key = text ? defaultTextKey(text) : undefined;
-  return key ? t(key) : text;
+  const arabic = blockText(row, id, lang);
+  if (isArabic(lang)) return arabic;
+  const english = blockText(row, `${id}_en`, lang);
+  if (english) return english;
+  const key = arabic ? defaultTextKey(arabic) : undefined;
+  return key ? t(key) : arabic;
 }
 
 /** A block's link field (the editor's link picker): a URL, `{ url }` or a list of them; empty when unset. */
@@ -147,13 +175,13 @@ export function blockTiles(
   icons: Record<string, string>
 ): CategoryTile[] {
   return blockRows(data, 'circles')
-    .filter((row) => blockLink(row.url) || blockText(row, 'name', lang) || blockLink(row.image))
+    .filter((row) => blockLink(row.url) || rowText(row, 'name', lang, t) || blockLink(row.image))
     .map((row) => {
       const chosen = choiceValue(row.icon);
       const icon = icons[chosen] ? chosen : 'gift';
       const preset = TILE_DEFAULTS.find((tile) => tile.icon === icon);
       return {
-        name: blockText(row, 'name', lang) || (preset ? t(preset.nameKey) : ''),
+        name: rowText(row, 'name', lang, t) || (preset ? t(preset.nameKey) : ''),
         url: resolveCategoryUrl(row.url, allProductsUrl(homeUrl), lang),
         image: blockLink(row.image),
         icon,

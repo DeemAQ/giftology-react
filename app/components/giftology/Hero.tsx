@@ -1,10 +1,12 @@
 import bow from '../../assets/images/white_logo.webp';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
-import { blockLink, blockRows, blockText, rowText, settingOn, settingText } from '../../lib/giftology';
+import { blockCopy, blockLink, blockRows, choiceValue, rowText, settingOn, settingText } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import { BrandIcon } from './BrandIcon';
 import { ArrowDownIcon, ArrowIcon, SparkIcon, StarIcon, TruckIcon } from './icons';
 import { useHomeSections } from './homeSections';
+import { TILE_ICONS } from './tileIcons';
+import type { BrandIconName } from './tileIcons';
 import { useGly } from './useGly';
 
 /**
@@ -21,6 +23,25 @@ const STATS = [
 ] as const;
 
 /**
+ * The three small cards floating over the hero art: `[title key, text key, icon]`.
+ * The hero block arrives with these as its list; the merchant rewrites, removes or
+ * reorders them. Each keeps its place and colour by position.
+ */
+const CARDS = [
+  ['mini_wrap_t', 'mini_wrap_d', 'gift'],
+  ['mini_fast_t', 'mini_fast_d', 'truck'],
+  ['mini_card_t', 'mini_card_d', 'envelope'],
+] as const;
+
+const CARD_COLOURS = ['var(--gly-gold)', 'var(--gly-teal-deep)', '#e2715f'];
+
+/** A card's icon: the delivery truck, or one of the brand icons. */
+function CardIcon({ name }: { name: string }) {
+  if (name === 'truck') return <TruckIcon />;
+  return <BrandIcon name={(name in TILE_ICONS ? name : 'gift') as BrandIconName} />;
+}
+
+/**
  * Home hero: headline, the calls to action (jump to the categories, the custom
  * gift and the latest products sections), the four stats, and the decorative art.
  * First screen, so it is visible in the server HTML with no reveal animation, and
@@ -31,16 +52,30 @@ export function Hero({ data }: { data?: BlockData }) {
   const shown = useHomeSections();
   const h = (key: string) => t(`blocks.gly.hero.${key}`);
   // A block field the merchant filled, else the theme's own text.
-  const own = (key: string) => blockText(data, key, locale) || h(key);
+  const own = (key: string) => blockCopy(data, key, locale) || h(key);
 
   // The headline is three parts; a merchant who writes any of them replaces all three.
-  const written = ['title_pre', 'title_em', 'title_post'].map((key) => blockText(data, key, locale));
+  const written = ['title_pre', 'title_em', 'title_post'].map((key) => blockCopy(data, key, locale));
   const [titlePre, titleEm, titlePost] = written.some(Boolean)
     ? written
     : [h('title_pre'), h('title_em'), h('title_post')];
 
   const shopUrl = blockLink(data?.cta_shop_url);
   const customUrl = blockLink(data?.cta_custom_url);
+
+  // The picture in the art: the merchant's upload, else the brand bow.
+  const art = blockLink(data?.art_image) || bow;
+  const ownCards = blockRows(data, 'cards')
+    .map((row) => ({
+      title: rowText(row, 'title', locale, t),
+      text: rowText(row, 'text', locale, t),
+      icon: choiceValue(row.icon),
+    }))
+    .filter((card) => card.title)
+    .slice(0, CARDS.length);
+  const cards = ownCards.length
+    ? ownCards
+    : CARDS.map(([title, text, icon]) => ({ title: h(title), text: h(text), icon: icon as string }));
 
   const showStats =
     typeof data?.show_stats === 'boolean' ? data.show_stats : settingOn(settings, 'gly_show_hero_stats');
@@ -91,9 +126,9 @@ export function Hero({ data }: { data?: BlockData }) {
                 </a>
               )
             )}
-            {shown.has('latest') && (
+            {data?.show_cta_latest !== false && shown.has('latest') && (
               <a href="#gly-latest" className="gly-btn gly-btn-ghost">
-                {h('cta_latest')}
+                {own('cta_latest')}
                 <ArrowDownIcon />
               </a>
             )}
@@ -115,8 +150,8 @@ export function Hero({ data }: { data?: BlockData }) {
           <div className="gly-blob teal" />
           <div className="gly-hero__pattern" />
           <div className="gly-blob peach" />
-          {/* Lazy: phones hide the bow (`_home.scss`), and a hidden lazy image is never fetched. */}
-          <img className="gly-bow" src={bow} alt="" width={240} height={240} loading="lazy" decoding="async" />
+          {/* Lazy: phones hide the picture (`_home.scss`), and a hidden lazy image is never fetched. */}
+          <img className="gly-bow" src={art} alt="" width={240} height={240} loading="lazy" decoding="async" />
           <StarIcon
             className="gly-sparkle"
             style={{ top: 30, insetInlineStart: 60, width: 26 }}
@@ -125,33 +160,18 @@ export function Hero({ data }: { data?: BlockData }) {
             className="gly-sparkle"
             style={{ bottom: 90, insetInlineEnd: 30, width: 18, animationDelay: '1s' }}
           />
-          <div className="gly-fcard fc1">
-            <div className="gly-fcard__ph" style={{ background: 'var(--gly-gold)' }}>
-              <BrandIcon name="gift" />
+          {cards.map((card, index) => (
+            // Up to three, each with a fixed place and colour: the slot is its identity.
+            <div key={index} className={`gly-fcard fc${index + 1}`}>
+              <div className="gly-fcard__ph" style={{ background: CARD_COLOURS[index] }}>
+                <CardIcon name={card.icon} />
+              </div>
+              <div>
+                <b>{card.title}</b>
+                {card.text && <small>{card.text}</small>}
+              </div>
             </div>
-            <div>
-              <b>{h('mini_wrap_t')}</b>
-              <small>{h('mini_wrap_d')}</small>
-            </div>
-          </div>
-          <div className="gly-fcard fc2">
-            <div className="gly-fcard__ph" style={{ background: 'var(--gly-teal-deep)' }}>
-              <TruckIcon />
-            </div>
-            <div>
-              <b>{h('mini_fast_t')}</b>
-              <small>{h('mini_fast_d')}</small>
-            </div>
-          </div>
-          <div className="gly-fcard fc3">
-            <div className="gly-fcard__ph" style={{ background: '#e2715f' }}>
-              <BrandIcon name="envelope" />
-            </div>
-            <div>
-              <b>{h('mini_card_t')}</b>
-              <small>{h('mini_card_d')}</small>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

@@ -70,6 +70,34 @@
         {
             "type": "string",
             "icon": "sicon-email-outline",
+            "label": "رسالة واتساب الجاهزة",
+            "multilanguage": false,
+            "id": "gly_whatsapp_msg",
+            "value": null,
+            "required": false,
+            "format": "text",
+            "description": "النص الذي تبدأ به المحادثة عند ضغط زر واتساب الطافي وفي أسفل الصفحة. إن تُركت فارغة تبقى الرسالة الجاهزة: «مرحباً، عندي استفسار 🌿».",
+            "placeholder": "hello@example.com",
+            "minLength": 0,
+            "maxLength": 300
+        },
+        {
+            "type": "string",
+            "icon": "sicon-email-outline",
+            "label": "رسالة واتساب الجاهزة (بالإنجليزية)",
+            "multilanguage": false,
+            "id": "gly_whatsapp_msg_en",
+            "value": null,
+            "required": false,
+            "format": "text",
+            "description": "اختيارية. تُستخدم في الصفحة الإنجليزية. إن تُركت فارغة تبقى الرسالة الإنجليزية الجاهزة.",
+            "placeholder": "hello@example.com",
+            "minLength": 0,
+            "maxLength": 300
+        },
+        {
+            "type": "string",
+            "icon": "sicon-email-outline",
             "label": "البريد الإلكتروني",
             "multilanguage": false,
             "id": "gly_email",
@@ -146,6 +174,30 @@
         {
             "type": "string",
             "icon": "sicon-format-text-alt",
+            "label": "عبارة الشريط الأولى (بالإنجليزية)",
+            "multilanguage": true,
+            "id": "gly_promo_1_en",
+            "value": null,
+            "required": false,
+            "format": "text",
+            "description": "اختيارية. تظهر في الصفحة الإنجليزية. إن تُركت العبارات الإنجليزية الثلاث فارغة تظهر العبارات الإنجليزية الجاهزة.",
+            "placeholder": null,
+            "minLength": 0,
+            "maxLength": 120,
+            "conditions": [
+                {
+                    "id": "gly_show_promo",
+                    "operation": "=",
+                    "value": true
+                }
+            ],
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "type": "string",
+            "icon": "sicon-format-text-alt",
             "label": "عبارة الشريط الثانية",
             "multilanguage": true,
             "id": "gly_promo_2",
@@ -170,6 +222,30 @@
         {
             "type": "string",
             "icon": "sicon-format-text-alt",
+            "label": "عبارة الشريط الثانية (بالإنجليزية)",
+            "multilanguage": true,
+            "id": "gly_promo_2_en",
+            "value": null,
+            "required": false,
+            "format": "text",
+            "description": "اختيارية. تظهر في الصفحة الإنجليزية. إن تُركت العبارات الإنجليزية الثلاث فارغة تظهر العبارات الإنجليزية الجاهزة.",
+            "placeholder": null,
+            "minLength": 0,
+            "maxLength": 120,
+            "conditions": [
+                {
+                    "id": "gly_show_promo",
+                    "operation": "=",
+                    "value": true
+                }
+            ],
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "type": "string",
+            "icon": "sicon-format-text-alt",
             "label": "عبارة الشريط الثالثة",
             "multilanguage": true,
             "id": "gly_promo_3",
@@ -178,6 +254,30 @@
             "format": "text",
             "description": "اختيارية. آخر عبارة مكتوبة تظهر بخط عريض، وهي التي تظهر على الجوال.",
             "placeholder": "شحن لكل مناطق المملكة",
+            "minLength": 0,
+            "maxLength": 120,
+            "conditions": [
+                {
+                    "id": "gly_show_promo",
+                    "operation": "=",
+                    "value": true
+                }
+            ],
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "type": "string",
+            "icon": "sicon-format-text-alt",
+            "label": "عبارة الشريط الثالثة (بالإنجليزية)",
+            "multilanguage": true,
+            "id": "gly_promo_3_en",
+            "value": null,
+            "required": false,
+            "format": "text",
+            "description": "اختيارية. تظهر في الصفحة الإنجليزية. إن تُركت العبارات الإنجليزية الثلاث فارغة تظهر العبارات الإنجليزية الجاهزة.",
+            "placeholder": null,
             "minLength": 0,
             "maxLength": 120,
             "conditions": [
@@ -369,6 +469,41 @@
             "selected": true
         },
         {
+            "id": "gly_subcats_style",
+            "type": "items",
+            "format": "dropdown-list",
+            "label": "شكل التصنيفات الفرعية في صفحة التصنيف",
+            "description": "تظهر التصنيفات الفرعية أعلى صفحة التصنيف تلقائياً من تصنيفات متجرك. الدوائر تظهر حين يكون لأحد التصنيفات الفرعية صورة في سلة.",
+            "labelHTML": null,
+            "icon": "sicon-list",
+            "selected": [
+                {
+                    "label": "دوائر: الصورة أيقونة وسط الدائرة",
+                    "value": "icon",
+                    "key": "gly-subcats-style-icon"
+                }
+            ],
+            "options": [
+                {
+                    "label": "دوائر: الصورة أيقونة وسط الدائرة",
+                    "value": "icon",
+                    "key": "gly-subcats-style-icon"
+                },
+                {
+                    "label": "دوائر: الصورة تملأ الدائرة",
+                    "value": "cover",
+                    "key": "gly-subcats-style-cover"
+                },
+                {
+                    "label": "أزرار نصية بدون صور",
+                    "value": "text",
+                    "key": "gly-subcats-style-text"
+                }
+            ],
+            "source": "Manual",
+            "required": true
+        },
+        {
             "type": "boolean",
             "icon": "sicon-toggle-off",
             "label": "إظهار إشعار «تمت الإضافة للسلة»",
@@ -465,6 +600,23 @@
             "minLength": 0,
             "maxLength": 300,
             "description": "تظهر بجانب الشعار في أسفل الصفحة. إن تُركت فارغة يُستخدم وصف المتجر المسجّل في سلة.",
+            "groups": [
+                "footer"
+            ]
+        },
+        {
+            "type": "string",
+            "format": "textarea",
+            "icon": "sicon-typography",
+            "label": "نبذة المتجر في أسفل الصفحة (بالإنجليزية)",
+            "id": "gly_footer_about_en",
+            "multilanguage": true,
+            "value": null,
+            "required": false,
+            "placeholder": null,
+            "minLength": 0,
+            "maxLength": 300,
+            "description": "اختيارية. تظهر في الصفحة الإنجليزية. إن تُركت فارغة يُستخدم وصف المتجر في سلة.",
             "groups": [
                 "footer"
             ]
@@ -2371,10 +2523,21 @@
                     "value": "<div>العنوان الكبير والأزرار في أعلى الصفحة. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "تعديل النصوص الإنجليزية",
+                    "description": "تُظهر تحت كل نص خانة لصيغته الإنجليزية. الخانة التي تتركها فارغة يظهر مكانها النص الإنجليزي الجاهز.",
+                    "id": "edit_en",
+                    "format": "switch",
+                    "required": false,
+                    "value": false,
+                    "selected": false
+                },
+                {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "العبارة الصغيرة فوق العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "eyebrow",
                     "value": null,
                     "required": false,
@@ -2387,8 +2550,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "العبارة الصغيرة فوق العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "eyebrow_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "The art & science of gifting",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "بداية العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_pre",
                     "value": null,
                     "required": false,
@@ -2401,8 +2585,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "بداية العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_pre_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Every gift",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "الكلمة المميّزة في العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_em",
                     "value": null,
                     "required": false,
@@ -2415,8 +2620,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "الكلمة المميّزة في العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_em_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "thoughtfully",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "نهاية العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_post",
                     "value": null,
                     "required": false,
@@ -2428,9 +2654,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نهاية العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_post_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "crafted",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-typography",
                     "label": "الوصف تحت العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "lede",
                     "value": null,
                     "required": false,
@@ -2442,9 +2689,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "الوصف تحت العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "lede_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Ready-to-buy gift boxes and fully custom ones — wrapped with care, made with love, delivered right on time.",
+                    "minLength": 0,
+                    "maxLength": 300,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "نص الزر الأول",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "cta_shop",
                     "value": null,
                     "required": false,
@@ -2453,6 +2721,27 @@
                     "placeholder": "تسوّق الأقسام",
                     "minLength": 0,
                     "maxLength": 40
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص الزر الأول (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "cta_shop_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Shop sections",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
                 },
                 {
                     "type": "items",
@@ -2527,7 +2816,7 @@
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "نص الزر الثاني",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "cta_custom",
                     "value": null,
                     "required": false,
@@ -2536,6 +2825,27 @@
                     "placeholder": "هدية مخصّصة",
                     "minLength": 0,
                     "maxLength": 40
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص الزر الثاني (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "cta_custom_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Custom gift",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
                 },
                 {
                     "type": "items",
@@ -2609,6 +2919,64 @@
                 {
                     "type": "boolean",
                     "icon": "sicon-toggle-off",
+                    "label": "إظهار الزر الثالث (أحدث المنتجات)",
+                    "description": "ينقل الزائر إلى قسم أحدث المنتجات في الصفحة. يظهر ما دام ذلك القسم موجوداً.",
+                    "id": "show_cta_latest",
+                    "format": "switch",
+                    "required": false,
+                    "value": true,
+                    "selected": true
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص الزر الثالث",
+                    "multilanguage": false,
+                    "id": "cta_latest",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "أحدث المنتجات",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "show_cta_latest",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص الزر الثالث (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "cta_latest_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Latest products",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "show_cta_latest",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
                     "label": "إظهار الأرقام تحت العنوان",
                     "description": null,
                     "id": "show_stats",
@@ -2629,19 +2997,27 @@
                     "value": [
                         {
                             "stats.value": "+12 ألف",
-                            "stats.label": "هدية تم توصيلها"
+                            "stats.value_en": "+12K",
+                            "stats.label": "هدية تم توصيلها",
+                            "stats.label_en": "gifts delivered"
                         },
                         {
                             "stats.value": "+40",
-                            "stats.label": "مناسبة مختلفة"
+                            "stats.value_en": "+40",
+                            "stats.label": "مناسبة مختلفة",
+                            "stats.label_en": "occasions"
                         },
                         {
                             "stats.value": "4.9★",
-                            "stats.label": "تقييم العملاء"
+                            "stats.value_en": "4.9★",
+                            "stats.label": "تقييم العملاء",
+                            "stats.label_en": "customer rating"
                         },
                         {
                             "stats.value": "2018",
-                            "stats.label": "نخدمكم منذ"
+                            "stats.value_en": "2018",
+                            "stats.label": "نخدمكم منذ",
+                            "stats.label_en": "serving since"
                         }
                     ],
                     "fields": [
@@ -2649,7 +3025,7 @@
                             "type": "string",
                             "icon": "sicon-format-text-alt",
                             "label": "الرقم",
-                            "multilanguage": true,
+                            "multilanguage": false,
                             "id": "stats.value",
                             "value": null,
                             "required": false,
@@ -2662,14 +3038,42 @@
                         {
                             "type": "string",
                             "icon": "sicon-format-text-alt",
+                            "label": "الرقم (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "stats.value_en",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
+                            "minLength": 0,
+                            "maxLength": 20
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-format-text-alt",
                             "label": "الوصف تحت الرقم",
-                            "multilanguage": true,
+                            "multilanguage": false,
                             "id": "stats.label",
                             "value": null,
                             "required": false,
                             "format": "text",
                             "description": null,
                             "placeholder": "هدية تم توصيلها",
+                            "minLength": 0,
+                            "maxLength": 40
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-format-text-alt",
+                            "label": "الوصف تحت الرقم (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "stats.label_en",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
                             "minLength": 0,
                             "maxLength": 40
                         }
@@ -2687,6 +3091,168 @@
                     "format": "description",
                     "id": "gly-hero-stats-note",
                     "value": "<div>الأرقام الأربعة الجاهزة مضافة في القائمة: عدّلها أو احذف ما لا تريد. لإخفاء الأرقام كلها أطفئ «إظهار الأرقام تحت العنوان».</div>"
+                },
+                {
+                    "type": "static",
+                    "format": "description",
+                    "id": "gly-hero-cards-note",
+                    "value": "<div>البطاقات الصغيرة الطافية فوق صورة الواجهة (تظهر على الشاشات الكبيرة). الثلاث الجاهزة مضافة: عدّلها أو احذف منها. حتى ثلاث بطاقات.</div>"
+                },
+                {
+                    "id": "cards",
+                    "type": "collection",
+                    "format": "collection",
+                    "required": false,
+                    "minLength": 0,
+                    "maxLength": 3,
+                    "label": "البطاقات الطافية",
+                    "item_label": "بطاقة",
+                    "value": [
+                        {
+                            "cards.title": "تغليف يدوي",
+                            "cards.title_en": "Hand wrapping",
+                            "cards.text": "بأيدي فنانينا",
+                            "cards.text_en": "By our artists",
+                            "cards.icon": "gift"
+                        },
+                        {
+                            "cards.title": "توصيل سريع",
+                            "cards.title_en": "Fast delivery",
+                            "cards.text": "داخل الرياض",
+                            "cards.text_en": "Within Riyadh",
+                            "cards.icon": "truck"
+                        },
+                        {
+                            "cards.title": "بطاقة مجانية",
+                            "cards.title_en": "Free card",
+                            "cards.text": "رسالة شخصية",
+                            "cards.text_en": "A personal note",
+                            "cards.icon": "envelope"
+                        }
+                    ],
+                    "fields": [
+                        {
+                            "type": "string",
+                            "icon": "sicon-format-text-alt",
+                            "label": "عنوان البطاقة",
+                            "multilanguage": false,
+                            "id": "cards.title",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "السطر العريض في البطاقة.",
+                            "placeholder": "تغليف يدوي",
+                            "minLength": 0,
+                            "maxLength": 40
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-format-text-alt",
+                            "label": "عنوان البطاقة (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "cards.title_en",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
+                            "minLength": 0,
+                            "maxLength": 40
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-format-text-alt",
+                            "label": "وصف البطاقة",
+                            "multilanguage": false,
+                            "id": "cards.text",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "السطر الصغير تحت العنوان. اختياري.",
+                            "placeholder": "بأيدي فنانينا",
+                            "minLength": 0,
+                            "maxLength": 60
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-format-text-alt",
+                            "label": "وصف البطاقة (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "cards.text_en",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
+                            "minLength": 0,
+                            "maxLength": 60
+                        },
+                        {
+                            "type": "items",
+                            "format": "dropdown-list",
+                            "icon": "sicon-image",
+                            "label": "أيقونة البطاقة",
+                            "id": "cards.icon",
+                            "source": "Manual",
+                            "required": false,
+                            "selected": [
+                                {
+                                    "label": "هدية",
+                                    "value": "gift",
+                                    "key": "gly-cards-icon-gift"
+                                }
+                            ],
+                            "options": [
+                                {
+                                    "label": "هدية",
+                                    "value": "gift",
+                                    "key": "gly-cards-icon-gift"
+                                },
+                                {
+                                    "label": "شاحنة توصيل",
+                                    "value": "truck",
+                                    "key": "gly-cards-icon-truck"
+                                },
+                                {
+                                    "label": "ظرف",
+                                    "value": "envelope",
+                                    "key": "gly-cards-icon-envelope"
+                                },
+                                {
+                                    "label": "مولود",
+                                    "value": "baby",
+                                    "key": "gly-cards-icon-baby"
+                                },
+                                {
+                                    "label": "كيك / حفلة",
+                                    "value": "cake",
+                                    "key": "gly-cards-icon-cake"
+                                },
+                                {
+                                    "label": "ربطة عنق",
+                                    "value": "tie",
+                                    "key": "gly-cards-icon-tie"
+                                },
+                                {
+                                    "label": "بطاقة",
+                                    "value": "tag",
+                                    "key": "gly-cards-icon-tag"
+                                }
+                            ],
+                            "description": null
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-image",
+                    "value": null,
+                    "id": "art_image",
+                    "label": "صورة الواجهة بدل شعار الفيونكة",
+                    "format": "image",
+                    "required": false,
+                    "placeholder": null,
+                    "description": "اختيارية. صورة مربعة بخلفية شفافة تظهر وسط الزخرفة في أعلى الصفحة. إن تُركت فارغة تظهر فيونكة جيفتولوجي."
                 }
             ]
         },
@@ -2706,10 +3272,21 @@
                     "value": "<div>آخر 8 منتجات أضفتها إلى المتجر. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "تعديل النصوص الإنجليزية",
+                    "description": "تُظهر تحت كل نص خانة لصيغته الإنجليزية. الخانة التي تتركها فارغة يظهر مكانها النص الإنجليزي الجاهز.",
+                    "id": "edit_en",
+                    "format": "switch",
+                    "required": false,
+                    "value": false,
+                    "selected": false
+                },
+                {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "العبارة الصغيرة فوق العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "eyebrow",
                     "value": null,
                     "required": false,
@@ -2722,8 +3299,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "العبارة الصغيرة فوق العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "eyebrow_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Just arrived",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "عنوان القسم",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title",
                     "value": null,
                     "required": false,
@@ -2732,6 +3330,27 @@
                     "placeholder": "أحدث المنتجات",
                     "minLength": 0,
                     "maxLength": 100
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "عنوان القسم (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Latest products",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
                 },
                 {
                     "type": "items",
@@ -2801,6 +3420,75 @@
                             "value": "custom"
                         }
                     ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر «عرض الكل»",
+                    "multilanguage": false,
+                    "id": "view_all",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "عرض الكل",
+                    "minLength": 0,
+                    "maxLength": 40
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر «عرض الكل» (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "view_all_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "View all",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "items",
+                    "format": "dropdown-list",
+                    "icon": "sicon-keyboard_arrow_down",
+                    "label": "عدد المنتجات المعروضة",
+                    "id": "limit",
+                    "source": "Manual",
+                    "required": false,
+                    "selected": [
+                        {
+                            "label": "8 منتجات",
+                            "value": "8",
+                            "key": "gly-limit-8"
+                        }
+                    ],
+                    "options": [
+                        {
+                            "label": "4 منتجات",
+                            "value": "4",
+                            "key": "gly-limit-4"
+                        },
+                        {
+                            "label": "8 منتجات",
+                            "value": "8",
+                            "key": "gly-limit-8"
+                        },
+                        {
+                            "label": "12 منتجاً",
+                            "value": "12",
+                            "key": "gly-limit-12"
+                        }
+                    ],
+                    "description": "آخر ما أضفته إلى المتجر. على الشاشات المتوسطة يُعرض عدد يملأ الصفوف كاملة."
                 }
             ]
         },
@@ -2820,10 +3508,21 @@
                     "value": "<div>دوائر تنقل الزائر إلى أقسام متجرك. لا تحتاج إعداداً: تظهر تصنيفات متجرك الرئيسية تلقائياً، وكل دائرة تأخذ اسم التصنيف وصورته من سلة (أضف صورة التصنيف من صفحة التصنيفات في لوحة تحكم سلة؛ التصنيف الذي بلا صورة تظهر له أيقونة). بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "تعديل النصوص الإنجليزية",
+                    "description": "تُظهر تحت كل نص خانة لصيغته الإنجليزية. الخانة التي تتركها فارغة يظهر مكانها النص الإنجليزي الجاهز.",
+                    "id": "edit_en",
+                    "format": "switch",
+                    "required": false,
+                    "value": false,
+                    "selected": false
+                },
+                {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "العبارة الصغيرة فوق العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "eyebrow",
                     "value": null,
                     "required": false,
@@ -2836,8 +3535,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "العبارة الصغيرة فوق العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "eyebrow_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Shop by category",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "بداية العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_pre",
                     "value": null,
                     "required": false,
@@ -2850,8 +3570,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "بداية العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_pre_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "A gift for every",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "الكلمة المميّزة في العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_em",
                     "value": null,
                     "required": false,
@@ -2863,9 +3604,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "الكلمة المميّزة في العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_em_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "occasion",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-typography",
                     "label": "الوصف تحت العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "sub",
                     "value": null,
                     "required": false,
@@ -2874,6 +3636,27 @@
                     "placeholder": "اختر القسم المناسب واكتشف هدايا منتقاة بعناية.",
                     "minLength": 0,
                     "maxLength": 200
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "الوصف تحت العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "sub_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Pick the right section and discover carefully curated gifts.",
+                    "minLength": 0,
+                    "maxLength": 200,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
                 },
                 {
                     "id": "categories",
@@ -2888,6 +3671,35 @@
                     "searchable": true,
                     "required": false,
                     "description": "اختيارية. إن تُركت فارغة تظهر تصنيفات متجرك الرئيسية تلقائياً. إن اخترت تصنيفات تظهر هي فقط، بترتيب اختيارك."
+                },
+                {
+                    "type": "items",
+                    "format": "dropdown-list",
+                    "icon": "sicon-image",
+                    "label": "طريقة عرض صورة التصنيف في الدائرة",
+                    "id": "image_fit",
+                    "source": "Manual",
+                    "required": false,
+                    "selected": [
+                        {
+                            "label": "أيقونة وسط الدائرة",
+                            "value": "icon",
+                            "key": "gly-image_fit-icon"
+                        }
+                    ],
+                    "options": [
+                        {
+                            "label": "أيقونة وسط الدائرة",
+                            "value": "icon",
+                            "key": "gly-image_fit-icon"
+                        },
+                        {
+                            "label": "صورة تملأ الدائرة",
+                            "value": "cover",
+                            "key": "gly-image_fit-cover"
+                        }
+                    ],
+                    "description": "اختر «أيقونة وسط الدائرة» إن كانت صور تصنيفاتك أيقونات بخلفية شفافة، و«صورة تملأ الدائرة» إن كانت صوراً فوتوغرافية."
                 },
                 {
                     "type": "static",
@@ -2959,13 +3771,27 @@
                             "type": "string",
                             "icon": "sicon-format-text-alt",
                             "label": "اسم الدائرة",
-                            "multilanguage": true,
+                            "multilanguage": false,
                             "id": "circles.name",
                             "value": null,
                             "required": false,
                             "format": "text",
                             "description": "اسم الدائرة. إن تُرك فارغاً يظهر اسم الأيقونة الجاهز.",
                             "placeholder": "هدايا مواليد",
+                            "minLength": 0,
+                            "maxLength": 40
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-format-text-alt",
+                            "label": "اسم الدائرة (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "circles.name_en",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
                             "minLength": 0,
                             "maxLength": 40
                         },
@@ -3069,10 +3895,21 @@
                     "value": "<div>قسم يشرح طلب هدية حسب الطلب. زرّه يفتح واتساب على الرقم المكتوب في إعدادات الثيم. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "تعديل النصوص الإنجليزية",
+                    "description": "تُظهر تحت كل نص خانة لصيغته الإنجليزية. الخانة التي تتركها فارغة يظهر مكانها النص الإنجليزي الجاهز.",
+                    "id": "edit_en",
+                    "format": "switch",
+                    "required": false,
+                    "value": false,
+                    "selected": false
+                },
+                {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "العبارة الصغيرة فوق العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "eyebrow",
                     "value": null,
                     "required": false,
@@ -3085,8 +3922,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "العبارة الصغيرة فوق العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "eyebrow_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Made just for you",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "بداية العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_pre",
                     "value": null,
                     "required": false,
@@ -3099,8 +3957,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "بداية العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_pre_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "A custom gift",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "الكلمة المميّزة في العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_em",
                     "value": null,
                     "required": false,
@@ -3112,9 +3991,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "الكلمة المميّزة في العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_em_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "designed for them",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-typography",
                     "label": "الوصف تحت العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "lede",
                     "value": null,
                     "required": false,
@@ -3123,6 +4023,27 @@
                     "placeholder": "عندك فكرة خاصة؟ نحوّلها إلى هدية فريدة. تواصل معنا أولاً بفكرتك، ونرسل لك عرض السعر، ثم نصنعها ونغلّفها بأناقة.",
                     "minLength": 0,
                     "maxLength": 300
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "الوصف تحت العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "lede_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Have a special idea? We turn it into a unique gift. Contact us first with your idea, we send a quote, then we craft and wrap it elegantly.",
+                    "minLength": 0,
+                    "maxLength": 300,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
                 },
                 {
                     "id": "steps",
@@ -3136,15 +4057,21 @@
                     "value": [
                         {
                             "steps.title": "تواصل معنا بفكرتك",
-                            "steps.text": "أخبرنا عن المناسبة، الميزانية، وما يحبّه الشخص."
+                            "steps.title_en": "Share your idea",
+                            "steps.text": "أخبرنا عن المناسبة، الميزانية، وما يحبّه الشخص.",
+                            "steps.text_en": "Tell us the occasion, the budget, and what they love."
                         },
                         {
                             "steps.title": "نرسل لك عرض السعر",
-                            "steps.text": "تفاصيل واضحة قبل تأكيد الطلب."
+                            "steps.title_en": "We send a quote",
+                            "steps.text": "تفاصيل واضحة قبل تأكيد الطلب.",
+                            "steps.text_en": "Clear details before you confirm the order."
                         },
                         {
                             "steps.title": "نصنع ونغلّف ونوصّل",
-                            "steps.text": "هدية مخصّصة بالكامل تصل إلى بابهم."
+                            "steps.title_en": "We make, wrap & deliver",
+                            "steps.text": "هدية مخصّصة بالكامل تصل إلى بابهم.",
+                            "steps.text_en": "A fully custom gift arrives at their door."
                         }
                     ],
                     "fields": [
@@ -3152,7 +4079,7 @@
                             "type": "string",
                             "icon": "sicon-format-text-alt",
                             "label": "عنوان الخطوة",
-                            "multilanguage": true,
+                            "multilanguage": false,
                             "id": "steps.title",
                             "value": null,
                             "required": false,
@@ -3164,15 +4091,43 @@
                         },
                         {
                             "type": "string",
+                            "icon": "sicon-format-text-alt",
+                            "label": "عنوان الخطوة (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "steps.title_en",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
+                            "minLength": 0,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "string",
                             "icon": "sicon-typography",
                             "label": "شرح الخطوة",
-                            "multilanguage": true,
+                            "multilanguage": false,
                             "id": "steps.text",
                             "value": null,
                             "required": false,
                             "format": "textarea",
                             "description": null,
                             "placeholder": "أخبرنا عن المناسبة، الميزانية، وما يحبّه الشخص.",
+                            "minLength": 0,
+                            "maxLength": 200
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-typography",
+                            "label": "شرح الخطوة (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "steps.text_en",
+                            "value": null,
+                            "required": false,
+                            "format": "textarea",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
                             "minLength": 0,
                             "maxLength": 200
                         }
@@ -3188,7 +4143,7 @@
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "البطاقة: الشارة الصغيرة",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "card_badge",
                     "value": null,
                     "required": false,
@@ -3201,8 +4156,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "البطاقة: الشارة الصغيرة (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "card_badge_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Made to order",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "البطاقة: العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "card_title",
                     "value": null,
                     "required": false,
@@ -3214,9 +4190,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "البطاقة: العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "card_title_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Order your custom gift",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-typography",
                     "label": "البطاقة: الوصف",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "card_desc",
                     "value": null,
                     "required": false,
@@ -3228,9 +4225,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "البطاقة: الوصف (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "card_desc_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Tell us your idea on WhatsApp, we send a suitable quote, then we start crafting it.",
+                    "minLength": 0,
+                    "maxLength": 300,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "البطاقة: نص زر واتساب",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "card_btn",
                     "value": null,
                     "required": false,
@@ -3239,6 +4257,62 @@
                     "placeholder": "تواصل عبر واتساب",
                     "minLength": 0,
                     "maxLength": 40
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "البطاقة: نص زر واتساب (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "card_btn_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Contact via WhatsApp",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "رسالة واتساب الجاهزة",
+                    "multilanguage": false,
+                    "id": "wa_message",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "النص الذي تبدأ به محادثة واتساب عند ضغط الزر. إن تُركت فارغة تبقى الرسالة الجاهزة.",
+                    "placeholder": "مرحباً، أرغب بطلب هدية مخصّصة 🎁",
+                    "minLength": 0,
+                    "maxLength": 200
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "رسالة واتساب الجاهزة (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "wa_message_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Hello, I'd like to order a custom gift 🎁",
+                    "minLength": 0,
+                    "maxLength": 200,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
                 }
             ]
         },
@@ -3258,10 +4332,21 @@
                     "value": "<div>يسأل الزائر سؤالين أو ثلاثة ثم يقترح عليه حتى ثلاثة منتجات متوفرة من الأكثر مبيعاً. لا يحتاج إعداداً: الأسئلة تُبنى من تصنيفات متجرك وتصنيفاتها الفرعية، ونطاقات الميزانية تُحسب من أسعار منتجاتك، فيتغيّر المكتشف تلقائياً كلما غيّرت تصنيفاتك أو أسعارك. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "تعديل النصوص الإنجليزية",
+                    "description": "تُظهر تحت كل نص خانة لصيغته الإنجليزية. الخانة التي تتركها فارغة يظهر مكانها النص الإنجليزي الجاهز.",
+                    "id": "edit_en",
+                    "format": "switch",
+                    "required": false,
+                    "value": false,
+                    "selected": false
+                },
+                {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "العبارة الصغيرة فوق العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "eyebrow",
                     "value": null,
                     "required": false,
@@ -3274,8 +4359,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "العبارة الصغيرة فوق العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "eyebrow_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Gift finder",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "بداية العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_pre",
                     "value": null,
                     "required": false,
@@ -3288,8 +4394,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "بداية العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_pre_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Not sure what to give?",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "الكلمة المميّزة في العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_em",
                     "value": null,
                     "required": false,
@@ -3301,9 +4428,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "الكلمة المميّزة في العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_em_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Let's find out",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-typography",
                     "label": "الوصف تحت العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "lede",
                     "value": null,
                     "required": false,
@@ -3315,9 +4463,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "الوصف تحت العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "lede_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Answer two or three quick questions and we'll suggest gifts that fit.",
+                    "minLength": 0,
+                    "maxLength": 200,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "السؤال الأول: ماذا يبحث عنه الزائر",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "q_category",
                     "value": null,
                     "required": false,
@@ -3330,8 +4499,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "السؤال الأول: ماذا يبحث عنه الزائر (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "q_category_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "What are you looking for?",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "السؤال الثاني: أي نوع",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "q_kind",
                     "value": null,
                     "required": false,
@@ -3344,8 +4534,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "السؤال الثاني: أي نوع (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "q_kind_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Which kind of {category}?",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "السؤال الثالث: الميزانية",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "q_budget",
                     "value": null,
                     "required": false,
@@ -3354,6 +4565,61 @@
                     "placeholder": "كم ميزانيتك؟",
                     "minLength": 0,
                     "maxLength": 100
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "السؤال الثالث: الميزانية (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "q_budget_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "What's your budget?",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "items",
+                    "format": "dropdown-list",
+                    "icon": "sicon-keyboard_arrow_down",
+                    "label": "ترتيب المنتجات المقترحة",
+                    "id": "sort",
+                    "source": "Manual",
+                    "required": false,
+                    "selected": [
+                        {
+                            "label": "الأكثر مبيعاً",
+                            "value": "bestSell",
+                            "key": "gly-sort-bestSell"
+                        }
+                    ],
+                    "options": [
+                        {
+                            "label": "الأكثر مبيعاً",
+                            "value": "bestSell",
+                            "key": "gly-sort-bestSell"
+                        },
+                        {
+                            "label": "ترتيبي في سلة (مقترحاتنا)",
+                            "value": "ourSuggest",
+                            "key": "gly-sort-ourSuggest"
+                        },
+                        {
+                            "label": "الأعلى تقييماً",
+                            "value": "topRated",
+                            "key": "gly-sort-topRated"
+                        }
+                    ],
+                    "description": "يقترح المكتشف أول ثلاثة منتجات متوفرة بهذا الترتيب. اختر «ترتيبي في سلة» لتتحكم أنت بما يُقترح أولاً."
                 },
                 {
                     "id": "exclude",
@@ -3368,6 +4634,880 @@
                     "searchable": true,
                     "required": false,
                     "description": "اختيارية. المكتشف يعرض كل تصنيفات متجرك التي فيها منتجات؛ اختر هنا ما تريد استبعاده."
+                },
+                {
+                    "type": "static",
+                    "format": "description",
+                    "id": "gly-finder-custom-note",
+                    "value": "<div>إجابة «هدية مخصّصة»: تظهر مع إجابات السؤال الأول ومع النتيجة، وتنتهي دائماً بنتيجة الهدية المخصّصة وزر واتساب. تحتاج رقم واتساب في إعدادات الثيم أو في بيانات متجرك.</div>"
+                },
+                {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "إظهار إجابة «هدية مخصّصة»",
+                    "description": null,
+                    "id": "show_custom",
+                    "format": "switch",
+                    "required": false,
+                    "value": true,
+                    "selected": true
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص إجابة «هدية مخصّصة»",
+                    "multilanguage": false,
+                    "id": "opt_custom",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "هدية مخصّصة",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص إجابة «هدية مخصّصة» (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "opt_custom_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "A custom gift",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر الهدية المخصّصة تحت النتيجة",
+                    "multilanguage": false,
+                    "id": "or_custom",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "أو اطلب هدية مخصّصة",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر الهدية المخصّصة تحت النتيجة (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "or_custom_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Or order a custom gift",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نتيجة الهدية المخصّصة: العنوان",
+                    "multilanguage": false,
+                    "id": "custom_title",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "هدايا مخصّصة",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نتيجة الهدية المخصّصة: العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "custom_title_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Custom gifts",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "نتيجة الهدية المخصّصة: الوصف",
+                    "multilanguage": false,
+                    "id": "r_custom",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "نصنعها خصيصاً حسب فكرتك.",
+                    "minLength": 0,
+                    "maxLength": 200,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "نتيجة الهدية المخصّصة: الوصف (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "r_custom_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Made specially around your idea.",
+                    "minLength": 0,
+                    "maxLength": 200,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نتيجة الهدية المخصّصة: نص زر واتساب",
+                    "multilanguage": false,
+                    "id": "custom_btn",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "تواصل عبر واتساب",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نتيجة الهدية المخصّصة: نص زر واتساب (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "custom_btn_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Contact via WhatsApp",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "رسالة واتساب الجاهزة للهدية المخصّصة",
+                    "multilanguage": false,
+                    "id": "wa_message",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "النص الذي تبدأ به محادثة واتساب. إن تُركت فارغة تبقى الرسالة الجاهزة.",
+                    "placeholder": "مرحباً، أرغب بطلب هدية مخصّصة 🎁",
+                    "minLength": 0,
+                    "maxLength": 200,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "رسالة واتساب الجاهزة للهدية المخصّصة (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "wa_message_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Hello, I'd like to order a custom gift 🎁",
+                    "minLength": 0,
+                    "maxLength": 200,
+                    "conditions": [
+                        {
+                            "id": "show_custom",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "تعديل بقية نصوص المكتشف",
+                    "description": "نصوص الأزرار الصغيرة ونطاقات الميزانية وعنوان النتيجة.",
+                    "id": "more_texts",
+                    "format": "switch",
+                    "required": false,
+                    "value": false,
+                    "selected": false
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "إجابة «كل التصنيف» في السؤال الثاني",
+                    "multilanguage": false,
+                    "id": "kind_all",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اكتب {category} حيث يظهر اسم التصنيف. إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "كل {category}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "إجابة «كل التصنيف» في السؤال الثاني (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "kind_all_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "All {category}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نطاق الميزانية الأدنى",
+                    "multilanguage": false,
+                    "id": "budget_low",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اكتب {max} حيث يظهر المبلغ. إن تُرك فارغاً يبقى النص الجاهز.",
+                    "placeholder": "حتى {max}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نطاق الميزانية الأدنى (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "budget_low_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Up to {max}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نطاق الميزانية الأوسط",
+                    "multilanguage": false,
+                    "id": "budget_mid",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اكتب {min} و{max} حيث يظهر المبلغان. إن تُرك فارغاً يبقى النص الجاهز.",
+                    "placeholder": "من {min} إلى {max}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نطاق الميزانية الأوسط (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "budget_mid_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "{min} to {max}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نطاق الميزانية الأعلى",
+                    "multilanguage": false,
+                    "id": "budget_high",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اكتب {min} حيث يظهر المبلغ. إن تُرك فارغاً يبقى النص الجاهز.",
+                    "placeholder": "أكثر من {min}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نطاق الميزانية الأعلى (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "budget_high_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Over {min}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "إجابة «أي ميزانية»",
+                    "multilanguage": false,
+                    "id": "budget_any",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "أي ميزانية",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "إجابة «أي ميزانية» (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "budget_any_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Any budget",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "عنوان النتيجة",
+                    "multilanguage": false,
+                    "id": "result_title",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اكتب {category} حيث يظهر اسم التصنيف. إن تُرك فارغاً يبقى النص الجاهز.",
+                    "placeholder": "اخترنا لك من {category}",
+                    "minLength": 0,
+                    "maxLength": 80,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "عنوان النتيجة (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "result_title_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Our picks from {category}",
+                    "minLength": 0,
+                    "maxLength": 80,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر «اقترح غيرها»",
+                    "multilanguage": false,
+                    "id": "others",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "اقترح غيرها",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر «اقترح غيرها» (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "others_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Show others",
+                    "minLength": 0,
+                    "maxLength": 40,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر تصفّح التصنيف",
+                    "multilanguage": false,
+                    "id": "see_all",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اكتب {category} حيث يظهر اسم التصنيف. إن تُرك فارغاً يبقى النص الجاهز.",
+                    "placeholder": "تصفّح كل {category}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر تصفّح التصنيف (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "see_all_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "See all {category}",
+                    "minLength": 0,
+                    "maxLength": 60,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "النص عند عدم توفر منتج",
+                    "multilanguage": false,
+                    "id": "empty",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "لا يوجد منتج متوفر في هذا القسم الآن.",
+                    "minLength": 0,
+                    "maxLength": 120,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "النص عند عدم توفر منتج (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "empty_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Nothing is in stock here right now.",
+                    "minLength": 0,
+                    "maxLength": 120,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر «رجوع»",
+                    "multilanguage": false,
+                    "id": "back",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "رجوع",
+                    "minLength": 0,
+                    "maxLength": 30,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر «رجوع» (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "back_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Back",
+                    "minLength": 0,
+                    "maxLength": 30,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر «ابدأ من جديد»",
+                    "multilanguage": false,
+                    "id": "restart",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "ابدأ من جديد",
+                    "minLength": 0,
+                    "maxLength": 30,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص زر «ابدأ من جديد» (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "restart_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Start over",
+                    "minLength": 0,
+                    "maxLength": 30,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "النص أثناء البحث",
+                    "multilanguage": false,
+                    "id": "loading",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "نبحث لك عن هدية مثالية…",
+                    "minLength": 0,
+                    "maxLength": 80,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "النص أثناء البحث (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "loading_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Finding the perfect gift…",
+                    "minLength": 0,
+                    "maxLength": 80,
+                    "conditions": [
+                        {
+                            "id": "more_texts",
+                            "operation": "=",
+                            "value": true
+                        },
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
                 }
             ]
         },
@@ -3387,10 +5527,21 @@
                     "value": "<div>خطوات تشرح طريقة عملك. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "تعديل النصوص الإنجليزية",
+                    "description": "تُظهر تحت كل نص خانة لصيغته الإنجليزية. الخانة التي تتركها فارغة يظهر مكانها النص الإنجليزي الجاهز.",
+                    "id": "edit_en",
+                    "format": "switch",
+                    "required": false,
+                    "value": false,
+                    "selected": false
+                },
+                {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "العبارة الصغيرة فوق العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "eyebrow",
                     "value": null,
                     "required": false,
@@ -3403,8 +5554,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "العبارة الصغيرة فوق العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "eyebrow_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "The Giftology way",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "بداية العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_pre",
                     "value": null,
                     "required": false,
@@ -3417,8 +5589,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "بداية العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_pre_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Gifting is...",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "الكلمة المميّزة في العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_em",
                     "value": null,
                     "required": false,
@@ -3430,9 +5623,30 @@
                 },
                 {
                     "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "الكلمة المميّزة في العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_em_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "a science & an art",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
                     "icon": "sicon-typography",
                     "label": "الوصف تحت العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "sub",
                     "value": null,
                     "required": false,
@@ -3443,30 +5657,63 @@
                     "maxLength": 200
                 },
                 {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "الوصف تحت العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "sub_en",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "A simple method behind every happy moment.",
+                    "minLength": 0,
+                    "maxLength": 200,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
                     "id": "steps",
                     "type": "collection",
                     "format": "collection",
                     "required": false,
                     "minLength": 0,
-                    "maxLength": 4,
+                    "maxLength": 6,
                     "label": "الخطوات",
                     "item_label": "خطوة",
                     "value": [
                         {
                             "steps.title": "نكتشف",
-                            "steps.text": "أخبرنا عن المناسبة، الشخص، والميزانية."
+                            "steps.title_en": "Discover",
+                            "steps.text": "أخبرنا عن المناسبة، الشخص، والميزانية.",
+                            "steps.text_en": "Tell us the occasion, the person, and the budget.",
+                            "steps.icon": "discover"
                         },
                         {
                             "steps.title": "ننتقي",
-                            "steps.text": "نختار قطعاً يحبّونها فعلاً ويتذكّرونها."
+                            "steps.title_en": "Select",
+                            "steps.text": "نختار قطعاً يحبّونها فعلاً ويتذكّرونها.",
+                            "steps.text_en": "We pick pieces they'll truly love and remember.",
+                            "steps.icon": "pick"
                         },
                         {
                             "steps.title": "نغلّف",
-                            "steps.text": "بشريطة مميزة وبطاقة شخصية بلمسة فاخرة."
+                            "steps.title_en": "Wrap",
+                            "steps.text": "بشريطة مميزة وبطاقة شخصية بلمسة فاخرة.",
+                            "steps.text_en": "With a signature ribbon and a personal card, a luxe touch.",
+                            "steps.icon": "wrap"
                         },
                         {
                             "steps.title": "نوصّل",
-                            "steps.text": "تصل إلى بابهم في الوقت المناسب تماماً."
+                            "steps.title_en": "Deliver",
+                            "steps.text": "تصل إلى بابهم في الوقت المناسب تماماً.",
+                            "steps.text_en": "It arrives at their door right on time.",
+                            "steps.icon": "deliver"
                         }
                     ],
                     "fields": [
@@ -3474,7 +5721,7 @@
                             "type": "string",
                             "icon": "sicon-format-text-alt",
                             "label": "عنوان الخطوة",
-                            "multilanguage": true,
+                            "multilanguage": false,
                             "id": "steps.title",
                             "value": null,
                             "required": false,
@@ -3486,9 +5733,23 @@
                         },
                         {
                             "type": "string",
+                            "icon": "sicon-format-text-alt",
+                            "label": "عنوان الخطوة (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "steps.title_en",
+                            "value": null,
+                            "required": false,
+                            "format": "text",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
+                            "minLength": 0,
+                            "maxLength": 100
+                        },
+                        {
+                            "type": "string",
                             "icon": "sicon-typography",
                             "label": "شرح الخطوة",
-                            "multilanguage": true,
+                            "multilanguage": false,
                             "id": "steps.text",
                             "value": null,
                             "required": false,
@@ -3497,6 +5758,105 @@
                             "placeholder": "أخبرنا عن المناسبة، الشخص، والميزانية.",
                             "minLength": 0,
                             "maxLength": 200
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-typography",
+                            "label": "شرح الخطوة (بالإنجليزية)",
+                            "multilanguage": false,
+                            "id": "steps.text_en",
+                            "value": null,
+                            "required": false,
+                            "format": "textarea",
+                            "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                            "placeholder": null,
+                            "minLength": 0,
+                            "maxLength": 200
+                        },
+                        {
+                            "type": "items",
+                            "format": "dropdown-list",
+                            "icon": "sicon-image",
+                            "label": "أيقونة الخطوة",
+                            "id": "steps.icon",
+                            "source": "Manual",
+                            "required": false,
+                            "selected": [
+                                {
+                                    "label": "تلقائية حسب ترتيب الخطوة",
+                                    "value": "auto",
+                                    "key": "gly-steps-icon-auto"
+                                }
+                            ],
+                            "options": [
+                                {
+                                    "label": "تلقائية حسب ترتيب الخطوة",
+                                    "value": "auto",
+                                    "key": "gly-steps-icon-auto"
+                                },
+                                {
+                                    "label": "عدسة بحث",
+                                    "value": "discover",
+                                    "key": "gly-steps-icon-discover"
+                                },
+                                {
+                                    "label": "صندوق",
+                                    "value": "pick",
+                                    "key": "gly-steps-icon-pick"
+                                },
+                                {
+                                    "label": "هدية مغلّفة",
+                                    "value": "wrap",
+                                    "key": "gly-steps-icon-wrap"
+                                },
+                                {
+                                    "label": "شاحنة توصيل",
+                                    "value": "deliver",
+                                    "key": "gly-steps-icon-deliver"
+                                },
+                                {
+                                    "label": "هدية",
+                                    "value": "gift",
+                                    "key": "gly-steps-icon-gift"
+                                },
+                                {
+                                    "label": "مولود",
+                                    "value": "baby",
+                                    "key": "gly-steps-icon-baby"
+                                },
+                                {
+                                    "label": "كيك / حفلة",
+                                    "value": "cake",
+                                    "key": "gly-steps-icon-cake"
+                                },
+                                {
+                                    "label": "ربطة عنق",
+                                    "value": "tie",
+                                    "key": "gly-steps-icon-tie"
+                                },
+                                {
+                                    "label": "بطاقة",
+                                    "value": "tag",
+                                    "key": "gly-steps-icon-tag"
+                                },
+                                {
+                                    "label": "ظرف",
+                                    "value": "envelope",
+                                    "key": "gly-steps-icon-envelope"
+                                }
+                            ],
+                            "description": "الرسمة فوق الخطوة."
+                        },
+                        {
+                            "type": "string",
+                            "icon": "sicon-image",
+                            "value": null,
+                            "id": "steps.image",
+                            "label": "صورة بدل الأيقونة",
+                            "format": "image",
+                            "required": false,
+                            "placeholder": null,
+                            "description": "اختيارية. إن رفعت صورة (يُفضّل أيقونة مربعة بخلفية شفافة) تظهر بدل الأيقونة."
                         }
                     ]
                 },
@@ -3504,7 +5864,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-how-steps-note",
-                    "value": "<div>الخطوات الأربع الجاهزة مضافة في القائمة: عدّل نصوصها أو رتّبها أو احذف منها. الرسمة فوق كل خطوة ثابتة حسب ترتيبها.</div>"
+                    "value": "<div>الخطوات الأربع الجاهزة مضافة في القائمة: عدّل نصوصها أو رتّبها أو احذف منها أو أضف إليها، واختر لكل خطوة أيقونتها أو ارفع صورة بدلها.</div>"
                 }
             ]
         },
@@ -3524,10 +5884,21 @@
                     "value": "<div>تقييمات متجرك الحقيقية من سلة. يبقى القسم فارغاً حتى تصلك تقييمات. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
+                    "type": "boolean",
+                    "icon": "sicon-toggle-off",
+                    "label": "تعديل النصوص الإنجليزية",
+                    "description": "تُظهر تحت كل نص خانة لصيغته الإنجليزية. الخانة التي تتركها فارغة يظهر مكانها النص الإنجليزي الجاهز.",
+                    "id": "edit_en",
+                    "format": "switch",
+                    "required": false,
+                    "value": false,
+                    "selected": false
+                },
+                {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
                     "label": "العبارة الصغيرة فوق العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "eyebrow",
                     "value": null,
                     "required": false,
@@ -3540,8 +5911,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "العبارة الصغيرة فوق العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "eyebrow_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Happy customers",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "بداية العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_pre",
                     "value": null,
                     "required": false,
@@ -3554,8 +5946,29 @@
                 {
                     "type": "string",
                     "icon": "sicon-format-text-alt",
+                    "label": "بداية العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_pre_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "Loved by",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
                     "label": "الكلمة المميّزة في العنوان",
-                    "multilanguage": true,
+                    "multilanguage": false,
                     "id": "title_em",
                     "value": null,
                     "required": false,
@@ -3564,6 +5977,66 @@
                     "placeholder": "الآلاف",
                     "minLength": 0,
                     "maxLength": 100
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "الكلمة المميّزة في العنوان (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "title_em_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
+                    "placeholder": "thousands",
+                    "minLength": 0,
+                    "maxLength": 100,
+                    "conditions": [
+                        {
+                            "id": "edit_en",
+                            "operation": "=",
+                            "value": true
+                        }
+                    ]
+                },
+                {
+                    "type": "items",
+                    "format": "dropdown-list",
+                    "icon": "sicon-keyboard_arrow_down",
+                    "label": "عدد التقييمات المعروضة",
+                    "id": "limit",
+                    "source": "Manual",
+                    "required": false,
+                    "selected": [
+                        {
+                            "label": "9 تقييمات",
+                            "value": "9",
+                            "key": "gly-limit-9"
+                        }
+                    ],
+                    "options": [
+                        {
+                            "label": "3 تقييمات",
+                            "value": "3",
+                            "key": "gly-limit-3"
+                        },
+                        {
+                            "label": "6 تقييمات",
+                            "value": "6",
+                            "key": "gly-limit-6"
+                        },
+                        {
+                            "label": "9 تقييمات",
+                            "value": "9",
+                            "key": "gly-limit-9"
+                        },
+                        {
+                            "label": "12 تقييماً",
+                            "value": "12",
+                            "key": "gly-limit-12"
+                        }
+                    ],
+                    "description": null
                 }
             ]
         }

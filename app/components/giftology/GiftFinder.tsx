@@ -5,7 +5,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useMoney } from '@salla.sa/twilight-theme-engine/hooks/useMoney';
 import { useReveal } from '../../hooks/useReveal';
-import { blockText } from '../../lib/giftology';
+import { blockCopy, choiceValue, whatsappLink } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import {
   SUGGESTIONS_SHOWN,
@@ -27,12 +27,15 @@ import { useGly } from './useGly';
 /** How many of a category's best sellers the budget ranges and the suggestions are drawn from. */
 const POOL = 24;
 
-/** The best sellers of one category: what the budget question and the answer are built from. */
-export const finderProductsQuery = (categoryId: number) =>
+/** The orders the block can suggest products in; the first is used unless it picks another. */
+const SORTS = ['bestSell', 'ourSuggest', 'topRated'];
+
+/** One category's products in the chosen order: what the budget question and the answer are built from. */
+export const finderProductsQuery = (categoryId: number, sort = SORTS[0]) =>
   product.queries.list({
     source: 'categories',
     sourceValue: [categoryId],
-    sort: 'bestSell',
+    sort,
     perPage: POOL,
   });
 
@@ -51,23 +54,32 @@ type Step = 'category' | 'kind' | 'budget' | 'result';
  * Gift finder. It asks up to three questions and suggests gifts that fit:
  *
  * 1. what the visitor is looking for: the store's top-level categories, plus
- *    "a custom gift" while the store has a WhatsApp number;
+ *    "a custom gift", which always ends on the custom-order answer with its
+ *    WhatsApp button (the block can switch it off; it needs a number to chat with);
  * 2. which kind: the chosen category's subcategories (skipped when it has none);
  * 3. the budget: ranges worked out from that category's real prices (skipped when
  *    its products are too few or cost the same).
  *
- * The answer is up to three in-stock best sellers that fit, with "show others" and
- * a link to the whole category. Nothing is set up by hand: the questions follow the
- * category tree, so they change when the merchant changes the categories. The
- * finder block can leave categories out (`exclude`) and reword the questions.
+ * The answer is up to three in-stock products that fit, best sellers first unless
+ * the block picks another order, with "show others" and a link to the whole
+ * category. Nothing is set up by hand: the questions follow the category tree, so
+ * they change when the merchant changes the categories. The finder block can leave
+ * categories out (`exclude`) and reword every text: a field named like a text's
+ * locale key (`q_budget`, `others`, `back`) replaces it.
  */
 export function GiftFinder({ data }: { data?: BlockData }) {
-  const { t, whatsappCustom, locale } = useGly();
+  const { t, whatsappCustom, whatsappNumber, locale } = useGly();
   const { format } = useMoney();
   const reveal = useReveal();
-  const f = (key: string) => t(`blocks.gly.finder.${key}`);
   // A block field the merchant filled, else the theme's own text.
-  const own = (key: string) => blockText(data, key, locale) || f(key);
+  const own = (key: string) => blockCopy(data, key, locale) || t(`blocks.gly.finder.${key}`);
+  const f = own;
+  // "A custom gift": on unless the block switches it off, and only with a number to chat with.
+  const message = blockCopy(data, 'wa_message', locale);
+  const chat = message ? whatsappLink(whatsappNumber, message) : whatsappCustom;
+  const offerCustom = data?.show_custom !== false && !!chat;
+  const chosenSort = choiceValue(data?.sort);
+  const sort = SORTS.includes(chosenSort) ? chosenSort : SORTS[0];
 
   const [top, setTop] = useState<CategoryNode | null>(null);
   // The subcategory picked in question 2; `'all'` keeps the whole category.
@@ -86,7 +98,7 @@ export function GiftFinder({ data }: { data?: BlockData }) {
   const target = top && (kinds.length === 0 || kind === 'all') ? top : kind !== 'all' ? kind : null;
   const targetId = categoryNumericId(target);
   const { data: listing, isLoading } = useQuery({
-    ...finderProductsQuery(targetId ?? 0),
+    ...finderProductsQuery(targetId ?? 0, sort),
     enabled: targetId !== null,
   });
   const available = useMemo(() => (listing?.items ?? []).filter(inStock), [listing]);
@@ -140,7 +152,7 @@ export function GiftFinder({ data }: { data?: BlockData }) {
     });
 
   // Nothing to ask about: a store with no categories yet and no custom orders.
-  if (!treeLoading && !categories.length && !whatsappCustom) return null;
+  if (!treeLoading && !categories.length && !offerCustom) return null;
 
   const band = budget && budget !== 'any' ? budget : null;
   const matches = suggestions(available, band);
@@ -203,14 +215,9 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                       <b>{f('custom_title')}</b>
                     </div>
                     <p>{f('r_custom')}</p>
-                    {whatsappCustom && (
-                      <a
-                        className="gly-btn gly-btn-wa gly-btn-block"
-                        href={whatsappCustom}
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        {t('blocks.gly.custom.card_btn')}
+                    {chat && (
+                      <a className="gly-btn gly-btn-wa gly-btn-block" href={chat} target="_blank" rel="noopener">
+                        {f('custom_btn')}
                       </a>
                     )}
                   </>
@@ -246,6 +253,16 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                         <Link className="gly-btn gly-btn-primary" to={target.url}>
                           {f('see_all').replace('{category}', target.name)}
                         </Link>
+                      )}
+                      {offerCustom && (
+                        <button
+                          type="button"
+                          className="gly-btn gly-btn-ghost"
+                          onClick={() => move(() => setCustom(true))}
+                        >
+                          <SparkIcon />
+                          {f('or_custom')}
+                        </button>
                       )}
                     </div>
                   </>
@@ -292,12 +309,13 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                           {node.name}
                         </button>
                       ))}
-                      {whatsappCustom && (
+                      {offerCustom && (
                         <button
                           type="button"
-                          className="gly-qopt"
+                          className="gly-qopt gly-qopt--custom"
                           onClick={() => move(() => setCustom(true))}
                         >
+                          <SparkIcon />
                           {f('opt_custom')}
                         </button>
                       )}

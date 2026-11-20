@@ -1,5 +1,5 @@
 import { useReveal } from '../../hooks/useReveal';
-import { blockRows, blockText, rowText } from '../../lib/giftology';
+import { blockCopy, blockRows, rowText, whatsappLink } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import { WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
@@ -11,11 +11,14 @@ const STEPS = [1, 2, 3] as const;
  * the card opens a WhatsApp chat and shows no price or add-to-cart button.
  */
 export function CustomGift({ data }: { data?: BlockData }) {
-  const { t, whatsappCustom, locale } = useGly();
+  const { t, whatsappCustom, whatsappNumber, locale } = useGly();
   const copy = useReveal();
   const card = useReveal();
   // A block field the merchant filled, else the theme's own text.
-  const c = (key: string) => blockText(data, key, locale) || t(`blocks.gly.custom.${key}`);
+  const c = (key: string) => blockCopy(data, key, locale) || t(`blocks.gly.custom.${key}`);
+  // The chat opens with the message typed in the block, else the theme's own.
+  const message = blockCopy(data, 'wa_message', locale);
+  const chat = message ? whatsappLink(whatsappNumber, message) : whatsappCustom;
   const ownSteps = blockRows(data, 'steps')
     .map((row) => ({ title: rowText(row, 'title', locale, t), text: rowText(row, 'text', locale, t) }))
     .filter((step) => step.title);
@@ -53,8 +56,8 @@ export function CustomGift({ data }: { data?: BlockData }) {
           <span className="gly-badge-soft">{c('card_badge')}</span>
           <h3>{c('card_title')}</h3>
           <p>{c('card_desc')}</p>
-          {whatsappCustom && (
-            <a className="gly-btn gly-btn-wa" href={whatsappCustom} target="_blank" rel="noopener">
+          {chat && (
+            <a className="gly-btn gly-btn-wa" href={chat} target="_blank" rel="noopener">
               <WhatsAppIcon />
               {c('card_btn')}
             </a>

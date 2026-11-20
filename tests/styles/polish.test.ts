@@ -62,7 +62,8 @@ describe('latest products grid', () => {
   });
 
   it('leaves the last two out where three fit, so no row is short', () => {
-    const lastTwo = '.gly-latest-grid > :nth-child(n+7)';
+    // Twelve products fill four rows of three, so only the eight-product grid drops its last two.
+    const lastTwo = '.gly-latest-grid:not([data-count="12"]) > :nth-child(n+7)';
     expect(find(home, lastTwo, 'display')).toEqual([
       { media: '(min-width:640px)and(max-width:959px)', value: 'none' },
     ]);

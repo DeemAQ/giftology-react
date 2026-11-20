@@ -168,6 +168,8 @@
 .gly-cat-ico{width:44px;height:44px;display:block;background:var(--gly-teal-deep);transition:.3s;-webkit-mask:var(--gly-ico) center/contain no-repeat;mask:var(--gly-ico) center/contain no-repeat}
 /* merchant-uploaded icon (overrides the preset) — shown in its own colours */
 .gly-cat-img{width:58px;height:58px;object-fit:contain;display:block}
+/* a photo fills its circle (the circles block's "image fills the circle" choice) */
+.gly-cat--photo .gly-cat-img{width:100%;height:100%;object-fit:cover}
 .gly-cat:hover .gly-cat-ic{transform:translateY(-7px);border-color:var(--gly-teal);box-shadow:var(--gly-shadow-teal)}
 .gly-cat:hover .gly-cat-ico{background:var(--gly-teal)}
 .gly-cat span{font-weight:700;font-size:.96rem;text-align:center}
@@ -207,6 +209,10 @@
 .gly-step:hover .gly-step__ic{transform:rotate(4deg) scale(1.05);background:var(--gly-teal-deep)}
 .gly-step:hover .gly-step__ic svg{color:#fff}
 .gly-step__ic svg{width:35px;height:35px;color:var(--gly-teal-ink);transition:.3s}
+/* a brand icon or an uploaded picture in place of the drawing */
+.gly-step__ic .gly-ico{width:35px;height:35px;color:var(--gly-teal-ink);transition:.3s}
+.gly-step:hover .gly-step__ic .gly-ico{color:#fff}
+.gly-step__ic img{width:35px;height:35px;object-fit:contain;display:block}
 .gly-step h4,.gly-step h3{font-family:var(--gly-font-display);font-size:1.3rem;font-weight:700;margin-bottom:.3rem}
 .gly-step p{font-size:.94rem;color:var(--gly-soft)}
 .gly-step:not(:last-child)::after{content:"";position:absolute;top:64px;inset-inline-end:-12px;width:24px;height:2px;background:repeating-linear-gradient(90deg,var(--gly-gold) 0 5px,transparent 5px 10px)}
@@ -251,6 +257,9 @@
   .gly-qpicks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,230px));justify-content:center;gap:1rem;overflow:visible;padding-bottom:0}
   .gly-qpicks .s-product-card-entry{max-width:none}
 }
+/* the custom-gift answer stands apart from the categories */
+.gly-qopt--custom{display:flex;align-items:center;gap:.45rem;border-style:dashed;border-color:var(--gly-teal-deep);color:var(--gly-teal-ink)}
+.gly-qopt--custom svg{width:18px;height:18px;flex:0 0 auto}
 .gly-qactions{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
 .gly-qnav{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.9rem}
 .gly-qnav .gly-restart{margin-top:0}
@@ -354,7 +363,9 @@
 @media (min-width:640px) and (max-width:959px){
   .gly-latest-grid.s-products-list-wrapper{grid-template-columns:repeat(3,minmax(0,1fr))}
   /* !important: each card's wrapper carries an inline `display:contents` */
-  .gly-latest-grid>:nth-child(n+7){display:none!important}
+  .gly-latest-grid:not([data-count="12"])>:nth-child(n+7){display:none!important}
+  /* four shown: three fit, so the fourth is left out; twelve fill four rows */
+  .gly-latest-grid[data-count="4"]>:nth-child(n+4){display:none!important}
 }
 @media (min-width:960px){
   .gly-latest-grid.s-products-list-wrapper{grid-template-columns:repeat(4,minmax(0,1fr))}

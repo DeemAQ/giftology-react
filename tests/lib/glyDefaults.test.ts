@@ -24,13 +24,31 @@ describe('ready-made rows of the Giftology blocks', () => {
     }
   });
 
-  it('ships each list in twilight.json filled with exactly those rows', () => {
+  it('ships each list in twilight.json filled with exactly those rows, in Arabic and English', () => {
     for (const [name, rows] of Object.entries(DEFAULT_ROWS)) {
       const id = name.split('.')[1];
-      const expected = rows.map((row) =>
-        Object.fromEntries(Object.entries(row).map(([field, key]) => [`${id}.${field}`, DEFAULT_TEXTS_AR[key]]))
-      );
-      expect(list(name)?.value, name).toEqual(expected);
+      const shipped = (list(name)?.value ?? []) as Record<string, unknown>[];
+      expect(shipped, name).toHaveLength(rows.length);
+      rows.forEach((row, index) => {
+        for (const [field, key] of Object.entries(row)) {
+          expect(shipped[index][`${id}.${field}`], `${name} ${field}`).toBe(DEFAULT_TEXTS_AR[key]);
+          expect(shipped[index][`${id}.${field}_en`], `${name} ${field}_en`).toBe((en as Record<string, string>)[key]);
+        }
+      });
+    }
+  });
+
+  it('gives every text box of a Giftology block an English box', () => {
+    const isText = (field: Field & { format?: string }) => field.type === 'string' && ['text', 'textarea'].includes(field.format ?? '');
+    for (const block of blocks.filter((item) => item.path.startsWith('home.gly-'))) {
+      const all = block.fields.flatMap((field) => [field, ...(((field as { fields?: Field[] }).fields ?? []) as Field[])]);
+      const ids = new Set(all.map((field) => field.id));
+      for (const field of all.filter(isText)) {
+        if (field.id.endsWith('_en')) continue;
+        expect(ids.has(`${field.id}_en`), `${block.path} ${field.id}`).toBe(true);
+        // One value per box: Salla's own per-language input would fight the English box.
+        expect((field as { multilanguage?: boolean }).multilanguage, `${block.path} ${field.id}`).toBe(false);
+      }
     }
   });
 
@@ -56,5 +74,8 @@ describe('ready-made rows of the Giftology blocks', () => {
     expect(rowText({ title: 'Find' }, 'title', 'en', t)).toBe('Find');
     expect(rowText({ title: { ar: 'نكتشف', en: 'We explore' } }, 'title', 'en', t)).toBe('We explore');
     expect(rowText({}, 'title', 'en', t)).toBe('');
+    // The English box wins on an English page; the Arabic page never reads it.
+    expect(rowText({ title: 'نكتشف', title_en: 'We listen' }, 'title', 'en', t)).toBe('We listen');
+    expect(rowText({ title: 'نستمع', title_en: 'We listen' }, 'title', 'ar', t)).toBe('نستمع');
   });
 });

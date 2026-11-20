@@ -4,7 +4,8 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useReveal } from '../../hooks/useReveal';
 import {
   TILE_COUNT,
-  blockText,
+  blockCopy,
+  choiceValue,
   blockTiles,
   categoryCircles,
   categoryTiles,
@@ -52,13 +53,17 @@ export function useCircles(data?: BlockData): CategoryTile[] {
 
 /**
  * Category circles. Each shows its category's image from Salla; a category without
- * one shows a brand icon, drawn as a teal silhouette through a CSS mask.
+ * one shows a brand icon, drawn as a teal silhouette through a CSS mask. The block
+ * says how an image sits in its circle (`image_fit`): inside it like an icon, or
+ * filling it like a photo.
  */
 export function Categories({ data }: { data?: BlockData }) {
   const { t, locale } = useGly();
   const reveal = useReveal();
-  const own = (key: string) => blockText(data, key, locale) || t(`blocks.gly.cats.${key}`);
+  const own = (key: string) => blockCopy(data, key, locale) || t(`blocks.gly.cats.${key}`);
   const tiles = useCircles(data);
+  // A photo fills the circle; an icon-like image sits inside it with room around.
+  const photos = choiceValue(data?.image_fit) === 'cover';
 
   return (
     <section id="gly-cats" className="gly-section gly-cats">
@@ -74,7 +79,11 @@ export function Categories({ data }: { data?: BlockData }) {
         <div ref={reveal.ref} className={`gly-cat-grid ${reveal.className}`}>
           {tiles.map((tile, index) => (
             // Two circles may share a link (two that are not set yet); the place tells them apart.
-            <Link key={`${index}-${tile.url}`} className="gly-cat" to={tile.url}>
+            <Link
+              key={`${index}-${tile.url}`}
+              className={`gly-cat${photos && tile.image ? ' gly-cat--photo' : ''}`}
+              to={tile.url}
+            >
               <span className="gly-cat-ic">
                 {tile.image ? (
                   <img

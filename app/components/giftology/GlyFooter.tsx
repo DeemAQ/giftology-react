@@ -3,7 +3,7 @@ import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
 import logo from '../../assets/images/white_logo_trim.webp';
-import { menuLabel, settingOn, settingText } from '../../lib/giftology';
+import { menuLabel, settingCopy, settingOn, settingText } from '../../lib/giftology';
 import { InstagramIcon, MailIcon, WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
 
@@ -49,7 +49,7 @@ export function GlyFooter() {
   const commercialNumber = store?.settings?.commercial_number;
   const taxNumber = store?.settings?.tax?.number;
   const about =
-    settingText(settings, 'gly_footer_about') ||
+    settingCopy(settings, 'gly_footer_about', locale) ||
     plainText(store?.description) ||
     t('blocks.gly.footer.about');
   const email = settingText(settings, 'gly_email') || store?.contacts?.email;

@@ -52,24 +52,38 @@ app/assets/images/          logos, watermark pattern, category icons
 - There are no section switches or section fields in the settings list. `gly_show_*`,
   `gly_hero_stat_*`, `gly_latest_*` and `gly_tile*` are still read for the built-in page if a
   store saved them under the Twig theme, but none is offered; do not add them back.
-- A block hands its section the fields as `data`. Read them with `blockText`, `blockRows`,
-  `rowText` and `blockLink` (`lib/giftology.ts`); an empty field falls back to the locale text,
-  so both languages keep working.
-- A block's list (hero figures, custom-gift steps, how-it-works steps) ships filled with the
-  ready-made rows in Arabic, so the merchant edits them instead of facing an empty list. A row
-  text still equal to its Arabic default is shown from the locale files in the visitor's
-  language (`lib/glyDefaults.ts`, `rowText`). Change a ready-made text in `locales/ar.json`,
-  `glyDefaults.ts` and the list's `value` in `twilight.json` together;
-  `tests/lib/glyDefaults.test.ts` fails if they drift.
+- A block hands its section the fields as `data`. Nothing a visitor reads is fixed in code:
+  every text of a section has a field, and so do its counts, icons, pictures and switches. When
+  you add a text to a section, add its field (and the English one) to the block in
+  `twilight.json`; do not leave it reachable only through the locale files.
+- Every text has two boxes in the editor: `id` for Arabic and `id_en` for English, each a plain
+  single-value field (`"multilanguage": false`). Read them with `blockCopy(data, id, locale)`,
+  or `rowText` inside a list row, and fall back to the locale text: an empty box shows the
+  theme's own wording in that language. Theme settings follow the same rule through
+  `settingCopy` (`gly_promo_1` / `gly_promo_1_en`). Block-level English boxes carry a
+  `conditions` entry on the block's `edit_en` switch, so they stay out of the way until asked for.
+  The local editor has no per-language input, and Salla's has not been seen to offer one for
+  theme fields; that is why the English box is its own field.
+- A block's list (hero figures, hero cards, custom-gift steps, how-it-works steps) ships filled
+  with the ready-made rows in both languages, so the merchant edits them instead of facing an
+  empty list. Change a ready-made text in the locale files, `lib/glyDefaults.ts` and the list's
+  `value` in `twilight.json` together; `tests/lib/glyDefaults.test.ts` fails if they drift.
 - Categories are never typed into the theme. The circles, the gift finder and the full-screen
   menu all read the store's category tree (`giftology/categoryTree.ts`; the home loader
-  prefetches it). Circles: the categories picked in the block, else the top-level ones with
-  products, each with its Salla name and image, then any hand-listed extras
-  (`useCircles` in `Categories.tsx`). Subcategories on a category page are that category's
-  children, as circles when any has an image (`SubcategoryPills.tsx`).
+  prefetches it). That list also carries the store's menu links (offers, brands, blog), which
+  have no numeric id: `isCategory` in `lib/giftFinder.ts` tells them apart. Circles: the
+  categories picked in the block, else the top-level ones, each with its Salla name and image,
+  then any hand-listed extras (`useCircles` in `Categories.tsx`). Subcategories on a category
+  page are that category's children, as circles when any has an image (`SubcategoryPills.tsx`,
+  `gly_subcats_style`).
 - The gift finder's rules are in `lib/giftFinder.ts` (no React): questions from the category
-  tree, budget ranges from the chosen category's real prices, up to three in-stock best
-  sellers. It has nothing to set up; the block only rewords it and leaves categories out.
+  tree, budget ranges from the chosen category's real prices, up to three in-stock products in
+  the order the block picks (best sellers by default). "A custom gift" always ends on the
+  custom-order answer with its WhatsApp button. Nothing has to be set up; the block rewords
+  every text, leaves categories out and can switch the custom answer off.
+- The six brand icons (`app/assets/images/{baby,gift,cake,tie,tag,envelope}.svg`) share one
+  line weight (the baby's) and one optical size. They are drawn through a CSS mask, so only
+  their shape matters, not their colour.
 - Every merchant setting starts with `gly_`. Their ids match the Twig theme; do not rename them.
 - The theme editor's list (`settings` in `twilight.json`) opens with a "start here" note, then
   contact, top bar, a pointer to the home tab, product card, product page, footer. A field that

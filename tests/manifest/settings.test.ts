@@ -47,10 +47,13 @@ describe('theme editor settings (twilight.json)', () => {
 
   it('reads every Giftology setting somewhere in the theme', () => {
     const source = themeSource();
+    // An English box (`<id>_en`) is read through `settingCopy`, by its Arabic twin's id.
+    const read = (id: string) =>
+      source.includes(id) || (id.endsWith('_en') && source.includes('settingCopy') && source.includes(id.slice(0, -3)));
     const unread = settings
       .map((entry) => entry.id)
       .filter((id) => id.startsWith('gly_'))
-      .filter((id) => !source.includes(id));
+      .filter((id) => !read(id));
     expect(unread).toEqual([]);
   });
 
@@ -69,6 +72,14 @@ describe('theme editor settings (twilight.json)', () => {
     const under = (id: string) => (byId.get(id)?.conditions ?? []).map((condition) => condition.id);
     expect(under('gly_promo_1')).toEqual(['gly_show_promo']);
     expect(under('gly_promo_3')).toEqual(['gly_show_promo']);
+  });
+
+  it('gives every text the visitor reads an English box beside its Arabic one', () => {
+    for (const id of ['gly_promo_1', 'gly_promo_2', 'gly_promo_3', 'gly_footer_about', 'gly_whatsapp_msg']) {
+      const index = entries.indexOf(byId.get(id) as Entry);
+      expect(index, id).toBeGreaterThanOrEqual(0);
+      expect(entries[index + 1]?.id, id).toBe(`${id}_en`);
+    }
   });
 
   it('opens with the "start here" note', () => {

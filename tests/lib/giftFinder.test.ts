@@ -5,6 +5,7 @@ import {
   childrenOf,
   hasProducts,
   inStock,
+  isCategory,
   offered,
   priceOf,
   sameCategory,
@@ -54,6 +55,13 @@ describe('categories', () => {
     // The API does not always send a count: offer it.
     expect(hasProducts(node({}))).toBe(true);
     expect(hasProducts(node({ products_count: 0, sub_categories: [node({ products_count: 2 })] }))).toBe(true);
+  });
+
+  it("tells a real category from the menu links Salla's category list also carries", () => {
+    expect(isCategory({ id: 'mgjZqj', id_: 708738657, name: 'Electronics', url: 'https://shop.test/ar/x/c708738657' })).toBe(true);
+    expect(isCategory({ id: 'offers', name: 'blocks.header.offers', url: 'https://shop.test/ar/offers' })).toBe(false);
+    expect(isCategory({ id: 'blog', name: 'Blog', url: 'https://shop.test/ar/blog' })).toBe(false);
+    expect(offered([node({ id: 'brands', url: 'https://shop.test/ar/brands' }), node({ id: 'a', id_: 5 })])).toHaveLength(1);
   });
 
   it('leaves out empty categories and the ones the merchant excluded', () => {

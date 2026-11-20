@@ -6,7 +6,8 @@ import en from '../../../locales/en.json';
 import { GiftFinder } from '../../../app/components/giftology/GiftFinder';
 import { GiftologyHome } from '../../../app/components/giftology/GiftologyHome';
 import { glyHomeBlockConfig, glyHomeBlocks } from '../../../app/components/giftology/blocks';
-import { SECTION_BLOCKS, shownSections } from '../../../app/components/giftology/homeSections';
+import { HomeSectionsProvider, SECTION_BLOCKS, shownSections } from '../../../app/components/giftology/homeSections';
+import { Hero } from '../../../app/components/giftology/Hero';
 import { GlyFooter } from '../../../app/components/giftology/GlyFooter';
 import { WhatsAppFloat } from '../../../app/components/giftology/WhatsAppFloat';
 import { PromoBar } from '../../../app/components/giftology/PromoBar';
@@ -87,7 +88,7 @@ vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
 }));
 vi.mock('@salla.sa/twilight-components-react', () => ({ ProductCardSkeleton: () => null }));
 vi.mock('@salla.sa/twilight-components-react/reviews', () => ({
-  SallaReviews: () => <div data-testid="store-reviews" />,
+  SallaReviews: ({ limit }: { limit?: number }) => <div data-testid="store-reviews" data-limit={limit} />,
 }));
 vi.mock('../../../app/components/product', () => ({
   ProductCard: ({ product }: { product: { name: string } }) => (
@@ -137,7 +138,7 @@ describe('PromoBar', () => {
   });
 
   it('shows only the filled phrases, the last one emphasised', () => {
-    state.settings = { gly_promo_1: 'Free wrap', gly_promo_3: 'Ships today' };
+    state.settings = { gly_promo_1_en: 'Free wrap', gly_promo_3_en: 'Ships today' };
     const { container } = render(<PromoBar />);
     expect(screen.getByRole('complementary')?.textContent).toContain('Free wrap');
     expect(screen.getByRole('complementary').textContent).not.toContain(en['blocks.gly.promo.fast']);
@@ -145,7 +146,7 @@ describe('PromoBar', () => {
   });
 
   it('marks the last phrase as the one a phone keeps', () => {
-    state.settings = { gly_promo_1: 'Free wrap', gly_promo_3: 'Ships today' };
+    state.settings = { gly_promo_1_en: 'Free wrap', gly_promo_3_en: 'Ships today' };
     const { container } = render(<PromoBar />);
     const phrases = [...container.querySelectorAll('.gly-topbar__phrase')];
     expect(phrases).toHaveLength(2);
@@ -154,9 +155,28 @@ describe('PromoBar', () => {
   });
 
   it('keeps a single phrase visible on a phone', () => {
-    state.settings = { gly_promo_2: 'Only one' };
+    state.settings = { gly_promo_2_en: 'Only one' };
     const { container } = render(<PromoBar />);
     expect(container.querySelector('.gly-topbar__phrase--main')?.textContent).toBe('Only one');
+  });
+
+  it('shows each language its own phrases', () => {
+    state.settings = { gly_promo_1: 'تغليف مجاني', gly_promo_1_en: 'Free wrap' };
+    const english = render(<PromoBar />);
+    expect(english.container.textContent).toContain('Free wrap');
+    expect(english.container.textContent).not.toContain('تغليف مجاني');
+    english.unmount();
+
+    state.locale = 'ar';
+    const arabic = render(<PromoBar />);
+    expect(arabic.container.textContent).toContain('تغليف مجاني');
+    arabic.unmount();
+
+    // Arabic phrases only: the English page keeps the theme's own English ones.
+    state.locale = 'en';
+    state.settings = { gly_promo_1: 'تغليف مجاني' };
+    const untranslated = render(<PromoBar />);
+    expect(untranslated.container.textContent).toContain(en['blocks.gly.promo.shipping']);
   });
 
   it('is off when gly_show_promo is off', () => {
@@ -535,6 +555,19 @@ describe('SubcategoryPills', () => {
     expect(circles[1].querySelector('.gly-ico')).not.toBeNull();
     expect(container.querySelector('.gly-subcat')).toBeNull();
   });
+
+  it('follows the setting for how subcategory images show, or text only', () => {
+    const known = [{ id: 3, name: 'Baby Boy', url: '/baby-boy/c3', image: 'https://cdn.test/boy.png' }];
+    state.settings = { gly_subcats_style: [{ value: 'cover' }] };
+    const photos = renderWithQuery(<SubcategoryPills id="1" known={known} />);
+    expect(photos.container.querySelector('.gly-subcats--photos .gly-subcirc')).not.toBeNull();
+    photos.unmount();
+
+    state.settings = { gly_subcats_style: 'text' };
+    const text = renderWithQuery(<SubcategoryPills id="1" known={known} />);
+    expect(text.container.querySelector('.gly-subcirc')).toBeNull();
+    expect(text.container.querySelector('.gly-subcat')?.textContent).toBe('Baby Boy');
+  });
 });
 
 describe('Giftology sections as home blocks', () => {
@@ -576,15 +609,18 @@ describe('Giftology sections as home blocks', () => {
 
   it('hero: the texts, button links and figures typed in the block', () => {
     const { container } = block('gly-hero', {
-      eyebrow: ' Hello ',
-      title_pre: 'Every gift',
-      title_em: '',
-      title_post: null,
-      cta_shop: 'Shop now',
+      // The Arabic boxes are filled too; an English page reads the English ones.
+      eyebrow: 'مرحباً',
+      eyebrow_en: ' Hello ',
+      title_pre: 'كل هدية',
+      title_pre_en: 'Every gift',
+      title_em_en: '',
+      title_post_en: null,
+      cta_shop_en: 'Shop now',
       cta_shop_url: 'https://shop.test/en/all/c9',
       show_stats: true,
       stats: [
-        { 'stats.value': '+5K', 'stats.label': 'gifts sent' },
+        { 'stats.value': '+5 آلاف', 'stats.value_en': '+5K', 'stats.label': 'هدية', 'stats.label_en': 'gifts sent' },
         { 'stats.value': '', 'stats.label': 'no figure, so not shown' },
       ],
     });
@@ -598,6 +634,45 @@ describe('Giftology sections as home blocks', () => {
     expect([...container.querySelectorAll('.gly-hero-stats b')].map((b) => b.textContent)).toEqual(['+5K']);
   });
 
+  it('hero: the third button, the floating cards and the picture are the block\'s too', () => {
+    const { container } = renderWithQuery(
+      <HomeSectionsProvider value={new Set(['hero', 'latest'] as const)}>
+        <Hero
+          data={{
+            cta_latest_en: 'New in',
+            art_image: 'https://cdn.test/art.png',
+            cards: [
+              { 'cards.title': 'تغليف يدوي', 'cards.title_en': 'Wrapped by hand', 'cards.text_en': 'With care', 'cards.icon': 'truck' },
+              { 'cards.title': 'بطاقة', 'cards.icon': [{ value: 'cake' }] },
+            ],
+          }}
+        />
+      </HomeSectionsProvider>
+    );
+    expect(screen.getByText('New in').closest('a')?.getAttribute('href')).toBe('#gly-latest');
+    expect(container.querySelector('.gly-bow')?.getAttribute('src')).toBe('https://cdn.test/art.png');
+    const cards = [...container.querySelectorAll('.gly-fcard')];
+    expect(cards.map((card) => card.querySelector('b')?.textContent)).toEqual(['Wrapped by hand', 'بطاقة']);
+    expect(cards[0].querySelector('small')?.textContent).toBe('With care');
+    // The truck is drawn; the others are brand icons.
+    expect(cards[0].querySelector('.gly-fcard__ph svg')).not.toBeNull();
+    expect(cards[1].querySelector('.gly-fcard__ph .gly-ico')).not.toBeNull();
+  });
+
+  it('hero: the third button can be switched off, and the ready-made cards show until the list is filled', () => {
+    const { container } = renderWithQuery(
+      <HomeSectionsProvider value={new Set(['hero', 'latest'] as const)}>
+        <Hero data={{ show_cta_latest: false }} />
+      </HomeSectionsProvider>
+    );
+    expect(container.querySelector('a[href="#gly-latest"]')).toBeNull();
+    expect([...container.querySelectorAll('.gly-fcard b')].map((b) => b.textContent)).toEqual([
+      en['blocks.gly.hero.mini_wrap_t'],
+      en['blocks.gly.hero.mini_fast_t'],
+      en['blocks.gly.hero.mini_card_t'],
+    ]);
+  });
+
   it('hero: the block can hide the figures the settings would show', () => {
     const { container } = block('gly-hero', { show_stats: false });
     expect(container.querySelector('.gly-hero-stats')).toBeNull();
@@ -605,7 +680,7 @@ describe('Giftology sections as home blocks', () => {
 
   it("circles: the store's top-level categories, with nothing to set up", async () => {
     state.categories = [NEWBORN, CARDS, EMPTY];
-    const { container } = block('gly-circles', { title_pre: 'Shop by' });
+    const { container } = block('gly-circles', { title_pre_en: 'Shop by' });
     await waitFor(() => expect(container.querySelectorAll('.gly-cat')).toHaveLength(2));
     const circles = [...container.querySelectorAll('.gly-cat')];
     expect(circles.map((circle) => circle.textContent)).toEqual(['Newborn', 'Cards']);
@@ -650,6 +725,24 @@ describe('Giftology sections as home blocks', () => {
       'https://shop.test/en/products',
     ]);
     expect(circles[2].querySelector('img')?.getAttribute('src')).toBe('https://cdn.test/about.png');
+  });
+
+  it("circles: only the store's real categories, never its menu links", async () => {
+    // Salla's category list also carries the menu's own entries.
+    state.categories = [CARDS, { id: 'offers', name: 'blocks.header.offers', url: 'https://shop.test/en/offers' }, { id: 'blog', name: 'Blog', url: 'https://shop.test/en/blog' }];
+    const { container } = block('gly-circles', {});
+    await waitFor(() => expect(container.querySelectorAll('.gly-cat')).toHaveLength(1));
+    expect(container.querySelector('.gly-cat')?.textContent).toBe('Cards');
+  });
+
+  it('circles: a photo fills its circle when the block says so', async () => {
+    state.categories = [NEWBORN, CARDS];
+    const { container } = block('gly-circles', { image_fit: [{ value: 'cover' }] });
+    await waitFor(() => expect(container.querySelectorAll('.gly-cat')).toHaveLength(2));
+    const circles = [...container.querySelectorAll('.gly-cat')];
+    expect(circles[0].classList.contains('gly-cat--photo')).toBe(true);
+    // No image: the brand icon stays as it is.
+    expect(circles[1].classList.contains('gly-cat--photo')).toBe(false);
   });
 
   it('circles: a store with no categories yet shows the six ready circles', async () => {
@@ -707,26 +800,83 @@ describe('Giftology sections as home blocks', () => {
     expect([...how.container.querySelectorAll('.gly-step h3')].map((h) => h.textContent)).toEqual(['Pick']);
     how.unmount();
 
+    // The chat button carries the message typed in the block.
+    state.settings = { gly_whatsapp: '966551234567' };
+    const chat = block('gly-custom', { wa_message_en: 'Hi, a custom box please' });
+    expect(chat.container.querySelector('a.gly-btn-wa')?.getAttribute('href')).toBe(
+      'https://wa.me/966551234567?text=Hi%2C%20a%20custom%20box%20please'
+    );
+    chat.unmount();
+    state.settings = {};
+
     const ready = block('gly-how', {});
     expect(ready.container.querySelectorAll('.gly-step')).toHaveLength(4);
   });
 
-  it('latest products and reviews: their heading, and the "view all" link', () => {
-    const latest = block('gly-latest', { title: 'Just in', url: [{ url: 'https://shop.test/en/new' }] });
+  it('latest products and reviews: their heading, the "view all" button and how many show', async () => {
+    state.products = Array.from({ length: 12 }, (_, index) => ({ id: index + 1, name: `Gift ${index + 1}` }));
+    const latest = block('gly-latest', {
+      title_en: 'Just in',
+      view_all_en: 'See everything',
+      url: [{ url: 'https://shop.test/en/new' }],
+      limit: '4',
+    });
     expect(latest.container.querySelector('.gly-shead h2')?.textContent).toBe('Just in');
-    expect(screen.getByText(en['blocks.gly.latest.view_all']).closest('a')?.getAttribute('href')).toBe('https://shop.test/en/new');
+    expect(screen.getByText('See everything').closest('a')?.getAttribute('href')).toBe('https://shop.test/en/new');
+    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(4));
+    expect(latest.container.querySelector('.gly-latest-grid')?.getAttribute('data-count')).toBe('4');
     latest.unmount();
 
-    const reviews = block('gly-testimonials', { title_pre: 'Loved by', title_em: 'many' });
+    // More than the usual eight asks for a bigger page.
+    state.listCalls = [];
+    const twelve = block('gly-latest', { limit: [{ value: '12' }] });
+    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(12));
+    expect(state.listCalls[0]).toMatchObject({ source: 'latest', perPage: 12 });
+    twelve.unmount();
+
+    const reviews = block('gly-testimonials', { title_pre_en: 'Loved by', title_em_en: 'many', limit: '6' });
     expect(reviews.container.querySelector('.gly-shead h2')?.textContent).toBe('Loved by many');
+    expect(screen.getByTestId('store-reviews').getAttribute('data-limit')).toBe('6');
+  });
+
+  it('how it works: each step takes the icon picked for it, or an uploaded picture', () => {
+    const { container } = block('gly-how', {
+      steps: [
+        { 'steps.title': 'One', 'steps.icon': 'deliver' },
+        { 'steps.title': 'Two', 'steps.icon': [{ value: 'cake' }] },
+        { 'steps.title': 'Three', 'steps.icon': 'auto', 'steps.image': 'https://cdn.test/three.png' },
+        { 'steps.title': 'Four', 'steps.icon': 'auto' },
+      ],
+    });
+    const icons = [...container.querySelectorAll('.gly-step__ic')];
+    // The truck drawing, wherever the step sits.
+    expect(icons[0].querySelector('svg circle')).not.toBeNull();
+    expect(icons[1].querySelector('.gly-ico')).not.toBeNull();
+    expect(icons[2].querySelector('img')?.getAttribute('src')).toBe('https://cdn.test/three.png');
+    // Automatic: the drawing that goes with the fourth place.
+    expect(icons[3].querySelector('svg')).not.toBeNull();
+  });
+
+  it("a text has an Arabic box and an English one, and each page reads its own", () => {
+    const data = { title_pre: 'كيف نعمل', title_em: 'معاً' };
+    const english = block('gly-how', data);
+    // Nothing typed for English: the theme's own English, never the Arabic text.
+    expect(english.container.querySelector('.gly-shead h2')?.textContent).toBe(
+      `${en['blocks.gly.how.title_pre']} ${en['blocks.gly.how.title_em']}`
+    );
+    english.unmount();
+
+    state.locale = 'ar';
+    const arabic = block('gly-how', data);
+    expect(arabic.container.querySelector('.gly-shead h2')?.textContent).toBe('كيف نعمل معاً');
   });
 
   it('gift finder: the questions and heading typed in the block, minus the categories left out', async () => {
     state.categories = [NEWBORN, CARDS];
     const { container } = block('gly-finder', {
-      title_pre: 'Stuck?',
-      q_category: 'Who is it for?',
-      q_kind: 'What kind of {category} gift?',
+      title_pre_en: 'Stuck?',
+      q_category_en: 'Who is it for?',
+      q_kind_en: 'What kind of {category} gift?',
       exclude: [{ id: 90, name: 'Cards', url: 'https://shop.test/en/cards/c90' }],
     });
     const newborn = await screen.findByRole('button', { name: 'Newborn' });
@@ -735,5 +885,43 @@ describe('Giftology sections as home blocks', () => {
     expect(screen.queryByRole('button', { name: 'Cards' })).toBeNull();
     fireEvent.click(newborn);
     expect(container.querySelector('.gly-qq')?.textContent).toBe('What kind of Newborn gift?');
+  });
+
+  it('gift finder: the custom-gift answer always ends on the custom result and its WhatsApp button', async () => {
+    state.categories = [CARDS];
+    state.settings = { gly_whatsapp: '966551234567' };
+    state.products = priced(25, 25, 25, 25);
+    block('gly-finder', {
+      opt_custom_en: 'Something made for me',
+      custom_title_en: 'Made to order',
+      custom_btn_en: 'Chat with us',
+      wa_message_en: 'A custom gift please',
+    });
+    fireEvent.click(await screen.findByRole('button', { name: 'Something made for me' }));
+    expect(screen.getByText('Made to order')).toBeTruthy();
+    expect(screen.getByText('Chat with us').closest('a')?.getAttribute('href')).toBe(
+      'https://wa.me/966551234567?text=A%20custom%20gift%20please'
+    );
+
+    // It is offered again beside the suggestions.
+    fireEvent.click(screen.getByText(en['blocks.gly.finder.back']));
+    fireEvent.click(screen.getByRole('button', { name: 'Cards' }));
+    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
+    fireEvent.click(screen.getByRole('button', { name: en['blocks.gly.finder.or_custom'] }));
+    expect(screen.getByText('Made to order')).toBeTruthy();
+  });
+
+  it('gift finder: the block can switch the custom-gift answer off, and pick the order of suggestions', async () => {
+    state.categories = [CARDS];
+    state.settings = { gly_whatsapp: '966551234567' };
+    state.products = priced(25, 25, 25, 25);
+    block('gly-finder', { show_custom: false, sort: [{ value: 'ourSuggest' }], others_en: 'More ideas' });
+    fireEvent.click(await screen.findByRole('button', { name: 'Cards' }));
+    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
+    expect(state.listCalls[0]).toMatchObject({ sourceValue: [90], sort: 'ourSuggest' });
+    expect(screen.queryByText(en['blocks.gly.finder.opt_custom'])).toBeNull();
+    expect(screen.queryByText(en['blocks.gly.finder.or_custom'])).toBeNull();
+    // Every text of the finder can be reworded in the block.
+    expect(screen.getByRole('button', { name: 'More ideas' })).toBeTruthy();
   });
 });

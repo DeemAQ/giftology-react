@@ -66,15 +66,24 @@ export function hasProducts(node: CategoryNode): boolean {
 }
 
 /**
- * The categories a question offers: those with products, minus the ones the
- * merchant left out in the finder block.
+ * Whether an entry of the store's category list is a real category. Salla's list
+ * also carries the store's menu links (offers, brands, blog): those have a word for
+ * an id and no category page, so they are told apart by having no numeric id.
+ */
+export function isCategory(node: Partial<CategoryNode> | null | undefined): boolean {
+  return !!node && !!node.name && !!node.url && categoryNumericId(node) !== null;
+}
+
+/**
+ * The categories a question offers: the store's real categories that hold products
+ * (or do not say how many), minus the ones the merchant left out in the finder block.
  */
 export function offered(
   nodes: readonly CategoryNode[] | null | undefined,
   excluded: readonly Partial<CategoryNode>[] = []
 ): CategoryNode[] {
   return (nodes ?? [])
-    .filter((node) => node && node.name && node.url)
+    .filter(isCategory)
     .filter(hasProducts)
     .filter((node) => !excluded.some((left) => sameCategory(left, node)));
 }

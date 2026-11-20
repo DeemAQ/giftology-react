@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   allProductsUrl,
+  blockCopy,
+  settingCopy,
   categoryTiles,
   fillStoreDetails,
   homeAnchor,
@@ -33,6 +35,32 @@ describe('setting readers', () => {
     expect(settingChoice({ x: 'cake' }, 'x')).toBe('cake');
     expect(settingChoice({ x: [{ value: 'baby', label: 'Baby' }] }, 'x')).toBe('baby');
     expect(settingChoice({}, 'x')).toBe('');
+  });
+});
+
+describe('texts in two languages', () => {
+  it('reads the Arabic box on an Arabic page and the English box on any other', () => {
+    const data = { title: 'هدايا', title_en: 'Gifts' };
+    expect(blockCopy(data, 'title', 'ar')).toBe('هدايا');
+    expect(blockCopy(data, 'title', undefined)).toBe('هدايا');
+    expect(blockCopy(data, 'title', 'en')).toBe('Gifts');
+    expect(blockCopy(data, 'title', 'fr')).toBe('Gifts');
+  });
+
+  it("is empty when that language's box is empty, so the theme's own text shows", () => {
+    expect(blockCopy({ title: 'هدايا' }, 'title', 'en')).toBe('');
+    expect(blockCopy({ title_en: 'Gifts' }, 'title', 'ar')).toBe('');
+  });
+
+  it('reads a value Salla holds per language', () => {
+    expect(blockCopy({ title: { ar: 'هدايا', en: 'Gifts' } }, 'title', 'en')).toBe('Gifts');
+  });
+
+  it('does the same for a setting', () => {
+    const settings = { gly_footer_about: ' متجر ', gly_footer_about_en: 'A store' };
+    expect(settingCopy(settings, 'gly_footer_about', 'ar')).toBe('متجر');
+    expect(settingCopy(settings, 'gly_footer_about', 'en')).toBe('A store');
+    expect(settingCopy({ gly_footer_about: 'متجر' }, 'gly_footer_about', 'en')).toBe('');
   });
 });
 

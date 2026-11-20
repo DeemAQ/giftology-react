@@ -18,6 +18,8 @@
 .gly-subcirc{display:flex;flex-direction:column;align-items:center;gap:.45rem;width:84px;font-weight:700;font-size:.86rem;line-height:1.3;text-align:center;color:var(--gly-ink)}
 .gly-subcirc__ic{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid rgba(74,63,53,.1);box-shadow:var(--gly-shadow-sm);overflow:hidden;color:var(--gly-teal-deep);transition:.25s}
 .gly-subcirc__ic img{width:40px;height:40px;object-fit:contain;display:block}
+/* photos fill the circle (the "image fills the circle" choice in the theme settings) */
+.gly-subcats--photos .gly-subcirc__ic img{width:100%;height:100%;object-fit:cover}
 .gly-subcirc__ic .gly-ico{width:30px;height:30px}
 .gly-subcirc:hover .gly-subcirc__ic{border-color:var(--gly-teal);transform:translateY(-3px)}
 .gly-subcirc:hover{color:var(--gly-teal-ink)}

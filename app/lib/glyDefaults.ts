@@ -1,13 +1,13 @@
 /**
  * The rows the Giftology home blocks arrive with in the theme editor, so the merchant
- * sees the ready-made figures and steps and edits them instead of starting from an
- * empty list. `twilight.json` carries the same rows as each list's default `value`,
- * written in Arabic (the editor's language).
+ * sees the ready-made figures, cards and steps and edits them instead of starting
+ * from an empty list. `twilight.json` carries the same rows as each list's default
+ * `value`: every text in Arabic (`field`) and in English (`field_en`).
  *
- * A row text that still equals its Arabic default counts as untouched: the page shows
- * the theme's own wording for the visitor's language (`locales/*.json`), so the
- * English page is not left with Arabic text. `tests/lib/glyDefaults.test.ts` keeps
- * this file, `twilight.json` and `locales/ar.json` in step.
+ * A row whose English box is empty but whose Arabic is still the ready-made text is
+ * shown from the locale files on an English page, so it is never left with Arabic
+ * (`rowText` in `giftology.ts`). `tests/lib/glyDefaults.test.ts` keeps this file,
+ * `twilight.json` and the locale files in step.
  */
 
 /** One ready-made row: field id to the locale key of its text. */
@@ -20,6 +20,11 @@ export const DEFAULT_ROWS: Record<string, DefaultRow[]> = {
     { value: 'blocks.gly.hero.stat_occasions_value', label: 'blocks.gly.hero.stat_occasions' },
     { value: 'blocks.gly.hero.stat_rating_value', label: 'blocks.gly.hero.stat_rating' },
     { value: 'blocks.gly.hero.stat_since_value', label: 'blocks.gly.hero.stat_since' },
+  ],
+  'hero.cards': [
+    { title: 'blocks.gly.hero.mini_wrap_t', text: 'blocks.gly.hero.mini_wrap_d' },
+    { title: 'blocks.gly.hero.mini_fast_t', text: 'blocks.gly.hero.mini_fast_d' },
+    { title: 'blocks.gly.hero.mini_card_t', text: 'blocks.gly.hero.mini_card_d' },
   ],
   'custom.steps': [
     { title: 'blocks.gly.custom.step1_t', text: 'blocks.gly.custom.step1_d' },
@@ -44,6 +49,12 @@ export const DEFAULT_TEXTS_AR: Record<string, string> = {
   'blocks.gly.hero.stat_rating': 'تقييم العملاء',
   'blocks.gly.hero.stat_since_value': '2018',
   'blocks.gly.hero.stat_since': 'نخدمكم منذ',
+  'blocks.gly.hero.mini_wrap_t': 'تغليف يدوي',
+  'blocks.gly.hero.mini_wrap_d': 'بأيدي فنانينا',
+  'blocks.gly.hero.mini_fast_t': 'توصيل سريع',
+  'blocks.gly.hero.mini_fast_d': 'داخل الرياض',
+  'blocks.gly.hero.mini_card_t': 'بطاقة مجانية',
+  'blocks.gly.hero.mini_card_d': 'رسالة شخصية',
   'blocks.gly.custom.step1_t': 'تواصل معنا بفكرتك',
   'blocks.gly.custom.step1_d': 'أخبرنا عن المناسبة، الميزانية، وما يحبّه الشخص.',
   'blocks.gly.custom.step2_t': 'نرسل لك عرض السعر',
