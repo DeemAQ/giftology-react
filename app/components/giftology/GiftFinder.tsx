@@ -20,7 +20,7 @@ import {
   suggestions,
 } from '../../lib/giftFinder';
 import type { BudgetBand, CategoryNode } from '../../lib/giftFinder';
-import { ProductCard } from '../product';
+import { withImageFallback } from '../../lib/productImage';
 import { categoryTreeQuery } from './categoryTree';
 import { SparkIcon } from './icons';
 import { useGly } from './useGly';
@@ -52,6 +52,36 @@ function fill(template: string, parts: Record<string, ReactNode>): ReactNode {
 type Step = 'category' | 'kind' | 'budget' | 'result';
 
 /**
+ * One suggestion: picture, name and price, the whole of it a link to the product.
+ * No cart or wishlist button here; the visitor chooses on the product's own page.
+ */
+function Pick({
+  item,
+  price,
+}: {
+  item: { name?: string; url?: string; image?: { url?: string } | null; thumbnail?: string | null };
+  price: ReactNode;
+}) {
+  const { product: shown } = withImageFallback(item as Parameters<typeof withImageFallback>[0]);
+  return (
+    <Link className="gly-qpick" to={item.url}>
+      {/* The name beside it says what the picture is. */}
+      <img
+        className="gly-qpick__img"
+        src={shown.image?.url}
+        alt=""
+        width={230}
+        height={170}
+        loading="lazy"
+        decoding="async"
+      />
+      <span className="gly-qpick__name">{item.name}</span>
+      {price && <span className="gly-qpick__price">{price}</span>}
+    </Link>
+  );
+}
+
+/**
  * Gift finder. It asks up to three questions and suggests gifts that fit:
  *
  * 1. what the visitor is looking for: the store's top-level categories, plus
@@ -64,9 +94,12 @@ type Step = 'category' | 'kind' | 'budget' | 'result';
  *
  * The answer is up to three in-stock products that fit (one at a time on a phone,
  * where three would crowd the screen), best sellers first unless the block picks
- * another order. Under them one button opens the whole category; "show others" and
- * the custom-gift offer are text links, so the page is not a wall of buttons. Nothing is set up by hand: the questions follow the category tree, so
- * they change when the merchant changes the categories. The finder block can leave
+ * another order. The suggestions are the only thing with any weight there: each is
+ * its picture, name and price, and opens the product. Everything under them is a
+ * text link: show others, the whole category, the custom-gift offer, start over.
+ * (When nothing fits, the category link is the one button.) Nothing is set up by
+ * hand: the questions follow the category tree, so they change when the merchant
+ * changes the categories. The finder block can leave
  * categories out (`exclude`) and reword every text: a field named like a text's
  * locale key (`q_budget`, `others`, `back`) replaces it.
  */
@@ -147,8 +180,7 @@ export function GiftFinder({ data }: { data?: BlockData }) {
   const back = () =>
     move(() => {
       setRound(0);
-      if (custom) return setCustom(false);
-      if (step === 'result' && budget !== null) return setBudget(null);
+      // Only the questions have a "back": from the budget to the kind, from the kind to the start.
       if (kind !== null) {
         setBudget(null);
         return setKind(null);
@@ -206,7 +238,8 @@ export function GiftFinder({ data }: { data?: BlockData }) {
             <h2>
               {own('title_pre')} <em>{own('title_em')}</em>
             </h2>
-            <p className="gly-qlede">{own('lede')}</p>
+            {/* The invitation to answer has done its job once the answer is up. */}
+            {step !== 'result' && <p className="gly-qlede">{own('lede')}</p>}
           </div>
 
           <div className="gly-qcard">
@@ -239,41 +272,40 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                     {picks.length > 0 ? (
                       <div className="gly-qpicks">
                         {picks.map((item) => (
-                          <ProductCard key={item.id} product={item} layout="vertical" />
+                          <Pick key={item.id} item={item} price={money(priceOf(item))} />
                         ))}
                       </div>
                     ) : (
                       <p>{f('empty')}</p>
                     )}
-                    {target && (
-                      <div className="gly-qactions">
-                        <Link className="gly-btn gly-btn-primary" to={target.url}>
-                          {f('see_all').replace('{category}', target.name)}
-                        </Link>
-                      </div>
-                    )}
-                    {(matches.length > shownAtOnce || offerCustom) && (
+                    {(matches.length > shownAtOnce || target) && (
                       <div className="gly-qlinks">
                         {matches.length > shownAtOnce && (
                           <button type="button" className="gly-qlink" onClick={() => setRound((value) => value + 1)}>
                             {f('others')}
                           </button>
                         )}
-                        {/* The visitor has already seen what there is: straight to the chat. */}
-                        {offerCustom && (
-                          <a className="gly-qlink" href={chat} target="_blank" rel="noopener">
-                            <SparkIcon />
-                            {f('or_custom')}
-                          </a>
+                        {/* With nothing to suggest, the category is the one thing left to offer. */}
+                        {target && (
+                          <Link className={picks.length > 0 ? 'gly-qlink' : 'gly-btn gly-btn-primary'} to={target.url}>
+                            {f('see_all').replace('{category}', target.name)}
+                          </Link>
                         )}
+                      </div>
+                    )}
+                    {/* The visitor has already seen what there is: straight to the chat. */}
+                    {offerCustom && (
+                      <div className="gly-qlinks">
+                        <a className="gly-qlink" href={chat} target="_blank" rel="noopener">
+                          <SparkIcon />
+                          {f('or_custom')}
+                        </a>
                       </div>
                     )}
                   </>
                 )}
+                {/* One way out of the answer; "back" belongs to the questions. */}
                 <div className="gly-qnav">
-                  <button type="button" className="gly-qlink" onClick={back}>
-                    {f('back')}
-                  </button>
                   <button type="button" className="gly-qlink" onClick={restart}>
                     ↺ {f('restart')}
                   </button>

@@ -99,6 +99,9 @@ vi.mock('../../../app/components/product', () => ({
   ),
 }));
 
+/** The gift finder's suggestions: each is a link to its product, named by the product. */
+const picks = () => [...document.querySelectorAll<HTMLAnchorElement>('.gly-qpick')];
+
 function renderWithQuery(ui: ReactNode) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
@@ -131,7 +134,14 @@ const NEWBORN = {
 const CARDS = { id: 'xa2', id_: 90, name: 'Cards', url: 'https://shop.test/en/cards/c90', products_count: 3 };
 const EMPTY = { id: 'xa3', id_: 91, name: 'Coming soon', url: 'https://shop.test/en/soon/c91', products_count: 0 };
 const priced = (...prices: number[]) =>
-  prices.map((price, index) => ({ id: index + 1, name: `Gift ${price}`, price, status: 'sale' }));
+  prices.map((price, index) => ({
+    id: index + 1,
+    name: `Gift ${price}`,
+    price,
+    status: 'sale',
+    url: `https://shop.test/en/gift/p${index + 1}`,
+    image: { url: `https://cdn.test/gift-${index + 1}.jpg` },
+  }));
 
 describe('PromoBar', () => {
   it('shows the three curated phrases when the merchant set none', () => {
@@ -326,7 +336,11 @@ describe('GiftFinder', () => {
     expect(options(container)).toEqual(['Up to 100 SAR', '100 SAR to 300 SAR', 'Over 300 SAR', en['blocks.gly.finder.budget_any']]);
     pick('100 SAR to 300 SAR');
 
-    expect(screen.getAllByTestId('product-card').map((card) => card.textContent)).toEqual(['Gift 120', 'Gift 300']);
+    // Picture, name and price, and the whole of it opens the product: no buttons of its own.
+    expect(picks().map((card) => card.textContent)).toEqual(['Gift 120120 SAR', 'Gift 300300 SAR']);
+    expect(picks()[0].getAttribute('href')).toBe('https://shop.test/en/gift/p4');
+    expect(picks()[0].querySelector('img')?.getAttribute('src')).toBe('https://cdn.test/gift-4.jpg');
+    expect(picks()[0].querySelector('button')).toBeNull();
     expect(screen.getByText('Our picks from Baby boy')).toBeTruthy();
     expect(screen.getByText('See all Baby boy').getAttribute('href')).toBe('https://shop.test/en/baby-boy/c79');
     // Two fit, so there are no others to show.
@@ -339,7 +353,7 @@ describe('GiftFinder', () => {
     state.products = priced(25, 25, 25, 25);
     renderWithQuery(<GiftFinder />);
     pick((await screen.findByRole('button', { name: 'Cards' })).textContent as string);
-    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
+    await waitFor(() => expect(picks()).toHaveLength(3));
     expect(state.listCalls[0]).toMatchObject({ sourceValue: [90] });
     expect(screen.queryByText(en['blocks.gly.finder.q_budget'])).toBeNull();
   });
@@ -349,7 +363,7 @@ describe('GiftFinder', () => {
     state.products = priced(25, 25, 25, 25, 25).map((item) => ({ ...item, name: `Gift ${item.id}` }));
     renderWithQuery(<GiftFinder />);
     pick((await screen.findByRole('button', { name: 'Cards' })).textContent as string);
-    const shown = () => screen.getAllByTestId('product-card').map((card) => card.textContent);
+    const shown = () => picks().map((card) => card.querySelector('.gly-qpick__name')?.textContent);
     await waitFor(() => expect(shown()).toEqual(['Gift 1', 'Gift 2', 'Gift 3']));
     pick(en['blocks.gly.finder.others']);
     // The next ones, starting again from the best seller once the list runs out.
@@ -362,24 +376,29 @@ describe('GiftFinder', () => {
     state.products = priced(25, 25, 25, 25).map((item) => ({ ...item, name: `Gift ${item.id}` }));
     renderWithQuery(<GiftFinder />);
     pick((await screen.findByRole('button', { name: 'Cards' })).textContent as string);
-    const shown = () => screen.getAllByTestId('product-card').map((card) => card.textContent);
+    const shown = () => picks().map((card) => card.querySelector('.gly-qpick__name')?.textContent);
     await waitFor(() => expect(shown()).toEqual(['Gift 1']));
     pick(en['blocks.gly.finder.others']);
     expect(shown()).toEqual(['Gift 2']);
   });
 
-  it('keeps one button under the suggestions; the rest are text links', async () => {
+  it('leaves the suggestions as the only thing with weight: everything under them is a text link', async () => {
     state.categories = [CARDS];
     state.settings = { gly_whatsapp: '966551234567' };
     state.products = priced(25, 25, 25, 25);
     const { container } = renderWithQuery(<GiftFinder />);
     pick((await screen.findByRole('button', { name: 'Cards' })).textContent as string);
-    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
-    expect([...container.querySelectorAll('.gly-qresult .gly-btn')].map((button) => button.textContent)).toEqual(['See all Cards']);
-    expect([...container.querySelectorAll('.gly-qlinks .gly-qlink')].map((link) => link.textContent)).toEqual([
+    await waitFor(() => expect(picks()).toHaveLength(3));
+    expect(container.querySelector('.gly-qresult .gly-btn')).toBeNull();
+    expect([...container.querySelectorAll('.gly-qresult .gly-qlink')].map((link) => link.textContent)).toEqual([
       en['blocks.gly.finder.others'],
+      'See all Cards',
       en['blocks.gly.finder.or_custom'],
+      `↺ ${en['blocks.gly.finder.restart']}`,
     ]);
+    // "Back" belongs to the questions, and so does the invitation to answer them.
+    expect(screen.queryByText(en['blocks.gly.finder.back'])).toBeNull();
+    expect(container.querySelector('.gly-qlede')).toBeNull();
   });
 
   it('links to the category when nothing in it is in stock', async () => {
@@ -388,8 +407,11 @@ describe('GiftFinder', () => {
     renderWithQuery(<GiftFinder />);
     pick((await screen.findByRole('button', { name: 'Cards' })).textContent as string);
     await screen.findByText(en['blocks.gly.finder.empty']);
-    expect(screen.queryByTestId('product-card')).toBeNull();
-    expect(screen.getByText('See all Cards').getAttribute('href')).toBe('https://shop.test/en/cards/c90');
+    expect(picks()).toHaveLength(0);
+    // Nothing to suggest, so the category is the one button.
+    const all = screen.getByText('See all Cards');
+    expect(all.getAttribute('href')).toBe('https://shop.test/en/cards/c90');
+    expect(all.className).toContain('gly-btn');
   });
 
   it('offers a custom gift while there is a number to chat with, and ends on the chat link', async () => {
@@ -408,11 +430,6 @@ describe('GiftFinder', () => {
     pick((await screen.findByRole('button', { name: 'Newborn' })).textContent as string);
     pick('All Newborn');
     await screen.findByText(en['blocks.gly.finder.q_budget']);
-    pick(en['blocks.gly.finder.budget_any']);
-    expect(screen.getAllByTestId('product-card')).toHaveLength(3);
-
-    pick(en['blocks.gly.finder.back']);
-    expect(container.querySelector('.gly-qq')?.textContent).toBe(en['blocks.gly.finder.q_budget']);
     pick(en['blocks.gly.finder.back']);
     expect(container.querySelector('.gly-qq')?.textContent).toBe('Which kind of Newborn?');
     pick(en['blocks.gly.finder.back']);
@@ -422,6 +439,8 @@ describe('GiftFinder', () => {
     pick('Baby girl');
     await screen.findByText(en['blocks.gly.finder.q_budget']);
     pick(en['blocks.gly.finder.budget_any']);
+    expect(picks()).toHaveLength(3);
+    // The answer has one way out.
     fireEvent.click(screen.getByText(new RegExp(en['blocks.gly.finder.restart'])));
     expect(container.querySelector('.gly-qq')?.textContent).toBe(en['blocks.gly.finder.q_category']);
   });
@@ -934,9 +953,9 @@ describe('Giftology sections as home blocks', () => {
     );
 
     // Beside the suggestions the same offer opens the chat directly, with the same message.
-    fireEvent.click(screen.getByText(en['blocks.gly.finder.back']));
+    fireEvent.click(screen.getByText(new RegExp(en['blocks.gly.finder.restart'])));
     fireEvent.click(screen.getByRole('button', { name: 'Cards' }));
-    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
+    await waitFor(() => expect(picks()).toHaveLength(3));
     const direct = screen.getByRole('link', { name: en['blocks.gly.finder.or_custom'] });
     expect(direct.getAttribute('href')).toBe('https://wa.me/966551234567?text=A%20custom%20gift%20please');
     expect(direct.getAttribute('target')).toBe('_blank');
@@ -948,7 +967,7 @@ describe('Giftology sections as home blocks', () => {
     state.products = priced(25, 25, 25, 25);
     block('gly-finder', { show_custom: false, sort: [{ value: 'ourSuggest' }], others_en: 'More ideas' });
     fireEvent.click(await screen.findByRole('button', { name: 'Cards' }));
-    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
+    await waitFor(() => expect(picks()).toHaveLength(3));
     expect(state.listCalls[0]).toMatchObject({ sourceValue: [90], sort: 'ourSuggest' });
     expect(screen.queryByText(en['blocks.gly.finder.opt_custom'])).toBeNull();
     expect(screen.queryByText(en['blocks.gly.finder.or_custom'])).toBeNull();
