@@ -17,7 +17,7 @@ const state = {
   store: {} as Record<string, unknown>,
   settings: {} as Record<string, unknown>,
   locale: 'en',
-  products: [] as { id: number; name: string; price?: number; status?: string }[],
+  products: [] as { id: number; name: string; price?: number; starting_price?: number; status?: string }[],
   categories: [] as Record<string, unknown>[],
   phone: false,
   listCalls: [] as Record<string, unknown>[],
@@ -399,6 +399,15 @@ describe('GiftFinder', () => {
     // "Back" belongs to the questions, and so does the invitation to answer them.
     expect(screen.queryByText(en['blocks.gly.finder.back'])).toBeNull();
     expect(container.querySelector('.gly-qlede')).toBeNull();
+  });
+
+  it('prices a product sold with options at its "starts from" price, in the store\'s own words', async () => {
+    state.categories = [CARDS];
+    state.products = [{ ...priced(228)[0], starting_price: 115 }];
+    renderWithQuery(<GiftFinder />);
+    pick((await screen.findByRole('button', { name: 'Cards' })).textContent as string);
+    await waitFor(() => expect(picks()).toHaveLength(1));
+    expect(picks()[0].querySelector('.gly-qpick__price')?.textContent).toBe('pages.products.starting_price 115 SAR');
   });
 
   it('links to the category when nothing in it is in stock', async () => {

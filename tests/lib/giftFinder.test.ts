@@ -83,6 +83,9 @@ describe('products', () => {
     expect(priceOf({ id: 1, price: 0 })).toBeNull();
     expect(priceOf({ id: 1, price: 'ask us' })).toBeNull();
     expect(priceOf({ id: 1 })).toBeNull();
+    // Sold with options: the "starts from" price, as the store shows it.
+    expect(priceOf({ id: 1, price: 228.85, starting_price: 115 })).toBe(115);
+    expect(priceOf({ id: 1, price: 228.85, starting_price: null })).toBe(228.85);
   });
 
   it('counts only what can be bought now as in stock', () => {

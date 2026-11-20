@@ -26,6 +26,8 @@ export interface FinderProduct {
   id: number | string;
   price?: number | string | null;
   price_as_float?: number;
+  /** The cheapest choice of a product sold with options; the store shows it as "starts from". */
+  starting_price?: number | string | null;
   status?: string;
   is_available?: boolean;
   is_out_of_stock?: boolean;
@@ -88,14 +90,24 @@ export function offered(
     .filter((node) => !excluded.some((left) => sameCategory(left, node)));
 }
 
-/** What the customer pays for a product, as a number; `null` when it has no usable price. */
+/** A price field as a positive number, else `null`. */
+function amount(raw: number | string | null | undefined): number | null {
+  const value = typeof raw === 'string' ? Number(raw.replace(/,/g, '')) : raw;
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
+}
+
+/** The "starts from" price of a product sold with options; `null` for any other product. */
+export function startingPriceOf(product: FinderProduct): number | null {
+  return amount(product.starting_price);
+}
+
+/**
+ * What the customer pays for a product, as a number; `null` when it has no usable price.
+ * A product with options counts at its "starts from" price, the one the store shows, so
+ * the budget question and the price under a suggestion agree with the product's own page.
+ */
 export function priceOf(product: FinderProduct): number | null {
-  if (typeof product.price_as_float === 'number' && product.price_as_float > 0) {
-    return product.price_as_float;
-  }
-  const raw = product.price;
-  const price = typeof raw === 'string' ? Number(raw.replace(/,/g, '')) : raw;
-  return typeof price === 'number' && Number.isFinite(price) && price > 0 ? price : null;
+  return startingPriceOf(product) ?? amount(product.price_as_float) ?? amount(product.price);
 }
 
 /** A product a visitor can buy now. */

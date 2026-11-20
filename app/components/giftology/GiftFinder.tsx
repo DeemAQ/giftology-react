@@ -16,6 +16,7 @@ import {
   offered,
   priceOf,
   inStock,
+  startingPriceOf,
   suggestionRound,
   suggestions,
 } from '../../lib/giftFinder';
@@ -58,9 +59,12 @@ type Step = 'category' | 'kind' | 'budget' | 'result';
 function Pick({
   item,
   price,
+  from,
 }: {
   item: { name?: string; url?: string; image?: { url?: string } | null; thumbnail?: string | null };
   price: ReactNode;
+  /** The store's own "starts from" wording, for a product sold with options. */
+  from?: string;
 }) {
   const { product: shown } = withImageFallback(item as Parameters<typeof withImageFallback>[0]);
   return (
@@ -76,7 +80,12 @@ function Pick({
         decoding="async"
       />
       <span className="gly-qpick__name">{item.name}</span>
-      {price && <span className="gly-qpick__price">{price}</span>}
+      {price && (
+        <span className="gly-qpick__price">
+          {from && <span className="gly-qpick__from">{from} </span>}
+          {price}
+        </span>
+      )}
     </Link>
   );
 }
@@ -272,7 +281,13 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                     {picks.length > 0 ? (
                       <div className="gly-qpicks">
                         {picks.map((item) => (
-                          <Pick key={item.id} item={item} price={money(priceOf(item))} />
+                          <Pick
+                            key={item.id}
+                            item={item}
+                            price={money(priceOf(item))}
+                            // The same words the product's own page uses.
+                            from={startingPriceOf(item) === null ? undefined : t('pages.products.starting_price')}
+                          />
                         ))}
                       </div>
                     ) : (
