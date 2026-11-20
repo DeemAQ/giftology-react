@@ -31,8 +31,27 @@
 /* ============================================================
    Top promo bar (§5.1)
    ============================================================ */
-.gly-topbar{background:var(--gly-teal-ink);color:#eafaf8;font-size:.86rem;text-align:center;padding:.6rem 1rem;font-weight:600;font-family:var(--gly-font-body)}
+.gly-topbar{background:var(--gly-teal-ink);color:#eafaf8;font-size:.86rem;text-align:center;padding:.6rem 1rem;font-weight:600;font-family:var(--gly-font-body);overflow:hidden}
 .gly-topbar b{color:var(--gly-gold-soft)}
+/* every phrase on one line, centred, while they fit */
+.gly-topbar__track{display:flex;justify-content:center;white-space:nowrap}
+.gly-topbar__group{flex:0 0 auto}
+/* the second copy is only there to close the loop when the phrases move */
+.gly-topbar__group + .gly-topbar__group{display:none}
+/* Where the phrases do not fit they travel across the bar in a loop, so all of them show
+   and the bar stays one line. `PromoBar` measures and says which (`--moving` / `--still`).
+   The track is two copies wide and slides by exactly one: towards the left in English,
+   towards the right in Arabic, so the start of a phrase comes in first either way. */
+@keyframes gly-ticker{to{transform:translateX(var(--gly-ticker-to,-50%))}}
+[dir='rtl'] .gly-topbar{--gly-ticker-to:50%}
+@media (prefers-reduced-motion: no-preference){
+  .gly-topbar--moving .gly-topbar__track{justify-content:flex-start;width:max-content;animation:gly-ticker var(--gly-ticker,22s) linear infinite}
+  .gly-topbar--moving .gly-topbar__group{padding-inline-end:2.5rem}
+  .gly-topbar--moving .gly-topbar__group + .gly-topbar__group{display:block}
+  .gly-topbar--moving .gly-topbar__end{display:none}
+  /* a pointer over the bar, or a finger held on it, stops the phrases to be read */
+  .gly-topbar:hover .gly-topbar__track,.gly-topbar:active .gly-topbar__track{animation-play-state:paused}
+}
 
 /* ============================================================
    Header / nav (§5.2)
@@ -432,8 +451,14 @@
   .gly-hero-stats{margin-top:1.5rem;gap:.8rem .5rem;justify-content:space-between}
   .gly-hero-stats b{font-size:1.3rem}
   .gly-hero-stats span{font-size:.72rem}
-  /* one promo phrase, so the bar stays one line */
-  .gly-topbar__phrase:not(.gly-topbar__phrase--main),.gly-topbar__phrase--main .gly-topbar__sep{display:none}
+}
+/* Before the bar has measured itself (the page as the server sent it), several phrases on a
+   phone are taken not to fit, so they move from the first paint instead of being cut off. */
+@media (prefers-reduced-motion: no-preference) and (max-width:767px){
+  .gly-topbar--many:not(.gly-topbar--still) .gly-topbar__track{justify-content:flex-start;width:max-content;animation:gly-ticker var(--gly-ticker,22s) linear infinite}
+  .gly-topbar--many:not(.gly-topbar--still) .gly-topbar__group{padding-inline-end:2.5rem}
+  .gly-topbar--many:not(.gly-topbar--still) .gly-topbar__group + .gly-topbar__group{display:block}
+  .gly-topbar--many:not(.gly-topbar--still) .gly-topbar__end{display:none}
 }
 
 /* ============================================================
@@ -469,5 +494,9 @@
   /* The full-screen menu opens and closes without sliding across. */
   .gly-mmenu,.gly-mmenu.open{transition:none}
   /* The gift finder's loading spinner keeps turning: it says something is happening. */
+  /* The top bar's phrases never move: where they do not fit one line they wrap onto more. */
+  .gly-topbar__track{animation:none;white-space:normal}
+  .gly-topbar__group{flex:0 1 auto}
+  .gly-topbar__phrase{white-space:nowrap}
 }
 

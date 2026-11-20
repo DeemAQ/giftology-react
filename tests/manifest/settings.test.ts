@@ -75,7 +75,7 @@ describe('theme editor settings (twilight.json)', () => {
   });
 
   it('gives every text the visitor reads an English box beside its Arabic one', () => {
-    for (const id of ['gly_promo_1', 'gly_promo_2', 'gly_promo_3', 'gly_footer_about', 'gly_whatsapp_msg']) {
+    for (const id of ['gly_promo_1', 'gly_promo_2', 'gly_promo_3', 'gly_footer_about', 'gly_whatsapp_msg', 'gly_whatsapp_custom_msg']) {
       const index = entries.indexOf(byId.get(id) as Entry);
       expect(index, id).toBeGreaterThanOrEqual(0);
       expect(entries[index + 1]?.id, id).toBe(`${id}_en`);

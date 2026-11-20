@@ -33,6 +33,10 @@ export function useGly() {
       number,
       settingCopy(settings, 'gly_whatsapp_msg', locale) || translate('blocks.gly.wa.general_msg')
     ),
-    whatsappCustom: whatsappLink(number, translate('blocks.gly.wa.custom_msg')),
+    // The custom-gift message set in the theme settings; a block's own message still wins.
+    whatsappCustom: whatsappLink(
+      number,
+      settingCopy(settings, 'gly_whatsapp_custom_msg', locale) || translate('blocks.gly.wa.custom_msg')
+    ),
   };
 }

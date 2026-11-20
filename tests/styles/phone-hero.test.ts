@@ -19,6 +19,17 @@ function phoneRule(selector: string): Rule | undefined {
   return found;
 }
 
+/** Every rule for `selector`, with the media query it sits in (`''` for none). */
+function rulesFor(selector: string): { rule: Rule; media: string }[] {
+  const found: { rule: Rule; media: string }[] = [];
+  root.walkRules((rule) => {
+    if (!rule.selectors.includes(selector)) return;
+    const parent = rule.parent as AtRule | undefined;
+    found.push({ rule, media: parent?.type === 'atrule' && parent.name === 'media' ? parent.params : '' });
+  });
+  return found;
+}
+
 function decl(rule: Rule | undefined, prop: string): string | undefined {
   let value: string | undefined;
   rule?.walkDecls(prop, (d) => {
@@ -42,8 +53,16 @@ describe('home hero on a phone', () => {
     expect(decl(rest, 'display')).toBe('none');
   });
 
-  it('shows one promo phrase so the bar stays one line', () => {
-    const others = phoneRule('.gly-topbar__phrase:not(.gly-topbar__phrase--main)');
-    expect(decl(others, 'display')).toBe('none');
+  it('hides no promo phrase: on a phone they all show, moving when they do not fit', () => {
+    expect(phoneRule('.gly-topbar__phrase:not(.gly-topbar__phrase--main)')).toBeUndefined();
+    const moving = rulesFor('.gly-topbar--moving .gly-topbar__track');
+    expect(moving).toHaveLength(1);
+    expect(decl(moving[0].rule, 'animation')).toContain('gly-ticker');
+    // Only for a visitor who has not asked for less motion.
+    expect(moving[0].media).toContain('prefers-reduced-motion: no-preference');
+    // Before the bar has measured itself, a phone with several phrases moves them from the first paint.
+    const guess = rulesFor('.gly-topbar--many:not(.gly-topbar--still) .gly-topbar__track');
+    expect(guess[0].media).toContain('max-width: 767px');
+    expect(guess[0].media).toContain('prefers-reduced-motion: no-preference');
   });
 });

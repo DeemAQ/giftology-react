@@ -159,19 +159,49 @@ describe('PromoBar', () => {
     expect(container.querySelector('b')?.textContent).toContain('Ships today');
   });
 
-  it('marks the last phrase as the one a phone keeps', () => {
+  it('shows every phrase on every screen, with a second copy to close the loop when they move', () => {
     state.settings = { gly_promo_1_en: 'Free wrap', gly_promo_3_en: 'Ships today' };
     const { container } = render(<PromoBar />);
-    const phrases = [...container.querySelectorAll('.gly-topbar__phrase')];
-    expect(phrases).toHaveLength(2);
-    expect(container.querySelector('.gly-topbar__phrase--main')?.textContent).toContain('Ships today');
-    expect(phrases[0].classList.contains('gly-topbar__phrase--main')).toBe(false);
+    const groups = [...container.querySelectorAll('.gly-topbar__group')];
+    expect(groups).toHaveLength(2);
+    for (const group of groups) {
+      expect([...group.querySelectorAll('.gly-topbar__phrase')].map((phrase) => phrase.textContent?.replace(/[\s·]/g, ''))).toEqual([
+        'Freewrap',
+        'Shipstoday',
+      ]);
+    }
+    // Screen readers hear the phrases once.
+    expect(groups[0].getAttribute('aria-hidden')).toBeNull();
+    expect(groups[1].getAttribute('aria-hidden')).toBe('true');
+    // Several phrases: a phone moves them until the bar has measured itself.
+    expect(container.querySelector('.gly-topbar')?.className).toBe('gly-topbar gly-topbar--many');
   });
 
-  it('keeps a single phrase visible on a phone', () => {
+  it('a single phrase stands still until measured', () => {
     state.settings = { gly_promo_2_en: 'Only one' };
     const { container } = render(<PromoBar />);
-    expect(container.querySelector('.gly-topbar__phrase--main')?.textContent).toBe('Only one');
+    expect(container.querySelector('.gly-topbar')?.className).toBe('gly-topbar');
+    expect(container.querySelector('.gly-topbar__phrase')?.textContent).toBe('Only one');
+  });
+
+  it('moves the phrases when they do not fit the bar, and stands them still when they do', () => {
+    const widths = { bar: 320, words: 600 };
+    const client = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(() => widths.bar);
+    const rect = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(() => ({ width: widths.words }) as DOMRect);
+    const narrow = render(<PromoBar />);
+    const bar = narrow.container.querySelector<HTMLElement>('.gly-topbar');
+    expect(bar?.classList.contains('gly-topbar--moving')).toBe(true);
+    // 45px a second over the phrases and the gap behind them.
+    expect(bar?.style.getPropertyValue('--gly-ticker')).toBe('14s');
+    narrow.unmount();
+
+    widths.bar = 1200;
+    const wide = render(<PromoBar />);
+    expect(wide.container.querySelector('.gly-topbar')?.classList.contains('gly-topbar--still')).toBe(true);
+    client.mockRestore();
+    rect.mockRestore();
   });
 
   it('shows each language its own phrases', () => {
@@ -865,6 +895,22 @@ describe('Giftology sections as home blocks', () => {
       'https://wa.me/966551234567?text=Hi%2C%20a%20custom%20box%20please'
     );
     chat.unmount();
+
+    // Without one, the custom-gift message from the theme settings, in the page's language.
+    state.settings = {
+      gly_whatsapp: '966551234567',
+      gly_whatsapp_custom_msg: 'أريد هدية مخصّصة',
+      gly_whatsapp_custom_msg_en: 'A custom gift, please',
+    };
+    const fromSettings = block('gly-custom', {});
+    expect(fromSettings.container.querySelector('a.gly-btn-wa')?.getAttribute('href')).toBe(
+      'https://wa.me/966551234567?text=A%20custom%20gift%2C%20please'
+    );
+    fromSettings.unmount();
+    // The block's own message still wins over it.
+    const own = block('gly-custom', { wa_message_en: 'Hi, a custom box please' });
+    expect(own.container.querySelector('a.gly-btn-wa')?.getAttribute('href')).toContain('Hi%2C%20a%20custom%20box');
+    own.unmount();
     state.settings = {};
 
     const ready = block('gly-how', {});
