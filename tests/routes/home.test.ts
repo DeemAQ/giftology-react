@@ -4,6 +4,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const LATEST = { queryKey: ['products', 'list', 'latest'] };
+const CATEGORIES = { queryKey: ['categories', 'list'] };
 
 vi.mock('@tanstack/react-router', () => ({
   createFileRoute: () => (options: unknown) => options,
@@ -24,6 +25,9 @@ vi.mock('../../app/assets/images/teal_pattern_with_bg.webp', () => ({ default: '
 vi.mock('../../app/components/giftology/GiftologyHome', () => ({ GiftologyHome: () => null }));
 vi.mock('../../app/components/giftology/LatestProducts', () => ({
   latestProductsQuery: () => LATEST,
+}));
+vi.mock('../../app/components/giftology/categoryTree', () => ({
+  categoryTreeQuery: () => CATEGORIES,
 }));
 
 type Loader = (ctx: {
@@ -69,19 +73,21 @@ describe('home route loader', () => {
     });
   });
 
-  it('waits for the latest products on the server, so they are in the HTML', async () => {
+  it('waits for the latest products and the category tree on the server, so they are in the HTML', async () => {
     vi.stubEnv('SSR', true);
-    let finished = false;
+    let finished = 0;
     const prefetchQuery = vi.fn(async () => {
       await Promise.resolve();
-      finished = true;
+      finished += 1;
     });
     await loaderWith(prefetchQuery);
     expect(prefetchQuery).toHaveBeenCalledWith(LATEST);
-    expect(finished).toBe(true);
+    // The circles and the gift finder's first question are built from it.
+    expect(prefetchQuery).toHaveBeenCalledWith(CATEGORIES);
+    expect(finished).toBe(2);
   });
 
-  it('starts the products request in the browser without holding the page back', async () => {
+  it('starts those requests in the browser without holding the page back', async () => {
     vi.stubEnv('SSR', false);
     const prefetchQuery = vi.fn(() => new Promise<void>(() => {}));
     // Resolves although the request never finishes.

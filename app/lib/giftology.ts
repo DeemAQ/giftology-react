@@ -3,6 +3,10 @@
  * bespoke sections share (category pages, WhatsApp). No React in here.
  */
 
+import { defaultTextKey } from './glyDefaults';
+import { offered, sameCategory } from './giftFinder';
+import type { CategoryNode } from './giftFinder';
+
 export type GlySettings = Record<string, unknown> | undefined | null;
 
 /**
@@ -79,6 +83,22 @@ export function blockRows(data: BlockData, id: string): Record<string, unknown>[
     .filter((row) => Object.values(row).some((value) => value !== null && value !== '' && value !== false));
 }
 
+/**
+ * A text of a list row. The lists arrive filled with the theme's ready-made rows in
+ * Arabic (`glyDefaults.ts`); a text the merchant left as it came is shown in the
+ * visitor's language from the locale files, and one they rewrote is shown as written.
+ */
+export function rowText(
+  row: BlockData,
+  id: string,
+  lang: string | undefined,
+  t: (key: string) => string
+): string {
+  const text = blockText(row, id, lang);
+  const key = text ? defaultTextKey(text) : undefined;
+  return key ? t(key) : text;
+}
+
 /** A block's link field (the editor's link picker): a URL, `{ url }` or a list of them; empty when unset. */
 export function blockLink(value: unknown): string {
   const first = Array.isArray(value) ? value[0] : value;
@@ -113,17 +133,11 @@ export function resolveCategoryUrl(value: unknown, fallback: string, lang?: stri
   return url;
 }
 
-/** Salla category pages end in `/c{id}`; the id, or `null`. */
-export function categoryIdFromUrl(url: string | null | undefined): number | null {
-  const match = String(url ?? '').match(/\/c(\d+)(?:[/?#]|$)/);
-  return match ? Number(match[1]) : null;
-}
-
 /**
- * The circles a merchant listed in the "category circles" home block. An unknown icon
- * falls back to the gift. A circle left without a name takes its icon's own name
- * (the baby icon is "newborn gifts"), in the visitor's language, so the six ready
- * circles need only a link each.
+ * The extra circles a merchant listed by hand in the "category circles" home block,
+ * for things that are not categories (the offers page, a store page). A row needs a
+ * link, a name or an image; one that only has an icon is skipped. An unknown icon
+ * falls back to the gift, and a circle left without a name takes its icon's own name.
  */
 export function blockTiles(
   data: BlockData,
@@ -132,15 +146,63 @@ export function blockTiles(
   lang: string | undefined,
   icons: Record<string, string>
 ): CategoryTile[] {
-  return blockRows(data, 'circles').map((row) => {
-    const chosen = choiceValue(row.icon);
-    const icon = icons[chosen] ? chosen : 'gift';
-    const preset = TILE_DEFAULTS.find((tile) => tile.icon === icon);
+  return blockRows(data, 'circles')
+    .filter((row) => blockLink(row.url) || blockText(row, 'name', lang) || blockLink(row.image))
+    .map((row) => {
+      const chosen = choiceValue(row.icon);
+      const icon = icons[chosen] ? chosen : 'gift';
+      const preset = TILE_DEFAULTS.find((tile) => tile.icon === icon);
+      return {
+        name: blockText(row, 'name', lang) || (preset ? t(preset.nameKey) : ''),
+        url: resolveCategoryUrl(row.url, allProductsUrl(homeUrl), lang),
+        image: blockLink(row.image),
+        icon,
+      };
+    });
+}
+
+/** The most circles drawn from the store's categories when the merchant picked none. */
+export const AUTO_CIRCLES = 12;
+
+/** Every category of a tree, parents before their children. */
+function flatten(nodes: readonly CategoryNode[]): CategoryNode[] {
+  return nodes.flatMap((node) => [node, ...flatten(node.sub_categories ?? node.items ?? [])]);
+}
+
+/**
+ * Circles for the store's own categories: each takes its category's name, page and
+ * image from Salla, so nothing is typed in the theme. A category without an image
+ * shows one of the brand icons: the one whose ready-made name it carries, else the gift.
+ *
+ * `picked` is what the merchant chose in the circles block, in their order; each is
+ * looked up in the store's tree for its current name and image. With nothing picked
+ * the circles are the top-level categories that hold products.
+ */
+export function categoryCircles(
+  tree: readonly CategoryNode[] | null | undefined,
+  picked: readonly Partial<CategoryNode>[],
+  t: (key: string, fallback?: string) => string
+): CategoryTile[] {
+  const all = flatten(tree ?? []);
+  const chosen = picked.length
+    ? picked
+        .filter((item) => item && typeof item === 'object')
+        .map((item) => {
+          const current = all.find(
+            (node) => sameCategory(item, node) || (!!item.url && node.url === item.url)
+          );
+          return { ...item, ...current };
+        })
+        .filter((item): item is CategoryNode => !!item.name && !!item.url)
+    : offered(tree).slice(0, AUTO_CIRCLES);
+
+  return chosen.map((node) => {
+    const preset = TILE_DEFAULTS.find((tile) => t(tile.nameKey) === node.name.trim());
     return {
-      name: blockText(row, 'name', lang) || (preset ? t(preset.nameKey) : ''),
-      url: resolveCategoryUrl(row.url, allProductsUrl(homeUrl), lang),
-      image: blockLink(row.image),
-      icon,
+      name: node.name,
+      url: node.url,
+      image: typeof node.image === 'string' ? node.image : '',
+      icon: preset?.icon ?? 'gift',
     };
   });
 }
@@ -176,17 +238,6 @@ export function allProductsUrl(homeUrl: string | undefined): string {
 }
 
 const TRANSLATION_KEY = /^[a-z_]+(\.[a-z_]+)+$/;
-
-/** Where the merchant's home blocks sit among the Giftology sections. */
-export type BlocksPosition = 'top' | 'after_hero' | 'after_latest' | 'bottom';
-
-const BLOCKS_POSITIONS: readonly BlocksPosition[] = ['top', 'after_hero', 'after_latest', 'bottom'];
-
-/** `gly_blocks_position`; under the hero until the merchant picks another place. */
-export function blocksPosition(settings: GlySettings): BlocksPosition {
-  const chosen = settingChoice(settings, 'gly_blocks_position') as BlocksPosition;
-  return BLOCKS_POSITIONS.includes(chosen) ? chosen : 'after_hero';
-}
 
 /**
  * The label of a store menu entry. Salla names a few built-in entries by translation

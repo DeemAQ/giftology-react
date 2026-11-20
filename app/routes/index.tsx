@@ -3,6 +3,7 @@ import { Home } from '@salla.sa/twilight-theme-engine/routes/home';
 import type { HomeLoaderData } from '@salla.sa/twilight-theme-engine/routes/home';
 import { withHead } from '@salla.sa/twilight-theme-engine/tanstack';
 import pattern from '../assets/images/teal_pattern_with_bg.webp';
+import { categoryTreeQuery } from '../components/giftology/categoryTree';
 import { GiftologyHome } from '../components/giftology/GiftologyHome';
 import { latestProductsQuery } from '../components/giftology/LatestProducts';
 
@@ -10,9 +11,10 @@ import { latestProductsQuery } from '../components/giftology/LatestProducts';
  * Home route, owned by the theme (see FORKS.md): the engine's loader and head, with
  * Giftology's curated sections around the merchant's home blocks.
  *
- * The loader also fetches the latest products into the shared query cache. The
- * server waits for them, so they are in the HTML it sends; in the browser the page
- * shows at once and the section fills in (`prefetchQuery` never rejects).
+ * The loader also fetches the latest products and the category tree (the circles
+ * and the gift finder are built from it) into the shared query cache. The server
+ * waits for them, so they are in the HTML it sends; in the browser the page shows at
+ * once and the sections fill in (`prefetchQuery` never rejects).
  *
  * If the blocks can't be loaded the page still opens, with the Giftology sections
  * only. The loader always returns data: `withHead` builds no head without it, which
@@ -24,7 +26,10 @@ import { latestProductsQuery } from '../components/giftology/LatestProducts';
  */
 export const Route = createFileRoute('/{-$locale}/')({
   loader: async ({ context, params }): Promise<HomeLoaderData> => {
-    const products = context.queryClient.prefetchQuery(latestProductsQuery());
+    const sections = Promise.all([
+      context.queryClient.prefetchQuery(latestProductsQuery()),
+      context.queryClient.prefetchQuery(categoryTreeQuery()),
+    ]);
     const blocks = Home.loader({ locale: params.locale }).catch(
       (): HomeLoaderData => ({
         locale: params.locale ?? 'ar',
@@ -32,7 +37,7 @@ export const Route = createFileRoute('/{-$locale}/')({
         page: { slug: Home.id },
       })
     );
-    if (import.meta.env.SSR) await products;
+    if (import.meta.env.SSR) await sections;
     return blocks;
   },
   head: withHead(Home, (head) => ({

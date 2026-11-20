@@ -1,6 +1,6 @@
 import bow from '../../assets/images/white_logo.webp';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
-import { blockLink, blockRows, blockText, settingOn, settingText } from '../../lib/giftology';
+import { blockLink, blockRows, blockText, rowText, settingOn, settingText } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import { BrandIcon } from './BrandIcon';
 import { ArrowDownIcon, ArrowIcon, SparkIcon, StarIcon, TruckIcon } from './icons';
@@ -8,9 +8,10 @@ import { useHomeSections } from './homeSections';
 import { useGly } from './useGly';
 
 /**
- * The four figures under the hero text: `[setting, label key]`. The merchant types
- * each figure in the theme editor; an empty field shows the built-in one
- * (`blocks.gly.hero.<label key>_value`). `gly_show_hero_stats` hides the row.
+ * The four figures under the hero text: `[setting, label key]`. The merchant edits
+ * them in the hero block, which arrives with these four as its list. The built-in
+ * hero shows the theme's own figures (`blocks.gly.hero.<label key>_value`), or the
+ * ones a store saved in the earlier `gly_hero_stat_*` settings.
  */
 const STATS = [
   ['gly_hero_stat_gifts', 'stat_gifts'],
@@ -44,7 +45,7 @@ export function Hero({ data }: { data?: BlockData }) {
   const showStats =
     typeof data?.show_stats === 'boolean' ? data.show_stats : settingOn(settings, 'gly_show_hero_stats');
   const ownStats = blockRows(data, 'stats')
-    .map((row) => ({ value: blockText(row, 'value', locale), label: blockText(row, 'label', locale) }))
+    .map((row) => ({ value: rowText(row, 'value', locale, t), label: rowText(row, 'label', locale, t) }))
     .filter((stat) => stat.value);
   const stats = ownStats.length
     ? ownStats

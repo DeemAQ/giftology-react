@@ -1,167 +1,173 @@
-import { useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
+import { useMoney } from '@salla.sa/twilight-theme-engine/hooks/useMoney';
 import { useReveal } from '../../hooks/useReveal';
-import { allProductsUrl, categoryIdFromUrl, resolveCategoryUrl } from '../../lib/giftology';
+import { blockText } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
+import {
+  SUGGESTIONS_SHOWN,
+  budgetBands,
+  categoryNumericId,
+  childrenOf,
+  offered,
+  priceOf,
+  inStock,
+  suggestionRound,
+  suggestions,
+} from '../../lib/giftFinder';
+import type { BudgetBand, CategoryNode } from '../../lib/giftFinder';
 import { ProductCard } from '../product';
-import { BrandIcon } from './BrandIcon';
+import { categoryTreeQuery } from './categoryTree';
 import { SparkIcon } from './icons';
-import type { BrandIconName } from './tileIcons';
 import { useGly } from './useGly';
 
-/** A quiz outcome: six store categories, or a custom gift ordered over WhatsApp. */
-type Outcome = 'newborn' | 'kids' | 'men' | 'occasion' | 'favors' | 'cards' | 'custom';
-type Category = Exclude<Outcome, 'custom'>;
-
-/** Each answer scores one outcome. Label keys live under `blocks.gly.finder.`. */
-const QUESTIONS: { q: string; options: [label: string, outcome: Outcome][] }[] = [
-  {
-    q: 'q1',
-    options: [
-      ['q1_newborn', 'newborn'],
-      ['q1_kids', 'kids'],
-      ['q1_men', 'men'],
-      ['q1_anyone', 'occasion'],
-    ],
-  },
-  {
-    q: 'q2',
-    options: [
-      ['q2_birth', 'newborn'],
-      ['q2_kids', 'kids'],
-      ['q2_general', 'occasion'],
-      ['q2_favors', 'favors'],
-    ],
-  },
-  {
-    q: 'q3',
-    options: [
-      ['q3_ready', 'occasion'],
-      ['q3_custom', 'custom'],
-      ['q3_card', 'cards'],
-      ['q3_favors', 'favors'],
-    ],
-  },
-];
-
-/** Result card per category: icon, title key, and the tile whose link it falls back to. */
-const RESULTS: Record<Category, { icon: BrandIconName; title: string; setting: string; tile: number }> = {
-  newborn: { icon: 'baby', title: 'blocks.gly.cats.newborn', setting: 'gly_cat_newborn', tile: 1 },
-  kids: { icon: 'cake', title: 'blocks.gly.cats.kids', setting: 'gly_cat_kids', tile: 3 },
-  men: { icon: 'tie', title: 'blocks.gly.cats.men', setting: 'gly_cat_men', tile: 4 },
-  occasion: { icon: 'gift', title: 'blocks.gly.cats.occasion', setting: 'gly_cat_occasion', tile: 2 },
-  favors: { icon: 'tag', title: 'blocks.gly.cats.favors', setting: 'gly_cat_favors', tile: 5 },
-  cards: { icon: 'envelope', title: 'blocks.gly.cats.cards', setting: 'gly_cat_cards', tile: 6 },
-};
-
-/** Breaks scoring ties: the earlier outcome wins. */
-const ORDER: Category[] = ['newborn', 'kids', 'men', 'occasion', 'favors', 'cards'];
-
-/** How many of the category's products the random pick is drawn from. */
+/** How many of a category's best sellers the budget ranges and the suggestions are drawn from. */
 const POOL = 24;
 
-/** The winning category's result: one random product from it, or a link to the category. */
-function CategoryResult({
-  outcome,
-  seed,
-  block,
-}: {
-  outcome: Category;
-  seed: number;
-  block?: BlockData;
-}) {
-  const { settings, t, homeUrl, locale } = useGly();
-  const result = RESULTS[outcome];
-  // The category picked in the finder block (its `cat_*` field), else the finder's own
-  // link setting, else the matching category tile's, else the all-products page.
-  const chosen = block?.[result.setting.replace('gly_', '')];
-  const picked = Array.isArray(chosen) ? chosen[0] : chosen;
-  const url = resolveCategoryUrl(
-    picked || settings?.[result.setting] || settings?.[`gly_tile${result.tile}_link`],
-    allProductsUrl(homeUrl),
-    locale
-  );
-  const pickedId = Number((picked as { id?: unknown } | null | undefined)?.id);
-  const categoryId = Number.isInteger(pickedId) && pickedId > 0 ? pickedId : categoryIdFromUrl(url);
-  const { data, isLoading } = useQuery({
-    ...product.queries.list({
-      source: 'categories',
-      sourceValue: categoryId ? [categoryId] : null,
-      perPage: POOL,
-    }),
-    enabled: categoryId !== null,
+/** The best sellers of one category: what the budget question and the answer are built from. */
+export const finderProductsQuery = (categoryId: number) =>
+  product.queries.list({
+    source: 'categories',
+    sourceValue: [categoryId],
+    sort: 'bestSell',
+    perPage: POOL,
   });
-  const items = data?.items ?? [];
-  const pick = items.length ? items[Math.floor(seed * items.length)] : null;
 
-  return (
-    <>
-      <div className="em" aria-hidden="true">
-        <BrandIcon name={result.icon} />
-      </div>
-      <b>{t(result.title)}</b>
-      {categoryId !== null && isLoading ? (
-        <p className="gly-qloading" role="status">
-          {t('blocks.gly.finder.loading')}
-        </p>
-      ) : pick ? (
-        <div className="gly-qpwrap">
-          <ProductCard product={pick} layout="vertical" />
-        </div>
-      ) : (
-        <>
-          <p>{t(`blocks.gly.finder.r_${outcome}`)}</p>
-          <Link className="gly-btn gly-btn-primary gly-btn-block" to={url}>
-            {t('blocks.gly.finder.shop')}
-          </Link>
-        </>
-      )}
-    </>
-  );
+/** A sentence with `{name}` slots, each filled with text or a formatted price. */
+function fill(template: string, parts: Record<string, ReactNode>): ReactNode {
+  return template.split(/(\{[a-z_]+\})/).map((piece, index) => {
+    const name = piece.match(/^\{([a-z_]+)\}$/)?.[1];
+    // The pieces of one sentence, always in the same order.
+    return <Fragment key={index}>{name && name in parts ? parts[name] : piece}</Fragment>;
+  });
 }
 
+type Step = 'category' | 'kind' | 'budget' | 'result';
+
 /**
- * Gift finder: three questions, each answer scoring a category. The result is a
- * random product from the winning category (read from the `/c{id}` in its link),
- * or a link to that category when no product can be shown. Choosing "custom gift"
- * at any point ends the quiz with the WhatsApp custom-order result.
+ * Gift finder. It asks up to three questions and suggests gifts that fit:
+ *
+ * 1. what the visitor is looking for: the store's top-level categories, plus
+ *    "a custom gift" while the store has a WhatsApp number;
+ * 2. which kind: the chosen category's subcategories (skipped when it has none);
+ * 3. the budget: ranges worked out from that category's real prices (skipped when
+ *    its products are too few or cost the same).
+ *
+ * The answer is up to three in-stock best sellers that fit, with "show others" and
+ * a link to the whole category. Nothing is set up by hand: the questions follow the
+ * category tree, so they change when the merchant changes the categories. The
+ * finder block can leave categories out (`exclude`) and reword the questions.
  */
 export function GiftFinder({ data }: { data?: BlockData }) {
-  const { t, whatsappCustom } = useGly();
+  const { t, whatsappCustom, locale } = useGly();
+  const { format } = useMoney();
   const reveal = useReveal();
-  const [answers, setAnswers] = useState<Outcome[]>([]);
-  // Drawn when the quiz ends, so the pick doesn't change between renders.
-  const [seed, setSeed] = useState(0);
   const f = (key: string) => t(`blocks.gly.finder.${key}`);
+  // A block field the merchant filled, else the theme's own text.
+  const own = (key: string) => blockText(data, key, locale) || f(key);
 
-  const custom = answers.includes('custom');
-  const finished = custom || answers.length >= QUESTIONS.length;
-  const winner = useMemo<Category>(() => {
-    let best = ORDER[0];
-    let bestScore = -1;
-    for (const outcome of ORDER) {
-      const score = answers.filter((answer) => answer === outcome).length;
-      if (score > bestScore) {
-        best = outcome;
-        bestScore = score;
-      }
-    }
-    return best;
-  }, [answers]);
+  const [top, setTop] = useState<CategoryNode | null>(null);
+  // The subcategory picked in question 2; `'all'` keeps the whole category.
+  const [kind, setKind] = useState<CategoryNode | 'all' | null>(null);
+  const [budget, setBudget] = useState<BudgetBand | 'any' | null>(null);
+  const [custom, setCustom] = useState(false);
+  const [round, setRound] = useState(0);
 
-  const answer = (outcome: Outcome) => {
-    setSeed(Math.random());
-    setAnswers((previous) => [...previous, outcome]);
+  const { data: tree, isLoading: treeLoading } = useQuery(categoryTreeQuery());
+  // The categories the merchant left out in the finder block.
+  const excluded = Array.isArray(data?.exclude) ? (data.exclude as Partial<CategoryNode>[]) : [];
+  const categories = offered(tree as CategoryNode[] | undefined, excluded);
+  const kinds = offered(childrenOf(top), excluded);
+
+  // The category the suggestions come from, once the visitor has narrowed it down.
+  const target = top && (kinds.length === 0 || kind === 'all') ? top : kind !== 'all' ? kind : null;
+  const targetId = categoryNumericId(target);
+  const { data: listing, isLoading } = useQuery({
+    ...finderProductsQuery(targetId ?? 0),
+    enabled: targetId !== null,
+  });
+  const available = useMemo(() => (listing?.items ?? []).filter(inStock), [listing]);
+  const bands = useMemo(
+    () => budgetBands(available.map(priceOf).filter((price): price is number => price !== null)),
+    [available]
+  );
+
+  const loading = target !== null && targetId !== null && isLoading;
+  const step: Step = custom
+    ? 'result'
+    : !top
+      ? 'category'
+      : !target
+        ? 'kind'
+        : !loading && bands.length > 0 && budget === null
+          ? 'budget'
+          : 'result';
+
+  // Move focus to the new question or the answer, so a keyboard or screen-reader
+  // user is not left on a button that has just gone. Not on the first render.
+  const heading = useRef<HTMLDivElement>(null);
+  const moved = useRef(false);
+  useEffect(() => {
+    if (moved.current) heading.current?.focus();
+  }, [step, loading]);
+  const move = (change: () => void) => {
+    moved.current = true;
+    change();
   };
-  const step = Math.min(answers.length, QUESTIONS.length - 1);
-  const question = QUESTIONS[step];
+
+  const restart = () =>
+    move(() => {
+      setTop(null);
+      setKind(null);
+      setBudget(null);
+      setCustom(false);
+      setRound(0);
+    });
+  const back = () =>
+    move(() => {
+      setRound(0);
+      if (custom) return setCustom(false);
+      if (step === 'result' && budget !== null) return setBudget(null);
+      if (kind !== null) {
+        setBudget(null);
+        return setKind(null);
+      }
+      setBudget(null);
+      setTop(null);
+    });
+
+  // Nothing to ask about: a store with no categories yet and no custom orders.
+  if (!treeLoading && !categories.length && !whatsappCustom) return null;
+
+  const band = budget && budget !== 'any' ? budget : null;
+  const matches = suggestions(available, band);
+  const picks = suggestionRound(matches, round);
+  const money = (amount: number | null) => (amount === null ? '' : format(amount));
+  const bandLabel = (item: BudgetBand) =>
+    fill(f(`budget_${item.id}`), { min: money(item.min), max: money(item.max) });
+
+  // Questions asked so far and still to come; the budget question counts until the prices say otherwise.
+  const willAskKind = top ? kinds.length > 0 : categories.some((node) => childrenOf(node).length > 0);
+  const total = 1 + (willAskKind ? 1 : 0) + 1;
+  const current = step === 'category' ? 1 : step === 'kind' ? 2 : total;
+
+  const question =
+    step === 'category'
+      ? own('q_category')
+      : step === 'kind'
+        ? own('q_kind').replace('{category}', top?.name ?? '')
+        : own('q_budget');
 
   return (
     <section id="gly-finder" className="gly-section gly-quiz">
       <div className="gly-wrap">
-        <div ref={reveal.ref} className={`gly-quiz-box ${reveal.className}`}>
+        <div
+          ref={reveal.ref}
+          className={`gly-quiz-box${step === 'result' && !custom ? ' gly-quiz-box--answer' : ''} ${reveal.className}`}
+        >
           <svg
             className="gly-quiz__mag"
             viewBox="0 0 32 32"
@@ -178,22 +184,24 @@ export function GiftFinder({ data }: { data?: BlockData }) {
             <line x1="18" x2="21" y1="18" y2="21" />
           </svg>
           <div>
-            <span className="gly-eyebrow">{f('eyebrow')}</span>
+            <span className="gly-eyebrow">{own('eyebrow')}</span>
             <h2>
-              {f('title_pre')} <em>{f('title_em')}</em>
+              {own('title_pre')} <em>{own('title_em')}</em>
             </h2>
-            <p className="gly-qlede">{f('lede')}</p>
+            <p className="gly-qlede">{own('lede')}</p>
           </div>
 
-          <div className="gly-qcard" aria-live="polite">
-            {finished ? (
+          <div className="gly-qcard">
+            {step === 'result' ? (
               <div className="gly-qresult">
                 {custom ? (
                   <>
                     <div className="em" aria-hidden="true">
                       <SparkIcon />
                     </div>
-                    <b>{f('custom_title')}</b>
+                    <div ref={heading} tabIndex={-1} className="gly-qhead">
+                      <b>{f('custom_title')}</b>
+                    </div>
                     <p>{f('r_custom')}</p>
                     {whatsappCustom && (
                       <a
@@ -206,38 +214,145 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                       </a>
                     )}
                   </>
+                ) : loading ? (
+                  <p ref={heading} tabIndex={-1} className="gly-qloading" role="status">
+                    {f('loading')}
+                  </p>
                 ) : (
-                  <CategoryResult outcome={winner} seed={seed} block={data} />
+                  <>
+                    <div ref={heading} tabIndex={-1} className="gly-qhead">
+                      <b>{f('result_title').replace('{category}', target?.name ?? '')}</b>
+                    </div>
+                    {picks.length > 0 ? (
+                      <div className="gly-qpicks">
+                        {picks.map((item) => (
+                          <ProductCard key={item.id} product={item} layout="vertical" />
+                        ))}
+                      </div>
+                    ) : (
+                      <p>{f('empty')}</p>
+                    )}
+                    <div className="gly-qactions">
+                      {matches.length > SUGGESTIONS_SHOWN && (
+                        <button
+                          type="button"
+                          className="gly-btn gly-btn-ghost"
+                          onClick={() => setRound((value) => value + 1)}
+                        >
+                          {f('others')}
+                        </button>
+                      )}
+                      {target && (
+                        <Link className="gly-btn gly-btn-primary" to={target.url}>
+                          {f('see_all').replace('{category}', target.name)}
+                        </Link>
+                      )}
+                    </div>
+                  </>
                 )}
-                <button type="button" className="gly-restart" onClick={() => setAnswers([])}>
-                  ↺ {f('restart')}
-                </button>
+                <div className="gly-qnav">
+                  <button type="button" className="gly-restart" onClick={back}>
+                    {f('back')}
+                  </button>
+                  <button type="button" className="gly-restart" onClick={restart}>
+                    ↺ {f('restart')}
+                  </button>
+                </div>
               </div>
             ) : (
               <>
                 <div className="gly-qprog" aria-hidden="true">
-                  {QUESTIONS.map((item, index) => (
-                    <i key={item.q} className={index <= step ? 'on' : ''} />
+                  {Array.from({ length: total }, (_, index) => (
+                    <i key={index} className={index < current ? 'on' : ''} />
                   ))}
                 </div>
                 <span className="sr-only">
                   {f('progress')
-                    .replace('{current}', String(step + 1))
-                    .replace('{total}', String(QUESTIONS.length))}
+                    .replace('{current}', String(current))
+                    .replace('{total}', String(total))}
                 </span>
-                <div className="gly-qq">{f(question.q)}</div>
-                <div className="gly-qopts">
-                  {question.options.map(([label, outcome]) => (
-                    <button
-                      key={label}
-                      type="button"
-                      className="gly-qopt"
-                      onClick={() => answer(outcome)}
-                    >
-                      {f(label)}
-                    </button>
-                  ))}
+                <div ref={heading} tabIndex={-1} className="gly-qq">
+                  {question}
                 </div>
+                <div className="gly-qopts">
+                  {step === 'category' && treeLoading && (
+                    <p className="gly-qloading" role="status">
+                      {f('loading')}
+                    </p>
+                  )}
+                  {step === 'category' && !treeLoading && (
+                    <>
+                      {categories.map((node) => (
+                        <button
+                          key={String(node.id)}
+                          type="button"
+                          className="gly-qopt"
+                          onClick={() => move(() => setTop(node))}
+                        >
+                          {node.name}
+                        </button>
+                      ))}
+                      {whatsappCustom && (
+                        <button
+                          type="button"
+                          className="gly-qopt"
+                          onClick={() => move(() => setCustom(true))}
+                        >
+                          {f('opt_custom')}
+                        </button>
+                      )}
+                    </>
+                  )}
+                  {step === 'kind' && (
+                    <>
+                      {kinds.map((node) => (
+                        <button
+                          key={String(node.id)}
+                          type="button"
+                          className="gly-qopt"
+                          onClick={() => move(() => setKind(node))}
+                        >
+                          {node.name}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="gly-qopt"
+                        onClick={() => move(() => setKind('all'))}
+                      >
+                        {f('kind_all').replace('{category}', top?.name ?? '')}
+                      </button>
+                    </>
+                  )}
+                  {step === 'budget' && (
+                    <>
+                      {bands.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className="gly-qopt"
+                          onClick={() => move(() => setBudget(item))}
+                        >
+                          {bandLabel(item)}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="gly-qopt"
+                        onClick={() => move(() => setBudget('any'))}
+                      >
+                        {f('budget_any')}
+                      </button>
+                    </>
+                  )}
+                </div>
+                {step !== 'category' && (
+                  <div className="gly-qnav">
+                    <button type="button" className="gly-restart" onClick={back}>
+                      {f('back')}
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>

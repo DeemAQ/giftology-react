@@ -1,20 +1,18 @@
 import type { ComponentType } from 'react';
 import { Home } from '@salla.sa/twilight-theme-engine/routes/home';
 import type { HomePageProps } from '@salla.sa/twilight-theme-engine/routes/home';
-import { blocksPosition, settingOn } from '../../lib/giftology';
-import type { BlocksPosition } from '../../lib/giftology';
 import { Categories } from './Categories';
 import { CustomGift } from './CustomGift';
 import { GiftFinder } from './GiftFinder';
 import { Hero } from './Hero';
 import { HowItWorks } from './HowItWorks';
-import { HomeSectionsProvider, SECTION_BLOCKS, SECTION_KINDS } from './homeSections';
+import { HomeSectionsProvider, SECTION_KINDS, sectionsAsBlocks, shownSections } from './homeSections';
 import type { SectionKind } from './homeSections';
 import { LatestProducts } from './LatestProducts';
 import { Testimonials } from './Testimonials';
 import { useGly } from './useGly';
 
-/** The home page's built-in sections in order. */
+/** The home page's built-in sections. */
 const SECTIONS: Record<SectionKind, ComponentType> = {
   hero: Hero,
   latest: LatestProducts,
@@ -25,31 +23,21 @@ const SECTIONS: Record<SectionKind, ComponentType> = {
   testimonials: Testimonials,
 };
 
-/** How many built-in sections come before the merchant's blocks, per `gly_blocks_position`. */
-const SECTIONS_BEFORE_BLOCKS: Record<BlocksPosition, number> = {
-  top: 0,
-  after_hero: 1,
-  after_latest: 2,
-  bottom: SECTION_KINDS.length,
-};
-
-/** The sections the merchant added as home blocks (`home.gly-*`). */
-function sectionsAsBlocks(components: HomePageProps['components']): Set<SectionKind> {
-  const names = new Set((components ?? []).map((block) => String(block.path).replace(/^home\./, '')));
-  return new Set(SECTION_KINDS.filter((kind) => names.has(SECTION_BLOCKS[kind])));
-}
+/** Salla's own blocks sit under the hero while the built-in page shows. */
+const SECTIONS_BEFORE_BLOCKS = 1;
 
 /**
  * Giftology home page.
  *
- * With nothing added in the theme editor it is the seven built-in sections in a fixed
- * order, each behind its `gly_show_*` switch. The blocks the merchant adds in the
- * editor's home tab show together at one place among them (`gly_blocks_position`).
+ * The home tab of the theme editor is the one place the page is built. Each
+ * Giftology section is a home block there (`home.gly-*`, `blocks.tsx`), with its own
+ * texts and lists. Once the merchant has placed any of them, the page is exactly the
+ * blocks in the home tab, in the merchant's order: a section that is not placed is
+ * not shown.
  *
- * Each section is also a home block (`home.gly-*`, `blocks.tsx`). Adding one replaces
- * the built-in section of that kind: it shows where the merchant put it, with the
- * texts and lists typed in the block. A home made only of blocks is fully the
- * merchant's order.
+ * Until then the page is the seven built-in sections in a fixed order, so a store
+ * that has set nothing up still opens on a full home page. Blocks that are not
+ * Giftology's (a Salla slider, a banner) show under the hero in that case.
  *
  * The blocks are drawn by the engine's own home page, so the editor's live preview,
  * the `home:start` / `home:content` / `home:end` slots (above and below the blocks)
@@ -59,22 +47,24 @@ function sectionsAsBlocks(components: HomePageProps['components']): Set<SectionK
  */
 export function GiftologyHome({ components }: Pick<HomePageProps, 'components'>) {
   const { settings } = useGly();
-  const asBlocks = sectionsAsBlocks(components);
-  const builtIn = (kind: SectionKind) => !asBlocks.has(kind) && settingOn(settings, `gly_show_${kind}`);
-  const shown = new Set(SECTION_KINDS.filter((kind) => asBlocks.has(kind) || builtIn(kind)));
-
-  const before = SECTIONS_BEFORE_BLOCKS[blocksPosition(settings)];
+  const shown = shownSections(components, settings);
+  const builtIn = sectionsAsBlocks(components).size
+    ? []
+    : SECTION_KINDS.filter((kind) => shown.has(kind));
   const sections = (kinds: readonly SectionKind[]) =>
-    kinds.filter(builtIn).map((kind) => {
+    kinds.map((kind) => {
       const Section = SECTIONS[kind];
       return <Section key={kind} />;
     });
+  // The hero opens the page; everything else follows the merchant's blocks.
+  const before = builtIn.filter((kind) => SECTION_KINDS.indexOf(kind) < SECTIONS_BEFORE_BLOCKS);
+  const after = builtIn.filter((kind) => SECTION_KINDS.indexOf(kind) >= SECTIONS_BEFORE_BLOCKS);
 
   return (
     <HomeSectionsProvider value={shown}>
-      {sections(SECTION_KINDS.slice(0, before))}
+      {sections(before)}
       <Home.Component components={components} />
-      {sections(SECTION_KINDS.slice(before))}
+      {sections(after)}
     </HomeSectionsProvider>
   );
 }

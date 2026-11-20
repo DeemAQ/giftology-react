@@ -42,6 +42,13 @@
         {
             "type": "static",
             "format": "title",
+            "id": "gly-start",
+            "value": "<div class='rounded-lg' style='background-color: #eef7f6; border: 1px solid #2e7772; padding: 15px; margin-bottom: 20px !important; font-size: 13px; line-height: 1.9;'><b style='font-size:15px;color:#2e7772'>ابدأ من هنا</b><br><b>1.</b> اكتب رقم واتساب المتجر في «التواصل مع العملاء» أدناه.<br><b>2.</b> ابنِ الصفحة الرئيسية من تبويب «الصفحة الرئيسية»: أضف عناصر «جيفتولوجي» ورتّبها واكتب نصوصها. قبل إضافة أي عنصر تظهر الصفحة الجاهزة كاملة.<br><b>3.</b> أضف صورة لكل تصنيف من صفحة التصنيفات في لوحة تحكم سلة. دوائر الأقسام ومكتشف الهدايا يتبعان تصنيفات متجرك تلقائياً، بأسمائها وصورها.<br><b>4.</b> أنشئ صفحاتك التعريفية (الاسترجاع، الخصوصية، الشروط) في لوحة تحكم سلة: تظهر روابطها في أسفل الصفحة تلقائياً.</div>",
+            "variant": "h6"
+        },
+        {
+            "type": "static",
+            "format": "title",
             "id": "gly-band-contact",
             "value": "<div class='rounded-lg' style='background-color: #2e7772; display: flex; justify-content: center; align-items: center;padding: 15px;margin-bottom: 20px !important; flex-direction: column;gap: 8px;'><h6 style='color: #ffffff;font-size: 15px; font-weight: bold;'>التواصل مع العملاء</h6><span style='color: #ffffff;font-size: 12px;opacity: .85;text-align: center;'>تظهر في أسفل الصفحة وفي أزرار واتساب.</span></div>",
             "variant": "h6"
@@ -188,497 +195,15 @@
             "type": "static",
             "format": "title",
             "id": "gly-band-home",
-            "value": "<div class='rounded-lg' style='background-color: #2e7772; display: flex; justify-content: center; align-items: center;padding: 15px;margin-bottom: 20px !important; flex-direction: column;gap: 8px;'><h6 style='color: #ffffff;font-size: 15px; font-weight: bold;'>الصفحة الرئيسية</h6><span style='color: #ffffff;font-size: 12px;opacity: .85;text-align: center;'>الأقسام الجاهزة بالترتيب الذي تظهر به. أطفئ أي قسم لإخفائه. لتعديل نصوص قسم أو تغيير مكانه أضفه كعنصر «جيفتولوجي» من تبويب «الصفحة الرئيسية».</span></div>",
+            "value": "<div class='rounded-lg' style='background-color: #2e7772; display: flex; justify-content: center; align-items: center;padding: 15px;margin-bottom: 20px !important; flex-direction: column;gap: 8px;'><h6 style='color: #ffffff;font-size: 15px; font-weight: bold;'>الصفحة الرئيسية</h6><span style='color: #ffffff;font-size: 12px;opacity: .85;text-align: center;'>تُبنى من تبويب «الصفحة الرئيسية» في هذا المحرّر: أضف عناصر «جيفتولوجي» ورتّبها واكتب نصوصها هناك. قبل إضافة أي عنصر تظهر الصفحة الجاهزة كاملة.</span></div>",
             "variant": "h6"
-        },
-        {
-            "type": "static",
-            "id": "gly-label-hero",
-            "format": "title",
-            "value": "<b style='font-size:14px'>1. واجهة الصفحة</b><br><span style='font-size:12px;opacity:.75'>العنوان الكبير والأزرار في أعلى الصفحة الرئيسية.</span>",
-            "variant": "h6"
-        },
-        {
-            "id": "gly_show_hero",
-            "label": "إظهار واجهة الصفحة",
-            "description": null,
-            "type": "boolean",
-            "icon": "sicon-toggle-on",
-            "format": "switch",
-            "required": false,
-            "value": true,
-            "selected": true
-        },
-        {
-            "id": "gly_show_hero_stats",
-            "label": "إظهار الأرقام الأربعة تحت العنوان",
-            "description": "أربعة أرقام تعرّف بالمتجر: الهدايا، المناسبات، التقييم، وسنة البداية.",
-            "type": "boolean",
-            "icon": "sicon-toggle-on",
-            "format": "switch",
-            "required": false,
-            "value": true,
-            "selected": true,
-            "conditions": [
-                {
-                    "id": "gly_show_hero",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "icon": "sicon-format-text-alt",
-            "label": "الرقم 1: عدد الهدايا التي تم توصيلها",
-            "multilanguage": true,
-            "id": "gly_hero_stat_gifts",
-            "value": null,
-            "required": false,
-            "format": "text",
-            "description": "يظهر فوق عبارة «هدية تم توصيلها». إن تُرك فارغاً يظهر الرقم المكتوب في الخانة كمثال.",
-            "placeholder": "+12 ألف",
-            "minLength": 0,
-            "maxLength": 20,
-            "conditions": [
-                {
-                    "id": "gly_show_hero",
-                    "operation": "=",
-                    "value": true
-                },
-                {
-                    "id": "gly_show_hero_stats",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "icon": "sicon-format-text-alt",
-            "label": "الرقم 2: عدد المناسبات",
-            "multilanguage": true,
-            "id": "gly_hero_stat_occasions",
-            "value": null,
-            "required": false,
-            "format": "text",
-            "description": "يظهر فوق عبارة «مناسبة مختلفة». إن تُرك فارغاً يظهر الرقم المكتوب في الخانة كمثال.",
-            "placeholder": "+40",
-            "minLength": 0,
-            "maxLength": 20,
-            "conditions": [
-                {
-                    "id": "gly_show_hero",
-                    "operation": "=",
-                    "value": true
-                },
-                {
-                    "id": "gly_show_hero_stats",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "icon": "sicon-format-text-alt",
-            "label": "الرقم 3: تقييم العملاء",
-            "multilanguage": true,
-            "id": "gly_hero_stat_rating",
-            "value": null,
-            "required": false,
-            "format": "text",
-            "description": "يظهر فوق عبارة «تقييم العملاء». إن تُرك فارغاً يظهر الرقم المكتوب في الخانة كمثال.",
-            "placeholder": "4.9★",
-            "minLength": 0,
-            "maxLength": 20,
-            "conditions": [
-                {
-                    "id": "gly_show_hero",
-                    "operation": "=",
-                    "value": true
-                },
-                {
-                    "id": "gly_show_hero_stats",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "icon": "sicon-format-text-alt",
-            "label": "الرقم 4: سنة البداية",
-            "multilanguage": true,
-            "id": "gly_hero_stat_since",
-            "value": null,
-            "required": false,
-            "format": "text",
-            "description": "يظهر فوق عبارة «نخدمكم منذ». إن تُرك فارغاً يظهر الرقم المكتوب في الخانة كمثال.",
-            "placeholder": "2018",
-            "minLength": 0,
-            "maxLength": 20,
-            "conditions": [
-                {
-                    "id": "gly_show_hero",
-                    "operation": "=",
-                    "value": true
-                },
-                {
-                    "id": "gly_show_hero_stats",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "static",
-            "id": "gly-line-latest",
-            "format": "line"
-        },
-        {
-            "type": "static",
-            "id": "gly-label-latest",
-            "format": "title",
-            "value": "<b style='font-size:14px'>2. أحدث المنتجات</b><br><span style='font-size:12px;opacity:.75'>آخر 8 منتجات أضفتها إلى المتجر.</span>",
-            "variant": "h6"
-        },
-        {
-            "type": "boolean",
-            "icon": "sicon-toggle-on",
-            "format": "switch",
-            "label": "إظهار أحدث المنتجات",
-            "id": "gly_show_latest",
-            "required": false,
-            "value": true,
-            "selected": true
-        },
-        {
-            "type": "string",
-            "format": "text",
-            "icon": "sicon-format-text-alt",
-            "label": "عنوان قسم أحدث المنتجات",
-            "id": "gly_latest_title",
-            "multilanguage": true,
-            "value": null,
-            "required": false,
-            "placeholder": "أحدث المنتجات",
-            "minLength": 0,
-            "maxLength": 60,
-            "description": "إن تُرك فارغاً يظهر العنوان «أحدث المنتجات».",
-            "conditions": [
-                {
-                    "id": "gly_show_latest",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "format": "text",
-            "icon": "sicon-link",
-            "label": "رابط زر «عرض الكل» في أحدث المنتجات",
-            "id": "gly_latest_url",
-            "value": null,
-            "required": false,
-            "placeholder": "https://your-store.com/...",
-            "minLength": 0,
-            "maxLength": 600,
-            "description": "إن تُرك فارغاً يفتح الزر صفحة أحدث المنتجات في متجرك.",
-            "conditions": [
-                {
-                    "id": "gly_show_latest",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "static",
-            "id": "gly-line-circles",
-            "format": "line"
-        },
-        {
-            "type": "static",
-            "id": "gly-label-circles",
-            "format": "title",
-            "value": "<b style='font-size:14px'>3. دوائر الأقسام</b><br><span style='font-size:12px;opacity:.75'>ست دوائر جاهزة تنقل الزائر إلى أقسام متجرك. لتغيير أسمائها أو روابطها أو عددها أضف عنصر «جيفتولوجي: دوائر الأقسام» من تبويب «الصفحة الرئيسية».</span>",
-            "variant": "h6"
-        },
-        {
-            "id": "gly_show_categories",
-            "label": "إظهار دوائر الأقسام",
-            "description": null,
-            "type": "boolean",
-            "icon": "sicon-toggle-on",
-            "format": "switch",
-            "required": false,
-            "value": true,
-            "selected": true
-        },
-        {
-            "type": "static",
-            "id": "gly-line-custom",
-            "format": "line"
-        },
-        {
-            "type": "static",
-            "id": "gly-label-custom",
-            "format": "title",
-            "value": "<b style='font-size:14px'>4. الهدية المخصّصة</b><br><span style='font-size:12px;opacity:.75'>قسم يشرح طلب هدية حسب الطلب، وزرّه يفتح واتساب على الرقم المكتوب في «التواصل مع العملاء».</span>",
-            "variant": "h6"
-        },
-        {
-            "id": "gly_show_custom",
-            "label": "إظهار قسم الهدية المخصّصة",
-            "description": null,
-            "type": "boolean",
-            "icon": "sicon-toggle-on",
-            "format": "switch",
-            "required": false,
-            "value": true,
-            "selected": true
-        },
-        {
-            "type": "static",
-            "id": "gly-line-finder",
-            "format": "line"
-        },
-        {
-            "type": "static",
-            "id": "gly-label-finder",
-            "format": "title",
-            "value": "<b style='font-size:14px'>5. مكتشف الهدايا</b><br><span style='font-size:12px;opacity:.75'>ثلاثة أسئلة قصيرة، ثم يقترح على الزائر منتجاً من القسم المناسب.</span>",
-            "variant": "h6"
-        },
-        {
-            "id": "gly_show_finder",
-            "label": "إظهار مكتشف الهدايا",
-            "description": null,
-            "type": "boolean",
-            "icon": "sicon-toggle-on",
-            "format": "switch",
-            "required": false,
-            "value": true,
-            "selected": true
-        },
-        {
-            "type": "string",
-            "format": "text",
-            "icon": "sicon-link",
-            "label": "رابط قسم «هدايا مواليد»",
-            "id": "gly_cat_newborn",
-            "value": null,
-            "required": false,
-            "placeholder": "https://your-store.com/.../c123456",
-            "description": "افتح صفحة القسم في متجرك وانسخ رابطها من المتصفح ثم الصقه هنا. إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات.",
-            "minLength": 0,
-            "maxLength": 600,
-            "conditions": [
-                {
-                    "id": "gly_show_finder",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "format": "text",
-            "icon": "sicon-link",
-            "label": "رابط قسم «هدايا لكل مناسبة»",
-            "id": "gly_cat_occasion",
-            "value": null,
-            "required": false,
-            "placeholder": "https://your-store.com/.../c123456",
-            "description": "افتح صفحة القسم في متجرك وانسخ رابطها من المتصفح ثم الصقه هنا. إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات.",
-            "minLength": 0,
-            "maxLength": 600,
-            "conditions": [
-                {
-                    "id": "gly_show_finder",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "format": "text",
-            "icon": "sicon-link",
-            "label": "رابط قسم «هدايا حفلات أطفال»",
-            "id": "gly_cat_kids",
-            "value": null,
-            "required": false,
-            "placeholder": "https://your-store.com/.../c123456",
-            "description": "افتح صفحة القسم في متجرك وانسخ رابطها من المتصفح ثم الصقه هنا. إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات.",
-            "minLength": 0,
-            "maxLength": 600,
-            "conditions": [
-                {
-                    "id": "gly_show_finder",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "format": "text",
-            "icon": "sicon-link",
-            "label": "رابط قسم «هدايا رجالية»",
-            "id": "gly_cat_men",
-            "value": null,
-            "required": false,
-            "placeholder": "https://your-store.com/.../c123456",
-            "description": "افتح صفحة القسم في متجرك وانسخ رابطها من المتصفح ثم الصقه هنا. إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات.",
-            "minLength": 0,
-            "maxLength": 600,
-            "conditions": [
-                {
-                    "id": "gly_show_finder",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "format": "text",
-            "icon": "sicon-link",
-            "label": "رابط قسم «توزيعات»",
-            "id": "gly_cat_favors",
-            "value": null,
-            "required": false,
-            "placeholder": "https://your-store.com/.../c123456",
-            "description": "افتح صفحة القسم في متجرك وانسخ رابطها من المتصفح ثم الصقه هنا. إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات.",
-            "minLength": 0,
-            "maxLength": 600,
-            "conditions": [
-                {
-                    "id": "gly_show_finder",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "string",
-            "format": "text",
-            "icon": "sicon-link",
-            "label": "رابط قسم «أظرف وبطاقات»",
-            "id": "gly_cat_cards",
-            "value": null,
-            "required": false,
-            "placeholder": "https://your-store.com/.../c123456",
-            "description": "افتح صفحة القسم في متجرك وانسخ رابطها من المتصفح ثم الصقه هنا. إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات.",
-            "minLength": 0,
-            "maxLength": 600,
-            "conditions": [
-                {
-                    "id": "gly_show_finder",
-                    "operation": "=",
-                    "value": true
-                }
-            ]
-        },
-        {
-            "type": "static",
-            "id": "gly-line-how",
-            "format": "line"
-        },
-        {
-            "type": "static",
-            "id": "gly-label-how",
-            "format": "title",
-            "value": "<b style='font-size:14px'>6. كيف نعمل</b><br><span style='font-size:12px;opacity:.75'>أربع خطوات تشرح طريقة جيفتولوجي: نكتشف، ننتقي، نغلّف، نوصّل.</span>",
-            "variant": "h6"
-        },
-        {
-            "id": "gly_show_how",
-            "label": "إظهار قسم «كيف نعمل»",
-            "description": null,
-            "type": "boolean",
-            "icon": "sicon-toggle-on",
-            "format": "switch",
-            "required": false,
-            "value": true,
-            "selected": true
-        },
-        {
-            "type": "static",
-            "id": "gly-line-testimonials",
-            "format": "line"
-        },
-        {
-            "type": "static",
-            "id": "gly-label-testimonials",
-            "format": "title",
-            "value": "<b style='font-size:14px'>7. آراء العملاء</b><br><span style='font-size:12px;opacity:.75'>تقييمات متجرك الحقيقية من سلة. يبقى القسم فارغاً حتى تصلك تقييمات.</span>",
-            "variant": "h6"
-        },
-        {
-            "id": "gly_show_testimonials",
-            "label": "إظهار آراء العملاء",
-            "description": null,
-            "type": "boolean",
-            "icon": "sicon-toggle-on",
-            "format": "switch",
-            "required": false,
-            "value": true,
-            "selected": true
-        },
-        {
-            "type": "static",
-            "id": "gly-line-blocks",
-            "format": "line"
         },
         {
             "type": "static",
             "id": "gly-label-blocks",
             "format": "title",
-            "value": "<b style='font-size:14px'>عناصر إضافية من محرّر سلة</b><br><span style='font-size:12px;opacity:.75'>العناصر التي تضيفها من تبويب «الصفحة الرئيسية» في المحرّر، مثل الصور المتحركة والمنتجات المميزة والماركات.</span>",
+            "value": "<b style='font-size:14px'>خيارات عناصر سلة</b><br><span style='font-size:12px;opacity:.75'>تخص عناصر سلة نفسها حين تضيفها إلى الصفحة الرئيسية: الصور المربعة، المنتجات الثابتة، الماركات.</span>",
             "variant": "h6"
-        },
-        {
-            "type": "items",
-            "format": "dropdown-list",
-            "icon": "sicon-layout-grid-rearrange",
-            "label": "مكان العناصر الإضافية",
-            "description": "تظهر العناصر مجتمعةً في هذا المكان بين أقسام جيفتولوجي.",
-            "id": "gly_blocks_position",
-            "source": "Manual",
-            "required": false,
-            "selected": [
-                {
-                    "label": "بعد واجهة الصفحة",
-                    "value": "after_hero",
-                    "key": "gly-blocks-after-hero"
-                }
-            ],
-            "options": [
-                {
-                    "label": "أعلى الصفحة، قبل واجهة الصفحة",
-                    "value": "top",
-                    "key": "gly-blocks-top"
-                },
-                {
-                    "label": "بعد واجهة الصفحة",
-                    "value": "after_hero",
-                    "key": "gly-blocks-after-hero"
-                },
-                {
-                    "label": "بعد أحدث المنتجات",
-                    "value": "after_latest",
-                    "key": "gly-blocks-after-latest"
-                },
-                {
-                    "label": "آخر الصفحة",
-                    "value": "bottom",
-                    "key": "gly-blocks-bottom"
-                }
-            ]
         },
         {
             "id": "squar_photo_bg_image_size",
@@ -2843,7 +2368,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-hero-note",
-                    "value": "<div>العنوان الكبير والأزرار في أعلى الصفحة. عند إضافة هذا العنصر يختفي القسم الجاهز المماثل ويظهر هذا مكانه في ترتيبك. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
+                    "value": "<div>العنوان الكبير والأزرار في أعلى الصفحة. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
                     "type": "string",
@@ -3101,7 +2626,24 @@
                     "maxLength": 4,
                     "label": "الأرقام",
                     "item_label": "رقم",
-                    "value": [],
+                    "value": [
+                        {
+                            "stats.value": "+12 ألف",
+                            "stats.label": "هدية تم توصيلها"
+                        },
+                        {
+                            "stats.value": "+40",
+                            "stats.label": "مناسبة مختلفة"
+                        },
+                        {
+                            "stats.value": "4.9★",
+                            "stats.label": "تقييم العملاء"
+                        },
+                        {
+                            "stats.value": "2018",
+                            "stats.label": "نخدمكم منذ"
+                        }
+                    ],
                     "fields": [
                         {
                             "type": "string",
@@ -3144,7 +2686,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-hero-stats-note",
-                    "value": "<div>إن تُركت قائمة الأرقام فارغة تظهر الأرقام الأربعة الجاهزة.</div>"
+                    "value": "<div>الأرقام الأربعة الجاهزة مضافة في القائمة: عدّلها أو احذف ما لا تريد. لإخفاء الأرقام كلها أطفئ «إظهار الأرقام تحت العنوان».</div>"
                 }
             ]
         },
@@ -3161,7 +2703,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-latest-note",
-                    "value": "<div>آخر 8 منتجات أضفتها إلى المتجر. عند إضافة هذا العنصر يختفي القسم الجاهز المماثل ويظهر هذا مكانه في ترتيبك. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
+                    "value": "<div>آخر 8 منتجات أضفتها إلى المتجر. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
                     "type": "string",
@@ -3275,7 +2817,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-circles-note",
-                    "value": "<div>دوائر تنقل الزائر إلى أقسام متجرك. الدوائر الست الجاهزة مضافة: اختر لكل دائرة قسمها من «رابط الدائرة»، وعدّل أو احذف أو أضف ما تريد. عند إضافة هذا العنصر يختفي القسم الجاهز المماثل ويظهر هذا مكانه في ترتيبك. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
+                    "value": "<div>دوائر تنقل الزائر إلى أقسام متجرك. لا تحتاج إعداداً: تظهر تصنيفات متجرك الرئيسية تلقائياً، وكل دائرة تأخذ اسم التصنيف وصورته من سلة (أضف صورة التصنيف من صفحة التصنيفات في لوحة تحكم سلة؛ التصنيف الذي بلا صورة تظهر له أيقونة). بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
                     "type": "string",
@@ -3334,34 +2876,35 @@
                     "maxLength": 200
                 },
                 {
+                    "id": "categories",
+                    "type": "items",
+                    "format": "dropdown-list",
+                    "label": "التصنيفات الظاهرة في الدوائر",
+                    "icon": "sicon-keyboard_arrow_down",
+                    "selected": [],
+                    "options": [],
+                    "source": "categories",
+                    "multichoice": true,
+                    "searchable": true,
+                    "required": false,
+                    "description": "اختيارية. إن تُركت فارغة تظهر تصنيفات متجرك الرئيسية تلقائياً. إن اخترت تصنيفات تظهر هي فقط، بترتيب اختيارك."
+                },
+                {
+                    "type": "static",
+                    "format": "description",
+                    "id": "gly-circles-extra-note",
+                    "value": "<div>دوائر إضافية لما ليس تصنيفاً، مثل صفحة التخفيضات أو صفحة تعريفية. تظهر بعد دوائر التصنيفات. اتركها فارغة إن لم تحتج إليها.</div>"
+                },
+                {
                     "id": "circles",
                     "type": "collection",
                     "format": "collection",
                     "required": false,
                     "minLength": 0,
                     "maxLength": 12,
-                    "label": "الدوائر",
-                    "item_label": "دائرة",
-                    "value": [
-                        {
-                            "circles.icon": "baby"
-                        },
-                        {
-                            "circles.icon": "gift"
-                        },
-                        {
-                            "circles.icon": "cake"
-                        },
-                        {
-                            "circles.icon": "tie"
-                        },
-                        {
-                            "circles.icon": "tag"
-                        },
-                        {
-                            "circles.icon": "envelope"
-                        }
-                    ],
+                    "label": "دوائر إضافية",
+                    "item_label": "دائرة إضافية",
+                    "value": [],
                     "fields": [
                         {
                             "type": "items",
@@ -3410,7 +2953,7 @@
                                     "key": "gly-circle-ico-envelope"
                                 }
                             ],
-                            "description": "لكل أيقونة اسم جاهز يظهر إن تركت خانة الاسم فارغة."
+                            "description": "تظهر إن لم ترفع صورة للدائرة."
                         },
                         {
                             "type": "string",
@@ -3421,7 +2964,7 @@
                             "value": null,
                             "required": false,
                             "format": "text",
-                            "description": "اختياري. إن تُرك فارغاً يظهر اسم الأيقونة الجاهز.",
+                            "description": "اسم الدائرة. إن تُرك فارغاً يظهر اسم الأيقونة الجاهز.",
                             "placeholder": "هدايا مواليد",
                             "minLength": 0,
                             "maxLength": 40
@@ -3432,7 +2975,7 @@
                             "label": "رابط الدائرة",
                             "id": "circles.url",
                             "value": null,
-                            "description": "اختر القسم الذي تفتحه الدائرة. إن تُرك فارغاً تفتح صفحة كل المنتجات.",
+                            "description": "ما تفتحه الدائرة: صفحة، منتج، التخفيضات أو رابط خارجي.",
                             "required": false,
                             "format": "variable-list",
                             "searchable": true,
@@ -3523,7 +3066,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-custom-note",
-                    "value": "<div>قسم يشرح طلب هدية حسب الطلب. زرّه يفتح واتساب على الرقم المكتوب في إعدادات الثيم. عند إضافة هذا العنصر يختفي القسم الجاهز المماثل ويظهر هذا مكانه في ترتيبك. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
+                    "value": "<div>قسم يشرح طلب هدية حسب الطلب. زرّه يفتح واتساب على الرقم المكتوب في إعدادات الثيم. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
                     "type": "string",
@@ -3590,7 +3133,20 @@
                     "maxLength": 5,
                     "label": "الخطوات",
                     "item_label": "خطوة",
-                    "value": [],
+                    "value": [
+                        {
+                            "steps.title": "تواصل معنا بفكرتك",
+                            "steps.text": "أخبرنا عن المناسبة، الميزانية، وما يحبّه الشخص."
+                        },
+                        {
+                            "steps.title": "نرسل لك عرض السعر",
+                            "steps.text": "تفاصيل واضحة قبل تأكيد الطلب."
+                        },
+                        {
+                            "steps.title": "نصنع ونغلّف ونوصّل",
+                            "steps.text": "هدية مخصّصة بالكامل تصل إلى بابهم."
+                        }
+                    ],
                     "fields": [
                         {
                             "type": "string",
@@ -3626,7 +3182,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-custom-steps-note",
-                    "value": "<div>إن تُركت قائمة الخطوات فارغة تظهر الخطوات الثلاث الجاهزة.</div>"
+                    "value": "<div>الخطوات الثلاث الجاهزة مضافة في القائمة: عدّل نصوصها أو رتّبها أو احذف منها أو أضف إليها.</div>"
                 },
                 {
                     "type": "string",
@@ -3699,91 +3255,119 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-finder-note",
-                    "value": "<div>ثلاثة أسئلة قصيرة، ثم يقترح على الزائر منتجاً من القسم المناسب. اختر لكل نتيجة القسم الذي يُقترح منه المنتج. عند إضافة هذا العنصر يختفي المكتشف الجاهز ويظهر هذا مكانه في ترتيبك.</div>"
+                    "value": "<div>يسأل الزائر سؤالين أو ثلاثة ثم يقترح عليه حتى ثلاثة منتجات متوفرة من الأكثر مبيعاً. لا يحتاج إعداداً: الأسئلة تُبنى من تصنيفات متجرك وتصنيفاتها الفرعية، ونطاقات الميزانية تُحسب من أسعار منتجاتك، فيتغيّر المكتشف تلقائياً كلما غيّرت تصنيفاتك أو أسعارك. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
-                    "id": "cat_newborn",
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "العبارة الصغيرة فوق العنوان",
+                    "multilanguage": true,
+                    "id": "eyebrow",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "مكتشف الهدايا",
+                    "minLength": 0,
+                    "maxLength": 100
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "بداية العنوان",
+                    "multilanguage": true,
+                    "id": "title_pre",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "محتار وش تهدي؟",
+                    "minLength": 0,
+                    "maxLength": 100
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "الكلمة المميّزة في العنوان",
+                    "multilanguage": true,
+                    "id": "title_em",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "تظهر بخط مائل ملوّن بعد العنوان. إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "خلّنا نكتشف",
+                    "minLength": 0,
+                    "maxLength": 100
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-typography",
+                    "label": "الوصف تحت العنوان",
+                    "multilanguage": true,
+                    "id": "lede",
+                    "value": null,
+                    "required": false,
+                    "format": "textarea",
+                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
+                    "placeholder": "جاوب على سؤالين أو ثلاثة ونرشّح لك هدايا تناسبك.",
+                    "minLength": 0,
+                    "maxLength": 200
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "السؤال الأول: ماذا يبحث عنه الزائر",
+                    "multilanguage": true,
+                    "id": "q_category",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إجاباته هي تصنيفات متجرك الرئيسية. إن تُرك فارغاً يبقى السؤال الجاهز.",
+                    "placeholder": "وش تدوّر عليه؟",
+                    "minLength": 0,
+                    "maxLength": 100
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "السؤال الثاني: أي نوع",
+                    "multilanguage": true,
+                    "id": "q_kind",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إجاباته هي التصنيفات الفرعية للتصنيف المختار، ويُتخطّى إن لم يكن له تصنيفات فرعية. اكتب {category} حيث تريد أن يظهر اسم التصنيف.",
+                    "placeholder": "أي نوع من {category}؟",
+                    "minLength": 0,
+                    "maxLength": 100
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "السؤال الثالث: الميزانية",
+                    "multilanguage": true,
+                    "id": "q_budget",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "إجاباته نطاقات تُحسب من أسعار منتجات التصنيف المختار. إن تُرك فارغاً يبقى السؤال الجاهز.",
+                    "placeholder": "كم ميزانيتك؟",
+                    "minLength": 0,
+                    "maxLength": 100
+                },
+                {
+                    "id": "exclude",
                     "type": "items",
                     "format": "dropdown-list",
-                    "label": "قسم «هدايا مواليد»",
+                    "label": "تصنيفات لا تظهر في المكتشف",
                     "icon": "sicon-keyboard_arrow_down",
                     "selected": [],
                     "options": [],
                     "source": "categories",
-                    "multichoice": false,
+                    "multichoice": true,
                     "searchable": true,
                     "required": false,
-                    "description": "إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات."
-                },
-                {
-                    "id": "cat_occasion",
-                    "type": "items",
-                    "format": "dropdown-list",
-                    "label": "قسم «هدايا لكل مناسبة»",
-                    "icon": "sicon-keyboard_arrow_down",
-                    "selected": [],
-                    "options": [],
-                    "source": "categories",
-                    "multichoice": false,
-                    "searchable": true,
-                    "required": false,
-                    "description": "إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات."
-                },
-                {
-                    "id": "cat_kids",
-                    "type": "items",
-                    "format": "dropdown-list",
-                    "label": "قسم «هدايا حفلات أطفال»",
-                    "icon": "sicon-keyboard_arrow_down",
-                    "selected": [],
-                    "options": [],
-                    "source": "categories",
-                    "multichoice": false,
-                    "searchable": true,
-                    "required": false,
-                    "description": "إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات."
-                },
-                {
-                    "id": "cat_men",
-                    "type": "items",
-                    "format": "dropdown-list",
-                    "label": "قسم «هدايا رجالية»",
-                    "icon": "sicon-keyboard_arrow_down",
-                    "selected": [],
-                    "options": [],
-                    "source": "categories",
-                    "multichoice": false,
-                    "searchable": true,
-                    "required": false,
-                    "description": "إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات."
-                },
-                {
-                    "id": "cat_favors",
-                    "type": "items",
-                    "format": "dropdown-list",
-                    "label": "قسم «توزيعات»",
-                    "icon": "sicon-keyboard_arrow_down",
-                    "selected": [],
-                    "options": [],
-                    "source": "categories",
-                    "multichoice": false,
-                    "searchable": true,
-                    "required": false,
-                    "description": "إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات."
-                },
-                {
-                    "id": "cat_cards",
-                    "type": "items",
-                    "format": "dropdown-list",
-                    "label": "قسم «أظرف وبطاقات»",
-                    "icon": "sicon-keyboard_arrow_down",
-                    "selected": [],
-                    "options": [],
-                    "source": "categories",
-                    "multichoice": false,
-                    "searchable": true,
-                    "required": false,
-                    "description": "إن تُرك فارغاً يفتح المكتشف صفحة كل المنتجات."
+                    "description": "اختيارية. المكتشف يعرض كل تصنيفات متجرك التي فيها منتجات؛ اختر هنا ما تريد استبعاده."
                 }
             ]
         },
@@ -3800,7 +3384,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-how-note",
-                    "value": "<div>خطوات تشرح طريقة عملك. عند إضافة هذا العنصر يختفي القسم الجاهز المماثل ويظهر هذا مكانه في ترتيبك. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
+                    "value": "<div>خطوات تشرح طريقة عملك. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
                     "type": "string",
@@ -3867,7 +3451,24 @@
                     "maxLength": 4,
                     "label": "الخطوات",
                     "item_label": "خطوة",
-                    "value": [],
+                    "value": [
+                        {
+                            "steps.title": "نكتشف",
+                            "steps.text": "أخبرنا عن المناسبة، الشخص، والميزانية."
+                        },
+                        {
+                            "steps.title": "ننتقي",
+                            "steps.text": "نختار قطعاً يحبّونها فعلاً ويتذكّرونها."
+                        },
+                        {
+                            "steps.title": "نغلّف",
+                            "steps.text": "بشريطة مميزة وبطاقة شخصية بلمسة فاخرة."
+                        },
+                        {
+                            "steps.title": "نوصّل",
+                            "steps.text": "تصل إلى بابهم في الوقت المناسب تماماً."
+                        }
+                    ],
                     "fields": [
                         {
                             "type": "string",
@@ -3903,7 +3504,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-how-steps-note",
-                    "value": "<div>إن تُركت قائمة الخطوات فارغة تظهر الخطوات الأربع الجاهزة. الرسمة فوق كل خطوة ثابتة حسب ترتيبها.</div>"
+                    "value": "<div>الخطوات الأربع الجاهزة مضافة في القائمة: عدّل نصوصها أو رتّبها أو احذف منها. الرسمة فوق كل خطوة ثابتة حسب ترتيبها.</div>"
                 }
             ]
         },
@@ -3920,7 +3521,7 @@
                     "type": "static",
                     "format": "description",
                     "id": "gly-testimonials-note",
-                    "value": "<div>تقييمات متجرك الحقيقية من سلة. يبقى القسم فارغاً حتى تصلك تقييمات. عند إضافة هذا العنصر يختفي القسم الجاهز المماثل ويظهر هذا مكانه في ترتيبك. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
+                    "value": "<div>تقييمات متجرك الحقيقية من سلة. يبقى القسم فارغاً حتى تصلك تقييمات. بعد إضافة أول عنصر من عناصر «جيفتولوجي» تصير الصفحة الرئيسية هي العناصر الموجودة في هذا التبويب فقط وبترتيبك، فأضف كل قسم تريد ظهوره. أي خانة تتركها فارغة يبقى نصّها الجاهز.</div>"
                 },
                 {
                     "type": "string",

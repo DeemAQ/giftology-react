@@ -233,16 +233,27 @@
 .gly-qresult .em .gly-ico,.gly-qresult .em svg{width:40px;height:40px}
 .gly-qresult b{font-family:var(--gly-font-display);font-size:1.45rem;display:block;color:var(--gly-teal-ink);margin-bottom:.3rem}
 .gly-qresult p{margin:0 auto 1.1rem;color:var(--gly-soft)}
-/* finder → random-product result */
+/* finder → the answer: up to three suggested products */
 .gly-qloading{display:flex;align-items:center;justify-content:center;gap:.5rem;color:var(--gly-soft);margin:0 auto 1.1rem}
 .gly-qloading::before{content:"";width:18px;height:18px;border-radius:50%;border:2px solid rgba(63,156,150,.25);border-top-color:var(--color-primary,#35837d);animation:gly-spin .8s linear infinite}
 @keyframes gly-spin{to{transform:rotate(360deg)}}
-.gly-qpwrap{max-width:240px;margin:.2rem auto 0}
-.gly-qpwrap .s-product-card-entry{margin:0 auto;width:100%}
-/* keep the result card compact: cap the product image so the card doesn't balloon */
-.gly-qpwrap .s-product-card-image,.gly-qpwrap .s-product-card-image-full{height:150px!important;min-height:0!important;padding:0!important;aspect-ratio:auto!important;overflow:hidden;border-radius:14px}
-.gly-qpwrap .s-product-card-image a{display:block;width:100%;height:100%}
-.gly-qpwrap .s-product-card-image img{width:100%!important;height:100%!important;object-fit:cover!important}
+/* the box becomes one column, so the cards have the full width */
+.gly-quiz-box--answer{grid-template-columns:1fr}
+/* phones: a row to swipe through, each card wide enough for its button */
+.gly-qpicks{display:flex;gap:.8rem;overflow-x:auto;scroll-snap-type:x mandatory;margin:1rem 0 1.2rem;padding-bottom:.4rem;text-align:start}
+.gly-qpicks .s-product-card-entry{flex:0 0 70%;max-width:240px;margin:0;scroll-snap-align:start}
+/* keep the cards compact: cap the product image so a card doesn't balloon */
+.gly-qpicks .s-product-card-image,.gly-qpicks .s-product-card-image-full{height:150px!important;min-height:0!important;padding:0!important;aspect-ratio:auto!important;overflow:hidden;border-radius:14px}
+.gly-qpicks .s-product-card-image a{display:block;width:100%;height:100%}
+.gly-qpicks .s-product-card-image img{width:100%!important;height:100%!important;object-fit:cover!important}
+@media (min-width:640px){
+  /* side by side and centred, however many there are */
+  .gly-qpicks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,230px));justify-content:center;gap:1rem;overflow:visible;padding-bottom:0}
+  .gly-qpicks .s-product-card-entry{max-width:none}
+}
+.gly-qactions{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
+.gly-qnav{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.9rem}
+.gly-qnav .gly-restart{margin-top:0}
 .gly-restart{margin-top:.6rem;padding:.5rem 1.1rem;border-radius:50px;font-weight:700;font-size:.88rem;background:#fff;border:1.4px solid rgba(74,63,53,.14);color:var(--gly-soft);font-family:var(--gly-font-body);cursor:pointer}
 
 /* ============================================================

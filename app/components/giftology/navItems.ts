@@ -1,14 +1,15 @@
-import { settingOn, type GlySettings } from '../../lib/giftology';
+import type { SectionKind } from './homeSections';
 
-/** Home sections the header and the mobile menu link to, each behind its toggle. */
-export const SECTION_LINKS = [
-  { setting: 'gly_show_categories', id: 'gly-cats', label: 'blocks.gly.nav.sections' },
-  { setting: 'gly_show_custom', id: 'gly-custom', label: 'blocks.gly.nav.custom' },
-  { setting: 'gly_show_finder', id: 'gly-finder', label: 'blocks.gly.nav.finder' },
-  { setting: 'gly_show_how', id: 'gly-how', label: 'blocks.gly.nav.how' },
-  { setting: 'gly_show_testimonials', id: 'gly-testi', label: 'blocks.gly.nav.testimonials' },
-] as const;
+/** Home sections the header and the full-screen menu link to, while each is on the home page. */
+export const SECTION_LINKS: readonly { kind: SectionKind; id: string; label: string }[] = [
+  { kind: 'categories', id: 'gly-cats', label: 'blocks.gly.nav.sections' },
+  { kind: 'custom', id: 'gly-custom', label: 'blocks.gly.nav.custom' },
+  { kind: 'finder', id: 'gly-finder', label: 'blocks.gly.nav.finder' },
+  { kind: 'how', id: 'gly-how', label: 'blocks.gly.nav.how' },
+  { kind: 'testimonials', id: 'gly-testi', label: 'blocks.gly.nav.testimonials' },
+];
 
-export function enabledSections(settings: GlySettings) {
-  return SECTION_LINKS.filter((link) => settingOn(settings, link.setting));
+/** The links to the sections that are on the home page. */
+export function sectionLinks(shown: ReadonlySet<SectionKind>) {
+  return SECTION_LINKS.filter((link) => shown.has(link.kind));
 }

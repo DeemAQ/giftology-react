@@ -13,6 +13,14 @@
 .gly-subcats:empty{display:none}
 .gly-subcat{display:inline-flex;align-items:center;font-weight:700;font-size:.92rem;padding:.5rem 1.15rem;border-radius:50px;border:1.6px solid rgba(74,63,53,.16);background:#fff;color:var(--gly-ink);transition:.25s;white-space:nowrap}
 .gly-subcat:hover{border-color:var(--gly-teal-deep);color:var(--gly-teal-ink);background:var(--gly-teal-wash)}
+/* subcategories that have an image in Salla: small circles with the image instead of pills */
+.gly-subcats--circles{gap:1rem 1.2rem}
+.gly-subcirc{display:flex;flex-direction:column;align-items:center;gap:.45rem;width:84px;font-weight:700;font-size:.86rem;line-height:1.3;text-align:center;color:var(--gly-ink)}
+.gly-subcirc__ic{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid rgba(74,63,53,.1);box-shadow:var(--gly-shadow-sm);overflow:hidden;color:var(--gly-teal-deep);transition:.25s}
+.gly-subcirc__ic img{width:40px;height:40px;object-fit:contain;display:block}
+.gly-subcirc__ic .gly-ico{width:30px;height:30px}
+.gly-subcirc:hover .gly-subcirc__ic{border-color:var(--gly-teal);transform:translateY(-3px)}
+.gly-subcirc:hover{color:var(--gly-teal-ink)}
 
 /* toolbar (.ptoolbar): count on the start side, sort on the end */
 .gly-ptoolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}

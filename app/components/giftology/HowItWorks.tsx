@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useReveal } from '../../hooks/useReveal';
-import { blockRows, blockText } from '../../lib/giftology';
+import { blockRows, blockText, rowText } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import { SectionHead } from './SectionHead';
 import { useGly } from './useGly';
@@ -41,7 +41,7 @@ export function HowItWorks({ data }: { data?: BlockData }) {
   // A block field the merchant filled, else the theme's own text.
   const own = (key: string) => blockText(data, key, locale) || t(`blocks.gly.how.${key}`);
   const ownSteps = blockRows(data, 'steps')
-    .map((row) => ({ title: blockText(row, 'title', locale), text: blockText(row, 'text', locale) }))
+    .map((row) => ({ title: rowText(row, 'title', locale, t), text: rowText(row, 'text', locale, t) }))
     .filter((step) => step.title);
   // The four drawings stay in order; a longer list starts them again.
   const steps = (

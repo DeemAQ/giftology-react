@@ -65,34 +65,48 @@ describe('theme editor settings (twilight.json)', () => {
     });
   });
 
-  it("hides a section's own fields while the section is off", () => {
+  it("hides the top bar's phrases while the bar is off", () => {
     const under = (id: string) => (byId.get(id)?.conditions ?? []).map((condition) => condition.id);
     expect(under('gly_promo_1')).toEqual(['gly_show_promo']);
-    expect(under('gly_hero_stat_gifts')).toEqual(['gly_show_hero', 'gly_show_hero_stats']);
-    expect(under('gly_latest_title')).toEqual(['gly_show_latest']);
-    expect(under('gly_cat_newborn')).toEqual(['gly_show_finder']);
+    expect(under('gly_promo_3')).toEqual(['gly_show_promo']);
   });
 
-  it('leaves the circles to their home block', () => {
-    expect(settings.filter((entry) => entry.id.startsWith('gly_tile'))).toEqual([]);
-    const circles = (manifest.components as { path: string; fields: Entry[] }[]).find(
-      (block) => block.path === 'home.gly-circles'
-    );
-    expect(circles?.fields.find((field) => field.id === 'circles')?.type).toBe('collection');
+  it('opens with the "start here" note', () => {
+    expect(entries[0]).toMatchObject({ id: 'gly-start', type: 'static' });
+    expect(String(entries[0].value)).toContain('ابدأ من هنا');
   });
 
-  it('lists the home sections in the order the page shows them', () => {
-    const order = [
-      'gly_show_hero',
-      'gly_show_latest',
-      'gly_show_categories',
-      'gly_show_custom',
-      'gly_show_finder',
-      'gly_show_how',
-      'gly_show_testimonials',
-    ].map((id) => entries.indexOf(byId.get(id) as Entry));
-    expect(order.every((index) => index >= 0)).toBe(true);
-    expect([...order].sort((a, b) => a - b)).toEqual(order);
+  it('leaves the home page to the home tab: no section switch, section field or block position', () => {
+    const homeSettings = settings
+      .map((entry) => entry.id)
+      .filter((id) => /^gly_(show_(?!promo)|hero_|latest_|cat_|tile|blocks_)/.test(id));
+    expect(homeSettings).toEqual([]);
+  });
+
+  const blocks = manifest.components as unknown as {
+    path: string;
+    fields: (Entry & { source?: string; multichoice?: boolean })[];
+  }[];
+  const blockField = (path: string, id: string) =>
+    blocks.find((block) => block.path === path)?.fields.find((field) => field.id === id);
+
+  it("builds the circles from the store's categories, with a hand list only for extras", () => {
+    expect(blockField('home.gly-circles', 'categories')).toMatchObject({
+      type: 'items',
+      format: 'dropdown-list',
+      source: 'categories',
+      multichoice: true,
+    });
+    expect(blockField('home.gly-circles', 'circles')).toMatchObject({ type: 'collection', value: [] });
+  });
+
+  it('asks for no category links in the gift finder: it follows the category tree', () => {
+    const finder = blocks.find((block) => block.path === 'home.gly-finder');
+    expect(finder?.fields.filter((field) => field.id.startsWith('cat_'))).toEqual([]);
+    expect(blockField('home.gly-finder', 'exclude')).toMatchObject({ source: 'categories', multichoice: true });
+    for (const id of ['q_category', 'q_kind', 'q_budget']) {
+      expect(blockField('home.gly-finder', id)?.type, id).toBe('string');
+    }
   });
 
   it('labels every setting in plain Arabic', () => {

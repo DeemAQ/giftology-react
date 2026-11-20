@@ -1,13 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
   allProductsUrl,
-  categoryIdFromUrl,
   categoryTiles,
   fillStoreDetails,
   homeAnchor,
   resolveCategoryUrl,
   settingChoice,
-  blocksPosition,
   settingOn,
   settingText,
   storePage,
@@ -35,18 +33,6 @@ describe('setting readers', () => {
     expect(settingChoice({ x: 'cake' }, 'x')).toBe('cake');
     expect(settingChoice({ x: [{ value: 'baby', label: 'Baby' }] }, 'x')).toBe('baby');
     expect(settingChoice({}, 'x')).toBe('');
-  });
-});
-
-describe('blocksPosition', () => {
-  it("reads the merchant's choice", () => {
-    expect(blocksPosition({ gly_blocks_position: 'bottom' })).toBe('bottom');
-    expect(blocksPosition({ gly_blocks_position: [{ value: 'top', label: 'Top' }] })).toBe('top');
-  });
-
-  it('puts the blocks under the hero when unset or unknown', () => {
-    expect(blocksPosition({})).toBe('after_hero');
-    expect(blocksPosition({ gly_blocks_position: 'sideways' })).toBe('after_hero');
   });
 });
 
@@ -82,13 +68,6 @@ describe('resolveCategoryUrl', () => {
 });
 
 describe('link helpers', () => {
-  it('reads the category id from a /c{id} URL', () => {
-    expect(categoryIdFromUrl('https://shop.test/ar/newborn/c1234')).toBe(1234);
-    expect(categoryIdFromUrl('https://shop.test/ar/newborn/c1234?sort=x')).toBe(1234);
-    expect(categoryIdFromUrl('https://shop.test/ar/cards')).toBeNull();
-    expect(categoryIdFromUrl(undefined)).toBeNull();
-  });
-
   it('builds a WhatsApp link, and none without a number', () => {
     expect(whatsappLink('966551234567', 'hi there')).toBe(
       'https://wa.me/966551234567?text=hi%20there'

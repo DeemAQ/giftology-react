@@ -1,5 +1,5 @@
 import { useReveal } from '../../hooks/useReveal';
-import { blockRows, blockText } from '../../lib/giftology';
+import { blockRows, blockText, rowText } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import { WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
@@ -17,7 +17,7 @@ export function CustomGift({ data }: { data?: BlockData }) {
   // A block field the merchant filled, else the theme's own text.
   const c = (key: string) => blockText(data, key, locale) || t(`blocks.gly.custom.${key}`);
   const ownSteps = blockRows(data, 'steps')
-    .map((row) => ({ title: blockText(row, 'title', locale), text: blockText(row, 'text', locale) }))
+    .map((row) => ({ title: rowText(row, 'title', locale, t), text: rowText(row, 'text', locale, t) }))
     .filter((step) => step.title);
   const steps = ownSteps.length
     ? ownSteps

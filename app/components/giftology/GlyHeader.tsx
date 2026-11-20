@@ -11,7 +11,8 @@ import { HOME_ROUTE_ID } from '../../lib/routeIds';
 import { ShoppingBagIcon } from '../icons';
 import { PageAdvertisements } from '../layout';
 import { BurgerIcon, GlobeIcon, SearchIcon } from './icons';
-import { enabledSections } from './navItems';
+import { useHomeSections } from './homeSections';
+import { sectionLinks } from './navItems';
 import { useGly } from './useGly';
 
 const openSearch = () => window.salla?.event?.dispatch('search::open');
@@ -25,7 +26,7 @@ interface GlyHeaderProps {
 /**
  * Giftology header: logo and the home-section links at the start, then search,
  * language, account, cart and the menu button. The section links follow the
- * section toggles, so the nav grows and shrinks with the home page.
+ * sections that are on the home page, so the nav grows and shrinks with it.
  *
  * The bar turns solid once the page scrolls. Off the home page the links point back
  * to the home sections and the menu button joins them (`.gly-header--inner`); on
@@ -34,7 +35,8 @@ interface GlyHeaderProps {
  * The `header:start` / `header:end` slots are kept for installed apps.
  */
 export function GlyHeader({ menuOpen, onOpenMenu }: GlyHeaderProps) {
-  const { store, settings, t, homeUrl } = useGly();
+  const { store, t, homeUrl } = useGly();
+  const shown = useHomeSections();
   const [solid, setSolid] = useState(false);
   // The route match, which the server and the client agree on.
   const isHome = useRouterState({
@@ -67,7 +69,7 @@ export function GlyHeader({ menuOpen, onOpenMenu }: GlyHeaderProps) {
           </Link>
 
           <div className="gly-menu">
-            {enabledSections(settings).map((item) => (
+            {sectionLinks(shown).map((item) => (
               <a key={item.id} href={isHome ? `#${item.id}` : homeAnchor(homeUrl, item.id)}>
                 {t(item.label)}
               </a>
