@@ -55,7 +55,8 @@ type Step = 'category' | 'kind' | 'budget' | 'result';
  *
  * 1. what the visitor is looking for: the store's top-level categories, plus
  *    "a custom gift", which always ends on the custom-order answer with its
- *    WhatsApp button (the block can switch it off; it needs a number to chat with);
+ *    WhatsApp button (the block can switch it off; it needs a number to chat with).
+ *    The same offer sits beside the suggestions, where it opens the chat directly;
  * 2. which kind: the chosen category's subcategories (skipped when it has none);
  * 3. the budget: ranges worked out from that category's real prices (skipped when
  *    its products are too few or cost the same).
@@ -254,15 +255,12 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                           {f('see_all').replace('{category}', target.name)}
                         </Link>
                       )}
+                      {/* Beside the suggestions the visitor has already seen what there is: straight to the chat. */}
                       {offerCustom && (
-                        <button
-                          type="button"
-                          className="gly-btn gly-btn-ghost"
-                          onClick={() => move(() => setCustom(true))}
-                        >
+                        <a className="gly-btn gly-btn-ghost" href={chat} target="_blank" rel="noopener">
                           <SparkIcon />
                           {f('or_custom')}
-                        </button>
+                        </a>
                       )}
                     </div>
                   </>

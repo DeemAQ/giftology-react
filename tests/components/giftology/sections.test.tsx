@@ -903,12 +903,13 @@ describe('Giftology sections as home blocks', () => {
       'https://wa.me/966551234567?text=A%20custom%20gift%20please'
     );
 
-    // It is offered again beside the suggestions.
+    // Beside the suggestions the same offer opens the chat directly, with the same message.
     fireEvent.click(screen.getByText(en['blocks.gly.finder.back']));
     fireEvent.click(screen.getByRole('button', { name: 'Cards' }));
     await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
-    fireEvent.click(screen.getByRole('button', { name: en['blocks.gly.finder.or_custom'] }));
-    expect(screen.getByText('Made to order')).toBeTruthy();
+    const direct = screen.getByRole('link', { name: en['blocks.gly.finder.or_custom'] });
+    expect(direct.getAttribute('href')).toBe('https://wa.me/966551234567?text=A%20custom%20gift%20please');
+    expect(direct.getAttribute('target')).toBe('_blank');
   });
 
   it('gift finder: the block can switch the custom-gift answer off, and pick the order of suggestions', async () => {
