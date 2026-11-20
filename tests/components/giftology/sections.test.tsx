@@ -472,6 +472,24 @@ describe('GiftologyHome', () => {
     expect(container.querySelector('#merchant-blocks')?.textContent).toBe('home.gly-hero,brands,gly-how');
   });
 
+  it("follows the local editor's layout on the dev server, where the engine swaps the blocks itself", () => {
+    const scope = globalThis as { __twilightDevPreview__?: unknown };
+    try {
+      // The page is handed the store's own blocks; the editor's saved layout holds a Giftology one.
+      scope.__twilightDevPreview__ = { enabled: true, settings: {}, layout: [{ id: 'b-1', path: 'gly-how', fields: {} }] };
+      const placed = renderWithQuery(<GiftologyHome components={[{ path: 'brands' }]} />);
+      expect(pageOrder(placed.container)).toEqual(['merchant-blocks']);
+      placed.unmount();
+
+      // Preview switched off: the layout is ignored, as the engine ignores it.
+      scope.__twilightDevPreview__ = { enabled: false, settings: {}, layout: [{ id: 'b-1', path: 'gly-how', fields: {} }] };
+      const off = renderWithQuery(<GiftologyHome components={[{ path: 'brands' }]} />);
+      expect(pageOrder(off.container)).toContain('gly-how');
+    } finally {
+      delete scope.__twilightDevPreview__;
+    }
+  });
+
   it('keeps their place when the section before them is switched off', () => {
     state.settings = { gly_show_hero: false };
     const { container } = renderWithQuery(<GiftologyHome components={[{ path: 'brands' }]} />);

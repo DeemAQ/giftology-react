@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { home } from '@salla.sa/twilight-theme-engine/api/home';
 import { settingOn } from '../../lib/giftology';
 import type { GlySettings } from '../../lib/giftology';
+import { usePlacedBlocks } from './devPreview';
+import type { PlacedBlocks } from './devPreview';
 import { useGly } from './useGly';
 
 /** The Giftology home sections, in their built-in order. */
@@ -29,8 +31,6 @@ export const SECTION_BLOCKS: Record<SectionKind, string> = {
   testimonials: 'gly-testimonials',
 };
 
-/** What the home page was given: the blocks the merchant placed in the editor's home tab. */
-type PlacedBlocks = readonly { path?: unknown }[] | null | undefined;
 
 /** The sections the merchant placed as home blocks (`home.gly-*`). */
 export function sectionsAsBlocks(components: PlacedBlocks): Set<SectionKind> {
@@ -70,6 +70,7 @@ export function useHomeSections(): ReadonlySet<SectionKind> {
   const onHome = useContext(HomeSections);
   const { settings } = useGly();
   // Never fetches: the home route's loader fills this query; other pages only read it.
-  const { data: placed } = useQuery({ ...home.queries.components(), enabled: false });
+  const { data: cached } = useQuery({ ...home.queries.components(), enabled: false });
+  const placed = usePlacedBlocks(cached);
   return onHome ?? shownSections(placed, settings);
 }

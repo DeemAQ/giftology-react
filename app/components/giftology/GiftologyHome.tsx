@@ -3,6 +3,7 @@ import { Home } from '@salla.sa/twilight-theme-engine/routes/home';
 import type { HomePageProps } from '@salla.sa/twilight-theme-engine/routes/home';
 import { Categories } from './Categories';
 import { CustomGift } from './CustomGift';
+import { usePlacedBlocks } from './devPreview';
 import { GiftFinder } from './GiftFinder';
 import { Hero } from './Hero';
 import { HowItWorks } from './HowItWorks';
@@ -47,8 +48,10 @@ const SECTIONS_BEFORE_BLOCKS = 1;
  */
 export function GiftologyHome({ components }: Pick<HomePageProps, 'components'>) {
   const { settings } = useGly();
-  const shown = shownSections(components, settings);
-  const builtIn = sectionsAsBlocks(components).size
+  // The blocks the page really shows: on the local dev server, the local editor's layout.
+  const placed = usePlacedBlocks(components);
+  const shown = shownSections(placed, settings);
+  const builtIn = sectionsAsBlocks(placed).size
     ? []
     : SECTION_KINDS.filter((kind) => shown.has(kind));
   const sections = (kinds: readonly SectionKind[]) =>
