@@ -5,6 +5,10 @@ import { resetWishlistStore } from '@salla.sa/twilight-theme-engine/hooks/useWis
 import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import { ProductDetails } from '../../../app/components/product/ProductDetails';
 
+// Prices are printed as given; the digit style has its own test (tests/hooks/useStoreDigits.test.ts).
+vi.mock('../../../app/hooks/useStoreDigits', () => ({
+  useStoreDigits: () => (amount: number | string | null | undefined) => (amount == null ? '' : String(amount)),
+}));
 vi.mock('@salla.sa/twilight-theme-engine/i18n', () => ({
   useTranslation: () => ({
     locale: 'ar',

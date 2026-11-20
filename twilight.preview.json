@@ -1,5 +1,5 @@
 {
-  "enabled": false,
+  "enabled": true,
   "settings": {
     "product_card_layout": "vertical",
     "product_card_img_ratio": "auto",
@@ -90,9 +90,9 @@
     "gly_pay_applepay": true,
     "gly_pay_visa": true,
     "gly_pay_mastercard": true,
-    "gly_pay_tabby": true,
+    "gly_pay_tabby": false,
     "gly_pay_tamara": false,
     "gly_pay_stcpay": true
   },
-  "layout": null
+  "layout": []
 }

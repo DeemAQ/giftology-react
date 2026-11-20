@@ -1,0 +1,19 @@
+/* ============================================================
+   Giftology — keyboard focus ring
+   File: app/styles/giftology/_focus.scss
+
+   The starter's reset removes the outline from links (`a:focus`) and nothing
+   replaced it, so someone moving through the page with the keyboard could not
+   see where they were. One ring for every link and button, on every page, shown
+   only to keyboard users (`:focus-visible`), never on a mouse click or a tap.
+
+   Sections with a dark background set `--gly-focus` so the ring stays visible.
+   ============================================================ */
+a:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible,
+summary:focus-visible{outline:2px solid var(--gly-focus,var(--gly-teal-ink));outline-offset:3px}
+
+.gly-topbar,
+.gly-custom,
+.gly-footer{--gly-focus:#fff}

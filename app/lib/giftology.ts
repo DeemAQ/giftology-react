@@ -5,7 +5,10 @@
 
 export type GlySettings = Record<string, unknown> | undefined | null;
 
-/** The `gly_whatsapp` setting's default in `twilight.json`: nobody's number, so it counts as unset. */
+/**
+ * The `gly_whatsapp` setting's former default in `twilight.json`. A store that saved its
+ * settings back then still holds it; it is nobody's number, so it counts as unset.
+ */
 export const WA_PLACEHOLDER = '966500000000';
 
 /** A boolean setting; an unsaved one (`undefined`) takes `fallback`. */
@@ -20,13 +23,68 @@ export function settingText(settings: GlySettings, id: string): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-/** A dropdown setting: the API sends a plain string or `[{ value }]`. */
-export function settingChoice(settings: GlySettings, id: string): string {
-  const raw = settings?.[id];
+/** A dropdown's chosen value: the API sends a plain string or `[{ value }]`. */
+export function choiceValue(raw: unknown): string {
   const first = Array.isArray(raw) ? raw[0] : raw;
   if (typeof first === 'string') return first;
   const value = (first as { value?: unknown } | null | undefined)?.value;
   return typeof value === 'string' ? value : '';
+}
+
+/** A dropdown setting. */
+export function settingChoice(settings: GlySettings, id: string): string {
+  return choiceValue(settings?.[id]);
+}
+
+/**
+ * What a Giftology home block receives: the fields the merchant filled for it in the
+ * theme editor's home tab (`components` in `twilight.json`), keyed by field id. The
+ * built-in sections get none.
+ */
+export type BlockData = Record<string, unknown> | null | undefined;
+
+/**
+ * A text field of a home block, trimmed; empty when unset. Salla sends the text in
+ * the visitor's language; a `{ ar, en }` object is read by `lang` in case it doesn't.
+ */
+export function blockText(data: BlockData, id: string, lang?: string): string {
+  const value = data?.[id];
+  if (typeof value === 'string') return value.trim();
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const byLang = value as Record<string, unknown>;
+    const text = (lang && byLang[lang]) || byLang.ar || byLang.en;
+    return typeof text === 'string' ? text.trim() : '';
+  }
+  return '';
+}
+
+/**
+ * The rows of a block's repeatable list (a `collection` field). A row's fields are
+ * declared as `list.field` in `twilight.json` and arrive as `field`; both spellings
+ * are read, and rows the merchant left empty are dropped.
+ */
+export function blockRows(data: BlockData, id: string): Record<string, unknown>[] {
+  const rows = data?.[id];
+  if (!Array.isArray(rows)) return [];
+  return rows
+    .filter((row): row is Record<string, unknown> => !!row && typeof row === 'object')
+    .map((row) =>
+      Object.fromEntries(
+        Object.entries(row).map(([key, value]) => [
+          key.startsWith(`${id}.`) ? key.slice(id.length + 1) : key,
+          value,
+        ])
+      )
+    )
+    .filter((row) => Object.values(row).some((value) => value !== null && value !== '' && value !== false));
+}
+
+/** A block's link field (the editor's link picker): a URL, `{ url }` or a list of them; empty when unset. */
+export function blockLink(value: unknown): string {
+  const first = Array.isArray(value) ? value[0] : value;
+  if (typeof first === 'string') return first.trim();
+  const url = (first as { url?: unknown } | null | undefined)?.url;
+  return typeof url === 'string' ? url.trim() : '';
 }
 
 /**
@@ -62,6 +120,32 @@ export function categoryIdFromUrl(url: string | null | undefined): number | null
 }
 
 /**
+ * The circles a merchant listed in the "category circles" home block. An unknown icon
+ * falls back to the gift. A circle left without a name takes its icon's own name
+ * (the baby icon is "newborn gifts"), in the visitor's language, so the six ready
+ * circles need only a link each.
+ */
+export function blockTiles(
+  data: BlockData,
+  t: (key: string, fallback?: string) => string,
+  homeUrl: string,
+  lang: string | undefined,
+  icons: Record<string, string>
+): CategoryTile[] {
+  return blockRows(data, 'circles').map((row) => {
+    const chosen = choiceValue(row.icon);
+    const icon = icons[chosen] ? chosen : 'gift';
+    const preset = TILE_DEFAULTS.find((tile) => tile.icon === icon);
+    return {
+      name: blockText(row, 'name', lang) || (preset ? t(preset.nameKey) : ''),
+      url: resolveCategoryUrl(row.url, allProductsUrl(homeUrl), lang),
+      image: blockLink(row.image),
+      icon,
+    };
+  });
+}
+
+/**
  * The first candidate that holds a real phone number, as digits; empty when none does.
  * Pass the `gly_whatsapp` setting first, then the store's own contact numbers.
  */
@@ -92,6 +176,17 @@ export function allProductsUrl(homeUrl: string | undefined): string {
 }
 
 const TRANSLATION_KEY = /^[a-z_]+(\.[a-z_]+)+$/;
+
+/** Where the merchant's home blocks sit among the Giftology sections. */
+export type BlocksPosition = 'top' | 'after_hero' | 'after_latest' | 'bottom';
+
+const BLOCKS_POSITIONS: readonly BlocksPosition[] = ['top', 'after_hero', 'after_latest', 'bottom'];
+
+/** `gly_blocks_position`; under the hero until the merchant picks another place. */
+export function blocksPosition(settings: GlySettings): BlocksPosition {
+  const chosen = settingChoice(settings, 'gly_blocks_position') as BlocksPosition;
+  return BLOCKS_POSITIONS.includes(chosen) ? chosen : 'after_hero';
+}
 
 /**
  * The label of a store menu entry. Salla names a few built-in entries by translation

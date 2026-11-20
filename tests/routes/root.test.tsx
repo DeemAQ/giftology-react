@@ -29,6 +29,9 @@ vi.mock('@salla.sa/twilight-theme-engine/tanstack', () => ({
 vi.mock('virtual:twilight/theme-translations', () => ({ default: {} }));
 vi.mock('virtual:twilight/schema', () => ({ default: {} }));
 vi.mock('../../app/components/layout/ThemeLayout', () => ({ ThemeLayout: () => null }));
+vi.mock('../../app/components/giftology/FontPreloads', () => ({
+  FontPreloads: ({ locale }: { locale: string }) => <meta name="font-preloads" content={locale} />,
+}));
 vi.mock('../../app/styles/app.css?url', () => ({ default: '/app.css' }));
 vi.mock('../../app/styles/critical.scss?inline', () => ({ default: '.home{color:red}' }));
 vi.mock('../../app/styles/critical-product.scss?inline', () => ({ default: '.pdp{color:blue}' }));
@@ -45,5 +48,16 @@ describe('root head', () => {
       [HOME_ROUTE_ID]: '.home{color:red}',
       [PRODUCT_ROUTE_ID]: '.pdp{color:blue}',
     });
+  });
+
+  it("loads the brand fonts from the theme's own files, not from Google", async () => {
+    const { Route } = await import('../../app/routes/__root');
+    const Shell = (Route as unknown as { shellComponent: ComponentType }).shellComponent;
+
+    const html = renderToString(<Shell />);
+
+    expect(html).not.toContain('fonts.googleapis.com');
+    expect(html).not.toContain('fonts.gstatic.com');
+    expect(html).toContain('<meta name="font-preloads" content="ar"/>');
   });
 });

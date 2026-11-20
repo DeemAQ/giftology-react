@@ -7,3 +7,6 @@ import tie from '../../assets/images/tie.svg';
 
 /** Brand icons a category tile can pick (`gly_tileN_icon`), by option value. */
 export const TILE_ICONS: Record<string, string> = { baby, gift, cake, tie, tag, envelope };
+
+/** The icons by name, for code that picks one itself. */
+export type BrandIconName = 'baby' | 'gift' | 'cake' | 'tie' | 'tag' | 'envelope';

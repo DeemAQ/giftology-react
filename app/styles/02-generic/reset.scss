@@ -44,8 +44,15 @@ img {
 }
 
 a:focus {
-  outline: none;
   text-decoration: none;
+}
+
+/* No ring on a link that was clicked or tapped. Keyboard focus keeps its ring
+   (giftology/_focus.scss). This file is also inlined as critical CSS, where a
+   plain `a:focus { outline: none }` would cancel that ring on the home and
+   product pages. */
+a:focus:not(:focus-visible) {
+  outline: none;
 }
 
 ul,

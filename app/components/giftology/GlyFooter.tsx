@@ -2,20 +2,23 @@ import { useQuery } from '@tanstack/react-query';
 import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
-import logo from '../../assets/images/white_logo_trim.png';
+import logo from '../../assets/images/white_logo_trim.webp';
 import { menuLabel, settingOn, settingText } from '../../lib/giftology';
 import { InstagramIcon, MailIcon, WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
 
-/** Payment badges, each behind its own switch (`[setting, label, on by default]`). */
+/**
+ * Payment badges, each behind its own switch: `[setting, name, name in Arabic, on by
+ * default]`. Names are the providers' own; two of them have an Arabic spelling.
+ */
 const PAYMENTS = [
-  ['gly_pay_mada', 'مدى', true],
-  ['gly_pay_applepay', 'Apple Pay', true],
-  ['gly_pay_visa', 'VISA', true],
-  ['gly_pay_mastercard', 'Mastercard', true],
-  ['gly_pay_tabby', 'tabby', true],
-  ['gly_pay_tamara', 'تمارا', false],
-  ['gly_pay_stcpay', 'STC Pay', true],
+  ['gly_pay_mada', 'mada', 'مدى', true],
+  ['gly_pay_applepay', 'Apple Pay', 'Apple Pay', true],
+  ['gly_pay_visa', 'VISA', 'VISA', true],
+  ['gly_pay_mastercard', 'Mastercard', 'Mastercard', true],
+  ['gly_pay_tabby', 'tabby', 'tabby', true],
+  ['gly_pay_tamara', 'Tamara', 'تمارا', false],
+  ['gly_pay_stcpay', 'STC Pay', 'STC Pay', true],
 ] as const;
 
 /** The store description arrives as HTML; the footer prints it as plain text. */
@@ -32,8 +35,8 @@ const plainText = (html: string | undefined) => (html ?? '').replace(/<[^>]*>/g,
  * show when the store has them.
  *
  * About text: `gly_footer_about`, else the store description, else the locale
- * default. Email: `gly_email`, else the store's. Instagram: the store's, else
- * `gly_instagram`. The `footer:start` / `footer:end` slots are kept for apps.
+ * default. Email: `gly_email`, else the store's. Instagram: `gly_instagram`, else
+ * the store's. The `footer:start` / `footer:end` slots are kept for apps.
  */
 export function GlyFooter() {
   const { store, settings, t, locale, whatsappGeneral } = useGly();
@@ -50,8 +53,8 @@ export function GlyFooter() {
     plainText(store?.description) ||
     t('blocks.gly.footer.about');
   const email = settingText(settings, 'gly_email') || store?.contacts?.email;
-  const instagram = store?.social?.instagram || settingText(settings, 'gly_instagram');
-  const payments = PAYMENTS.filter(([id, , fallback]) => settingOn(settings, id, fallback));
+  const instagram = settingText(settings, 'gly_instagram') || store?.social?.instagram;
+  const payments = PAYMENTS.filter(([id, , , fallback]) => settingOn(settings, id, fallback));
 
   return (
     <footer className="gly-footer">
@@ -135,8 +138,8 @@ export function GlyFooter() {
           </div>
           {payments.length > 0 && (
             <div className="gly-pays">
-              {payments.map(([id, label]) => (
-                <span key={id}>{label}</span>
+              {payments.map(([id, name, arabicName]) => (
+                <span key={id}>{locale === 'ar' ? arabicName : name}</span>
               ))}
             </div>
           )}

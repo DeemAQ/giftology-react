@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { useReveal } from '../../hooks/useReveal';
-import { categoryTiles } from '../../lib/giftology';
+import { blockText, blockTiles, categoryTiles } from '../../lib/giftology';
+import type { BlockData } from '../../lib/giftology';
 import { SectionHead } from './SectionHead';
 import { TILE_ICONS } from './tileIcons';
 import { useGly } from './useGly';
@@ -11,20 +12,23 @@ import { useGly } from './useGly';
  * (`gly_tileN_enabled` / `_name` / `_icon` / `_image` / `_link`). An uploaded image
  * replaces the brand icon, which is drawn as a teal silhouette through a CSS mask.
  */
-export function Categories() {
+export function Categories({ data }: { data?: BlockData }) {
   const { settings, t, homeUrl, locale } = useGly();
   const reveal = useReveal();
-  const tiles = categoryTiles(settings, t, homeUrl, locale, TILE_ICONS);
+  const own = (key: string) => blockText(data, key, locale) || t(`blocks.gly.cats.${key}`);
+  // The circles listed in the block, else the built-in six (`gly_tileN_*`).
+  const listed = blockTiles(data, t, homeUrl, locale, TILE_ICONS);
+  const tiles = listed.length ? listed : categoryTiles(settings, t, homeUrl, locale, TILE_ICONS);
 
   return (
     <section id="gly-cats" className="gly-section gly-cats">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={t('blocks.gly.cats.eyebrow')}
-          title={t('blocks.gly.cats.title_pre')}
-          emphasis={t('blocks.gly.cats.title_em')}
+          eyebrow={own('eyebrow')}
+          title={own('title_pre')}
+          emphasis={own('title_em')}
         >
-          <p>{t('blocks.gly.cats.sub')}</p>
+          <p>{own('sub')}</p>
         </SectionHead>
 
         <div ref={reveal.ref} className={`gly-cat-grid ${reveal.className}`}>

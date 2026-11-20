@@ -5,22 +5,25 @@
    Component styles live in _home.scss and _plist.scss.
    ============================================================ */
 
-/* Brand fonts (Amiri, Aref Ruqaa, Tajawal) are linked from app/routes/__root.tsx. */
+/* Brand fonts (Amiri, Aref Ruqaa, Tajawal): the theme's own files, declared in _fonts.scss. */
+@import './fonts';
 
 :root {
   /* ---- Theme variables, locked to the brand ----
      The engine writes the dashboard colour and font as inline styles on <html>,
      so these need !important to win. Remove it to make them dashboard-driven. */
-  --color-primary: #35837d !important;          /* darker Tiffany: legible white text on buttons */
+  --color-primary: #2e7772 !important;          /* darker Tiffany: white text on it reads at 5.2:1 */
   --color-primary-dark: #25605c !important;
   --color-primary-light: #61c5bf !important;    /* exact Tiffany as the light accent */
   --color-primary-reverse: #ffffff !important;
   --font-main: 'Tajawal', sans-serif !important;
 
   /* ---- Giftology design tokens (used by all gly- components) ---- */
-  --gly-teal:#61c5bf; --gly-teal-deep:#35837d; --gly-teal-ink:#25605c; --gly-teal-wash:#e7f5f3;
+  /* Text colours are checked against the page backgrounds in tests/styles/contrast.test.ts.
+     Tiffany and gold are for fills and decoration; text uses teal-deep, teal-ink and gold-ink. */
+  --gly-teal:#61c5bf; --gly-teal-deep:#2e7772; --gly-teal-ink:#25605c; --gly-teal-wash:#e7f5f3;
   --gly-ink:#33302b; --gly-soft:#6b645c; --gly-line:#4a3f35;
-  --gly-gold:#c8a24a; --gly-gold-soft:#e7d39a;
+  --gly-gold:#c8a24a; --gly-gold-soft:#e7d39a; --gly-gold-ink:#876a22;
   --gly-peach:#f9e6da; --gly-peach-deep:#f4c9b3;
   --gly-cream:#fdf9f3; --gly-paper:#ffffff;
 
@@ -34,7 +37,7 @@
   --gly-r:18px;
 
   /* watermark pattern (hero blob, custom-gift band, footer) */
-  --gly-pat:url('../../assets/images/teal_pattern_with_bg.jpg');
+  --gly-pat:url('../../assets/images/teal_pattern_with_bg.webp');
 }
 
 /* warm peach → cream page background (overall), like the reference mockup */

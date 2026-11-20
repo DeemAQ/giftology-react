@@ -19,6 +19,7 @@ import type { Product } from '@salla.sa/twilight-theme-engine/types';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePriceBump } from '../../hooks/usePriceBump';
+import { useStoreDigits } from '../../hooks/useStoreDigits';
 import { ProductOptionsPanel, type PanelOption } from '../common/ProductOptionsPanel';
 
 /** The web component's `type="submit"` path skips its own loader, so drive the
@@ -238,6 +239,7 @@ function StickyPriceDisplay({ product, priceBump }: { product: Product; priceBum
   const { t } = useTranslation();
   // The API converts the amounts but still labels them in the store's own currency.
   const priceCurrency = getActiveCurrency(product.currency);
+  const digits = useStoreDigits();
   const priceBumpClass = priceBump ? ' price-bump' : '';
 
   return (
@@ -250,10 +252,10 @@ function StickyPriceDisplay({ product, priceBump }: { product: Product; priceBum
           className={`price_is_on_sale${priceBumpClass} space-x-2 rtl:space-x-reverse whitespace-nowrap ${product.is_on_sale ? '' : 'hidden'}`}
         >
           <span className="price-bump__now total-price text-red-800 font-bold text-xl inline-block">
-            {product.sale_price} <CurrencySymbol currency={priceCurrency} />
+            {digits(product.sale_price)} <CurrencySymbol currency={priceCurrency} />
           </span>
           <span className="before-price text-gray-500 line-through">
-            {product.regular_price} <CurrencySymbol currency={priceCurrency} />
+            {digits(product.regular_price)} <CurrencySymbol currency={priceCurrency} />
           </span>
         </div>
         <div
@@ -264,7 +266,7 @@ function StickyPriceDisplay({ product, priceBump }: { product: Product; priceBum
             <span className="starting-price-title">{t('pages.products.starting_price')}</span>
           )}
           <span className="price-bump__now total-price font-bold text-xl inline-block">
-            {String(product.starting_price ?? product.price)}{' '}
+            {digits(product.starting_price ?? product.price)}{' '}
             <CurrencySymbol currency={priceCurrency} />
           </span>
         </div>

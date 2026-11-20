@@ -35,14 +35,29 @@ This theme is the React version of the Giftology Twig theme. Its custom layer:
 ```text
 app/components/giftology/   header, full-screen menu, footer, promo bar, WhatsApp button,
                             the home sections, gift finder, subcategory pills
-app/lib/giftology.ts        gly_* setting readers, category-link and WhatsApp helpers
+app/lib/giftology.ts        gly_* setting and home-block field readers, category-link and WhatsApp helpers
 app/styles/giftology/       brand tokens, section styles, category-page styles, product-card styles
 app/assets/images/          logos, watermark pattern, category icons
 ```
 
-- The home page is a fixed sequence of sections (`GiftologyHome.tsx`), each behind a
-  `gly_show_*` switch. Merchant home blocks are not rendered.
+- The home page starts as seven built-in sections in a fixed order (`GiftologyHome.tsx`), each
+  behind a `gly_show_*` switch. The blocks a merchant adds in the theme editor are drawn
+  together by the engine's `Home.Component`, at the place `gly_blocks_position` names (under
+  the hero by default). The engine's no-blocks fallback is registered as an empty component in
+  `app/router.tsx`: Giftology has its own latest-products section.
+- Each section is also a home block (`home.gly-*` in `twilight.json`, `giftology/blocks.tsx`,
+  names in `giftology/homeSections.tsx`). A block replaces the built-in section of its kind and
+  hands the section its fields as `data`. Read them with `blockText`, `blockRows` and
+  `blockLink` (`lib/giftology.ts`); an empty field falls back to the setting, then to the
+  locale text, so both languages keep working. The category circles are edited only in their
+  block; the old `gly_tile*` settings are no longer offered but are still read if a store has them.
 - Every merchant setting starts with `gly_`. Their ids match the Twig theme; do not rename them.
+- The theme editor's list (`settings` in `twilight.json`) is ordered the way a shop owner works:
+  contact, top bar, the home sections in page order, product card, product page, footer. A
+  section's own fields carry `conditions` on its `gly_show_*` switch, so they hide while the
+  section is off. Write each label so it makes sense without its heading: the local editor
+  (`/__twilight/editor`) does not draw the `static` headings. A setting nothing reads does not
+  belong in the list; `tests/manifest/settings.test.ts` checks these rules.
 - Brand colours and the body font are locked in `app/styles/giftology/_tokens.scss`.
 - Phones keep the starter's bottom nav and page-title bar. Its Menu tab opens `GlyMobileMenu`.
 - Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and

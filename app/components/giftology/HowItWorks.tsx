@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import { useReveal } from '../../hooks/useReveal';
+import { blockRows, blockText } from '../../lib/giftology';
+import type { BlockData } from '../../lib/giftology';
 import { SectionHead } from './SectionHead';
 import { useGly } from './useGly';
 
@@ -33,24 +35,36 @@ const STEPS: { key: string; icon: ReactNode }[] = [
 ];
 
 /** "How it works": the four steps, numbered 01 to 04. */
-export function HowItWorks() {
-  const { t } = useGly();
+export function HowItWorks({ data }: { data?: BlockData }) {
+  const { t, locale } = useGly();
   const reveal = useReveal();
+  // A block field the merchant filled, else the theme's own text.
+  const own = (key: string) => blockText(data, key, locale) || t(`blocks.gly.how.${key}`);
+  const ownSteps = blockRows(data, 'steps')
+    .map((row) => ({ title: blockText(row, 'title', locale), text: blockText(row, 'text', locale) }))
+    .filter((step) => step.title);
+  // The four drawings stay in order; a longer list starts them again.
+  const steps = (
+    ownSteps.length
+      ? ownSteps
+      : STEPS.map((step) => ({ title: own(`${step.key}_t`), text: own(`${step.key}_d`) }))
+  ).map((step, index) => ({ ...step, icon: STEPS[index % STEPS.length].icon }));
 
   return (
     <section id="gly-how" className="gly-section gly-how">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={t('blocks.gly.how.eyebrow')}
-          title={t('blocks.gly.how.title_pre')}
-          emphasis={t('blocks.gly.how.title_em')}
+          eyebrow={own('eyebrow')}
+          title={own('title_pre')}
+          emphasis={own('title_em')}
         >
-          <p>{t('blocks.gly.how.sub')}</p>
+          <p>{own('sub')}</p>
         </SectionHead>
 
         <div ref={reveal.ref} className={`gly-steps ${reveal.className}`}>
-          {STEPS.map((step, index) => (
-            <div key={step.key} className="gly-step">
+          {steps.map((step, index) => (
+            // An ordered list with no ids; a step's place is its identity.
+            <div key={index} className="gly-step">
               <div className="gly-step__num" aria-hidden="true">
                 0{index + 1}
               </div>
@@ -65,8 +79,8 @@ export function HowItWorks() {
                   {step.icon}
                 </svg>
               </div>
-              <h3>{t(`blocks.gly.how.${step.key}_t`)}</h3>
-              <p>{t(`blocks.gly.how.${step.key}_d`)}</p>
+              <h3>{step.title}</h3>
+              {step.text && <p>{step.text}</p>}
             </div>
           ))}
         </div>
