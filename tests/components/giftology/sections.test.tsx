@@ -19,6 +19,7 @@ const state = {
   locale: 'en',
   products: [] as { id: number; name: string; price?: number; status?: string }[],
   categories: [] as Record<string, unknown>[],
+  phone: false,
   listCalls: [] as Record<string, unknown>[],
   footerMenu: [] as { id?: number | string; title: string; url: string; target?: string }[],
 };
@@ -67,6 +68,8 @@ vi.mock('@salla.sa/twilight-theme-engine/api/menu', () => ({
 vi.mock('@salla.sa/twilight-theme-engine/api/home', () => ({
   home: { queries: { components: () => ({ queryKey: ['home', 'components'], queryFn: async () => [] }) } },
 }));
+// The viewport the finder sees; the test setup's own matchMedia always says "phone".
+vi.mock('../../../app/hooks/useMobileViewport', () => ({ useMobileViewport: () => state.phone }));
 vi.mock('@salla.sa/twilight-theme-engine/hooks/useMoney', () => ({
   useMoney: () => ({ format: (amount: number) => `${amount} SAR` }),
 }));
@@ -108,6 +111,7 @@ beforeEach(() => {
   state.settings = {};
   state.products = [];
   state.categories = [];
+  state.phone = false;
   state.listCalls = [];
 });
 
@@ -350,6 +354,32 @@ describe('GiftFinder', () => {
     pick(en['blocks.gly.finder.others']);
     // The next ones, starting again from the best seller once the list runs out.
     expect(shown()).toEqual(['Gift 4', 'Gift 5', 'Gift 1']);
+  });
+
+  it('shows one suggestion at a time on a phone, where three would crowd the screen', async () => {
+    state.phone = true;
+    state.categories = [CARDS];
+    state.products = priced(25, 25, 25, 25).map((item) => ({ ...item, name: `Gift ${item.id}` }));
+    renderWithQuery(<GiftFinder />);
+    pick((await screen.findByRole('button', { name: 'Cards' })).textContent as string);
+    const shown = () => screen.getAllByTestId('product-card').map((card) => card.textContent);
+    await waitFor(() => expect(shown()).toEqual(['Gift 1']));
+    pick(en['blocks.gly.finder.others']);
+    expect(shown()).toEqual(['Gift 2']);
+  });
+
+  it('keeps one button under the suggestions; the rest are text links', async () => {
+    state.categories = [CARDS];
+    state.settings = { gly_whatsapp: '966551234567' };
+    state.products = priced(25, 25, 25, 25);
+    const { container } = renderWithQuery(<GiftFinder />);
+    pick((await screen.findByRole('button', { name: 'Cards' })).textContent as string);
+    await waitFor(() => expect(screen.getAllByTestId('product-card')).toHaveLength(3));
+    expect([...container.querySelectorAll('.gly-qresult .gly-btn')].map((button) => button.textContent)).toEqual(['See all Cards']);
+    expect([...container.querySelectorAll('.gly-qlinks .gly-qlink')].map((link) => link.textContent)).toEqual([
+      en['blocks.gly.finder.others'],
+      en['blocks.gly.finder.or_custom'],
+    ]);
   });
 
   it('links to the category when nothing in it is in stock', async () => {

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useMoney } from '@salla.sa/twilight-theme-engine/hooks/useMoney';
+import { useMobileViewport } from '../../hooks/useMobileViewport';
 import { useReveal } from '../../hooks/useReveal';
 import { blockCopy, choiceValue, whatsappLink } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
@@ -61,9 +62,10 @@ type Step = 'category' | 'kind' | 'budget' | 'result';
  * 3. the budget: ranges worked out from that category's real prices (skipped when
  *    its products are too few or cost the same).
  *
- * The answer is up to three in-stock products that fit, best sellers first unless
- * the block picks another order, with "show others" and a link to the whole
- * category. Nothing is set up by hand: the questions follow the category tree, so
+ * The answer is up to three in-stock products that fit (one at a time on a phone,
+ * where three would crowd the screen), best sellers first unless the block picks
+ * another order. Under them one button opens the whole category; "show others" and
+ * the custom-gift offer are text links, so the page is not a wall of buttons. Nothing is set up by hand: the questions follow the category tree, so
  * they change when the merchant changes the categories. The finder block can leave
  * categories out (`exclude`) and reword every text: a field named like a text's
  * locale key (`q_budget`, `others`, `back`) replaces it.
@@ -72,6 +74,9 @@ export function GiftFinder({ data }: { data?: BlockData }) {
   const { t, whatsappCustom, whatsappNumber, locale } = useGly();
   const { format } = useMoney();
   const reveal = useReveal();
+  // A phone shows one suggestion at a time. The answer only ever appears after a tap,
+  // so the server never has to guess the screen.
+  const shownAtOnce = useMobileViewport() ? 1 : SUGGESTIONS_SHOWN;
   // A block field the merchant filled, else the theme's own text.
   const own = (key: string) => blockCopy(data, key, locale) || t(`blocks.gly.finder.${key}`);
   const f = own;
@@ -157,7 +162,7 @@ export function GiftFinder({ data }: { data?: BlockData }) {
 
   const band = budget && budget !== 'any' ? budget : null;
   const matches = suggestions(available, band);
-  const picks = suggestionRound(matches, round);
+  const picks = suggestionRound(matches, round, shownAtOnce);
   const money = (amount: number | null) => (amount === null ? '' : format(amount));
   const bandLabel = (item: BudgetBand) =>
     fill(f(`budget_${item.id}`), { min: money(item.min), max: money(item.max) });
@@ -240,36 +245,36 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                     ) : (
                       <p>{f('empty')}</p>
                     )}
-                    <div className="gly-qactions">
-                      {matches.length > SUGGESTIONS_SHOWN && (
-                        <button
-                          type="button"
-                          className="gly-btn gly-btn-ghost"
-                          onClick={() => setRound((value) => value + 1)}
-                        >
-                          {f('others')}
-                        </button>
-                      )}
-                      {target && (
+                    {target && (
+                      <div className="gly-qactions">
                         <Link className="gly-btn gly-btn-primary" to={target.url}>
                           {f('see_all').replace('{category}', target.name)}
                         </Link>
-                      )}
-                      {/* Beside the suggestions the visitor has already seen what there is: straight to the chat. */}
-                      {offerCustom && (
-                        <a className="gly-btn gly-btn-ghost" href={chat} target="_blank" rel="noopener">
-                          <SparkIcon />
-                          {f('or_custom')}
-                        </a>
-                      )}
-                    </div>
+                      </div>
+                    )}
+                    {(matches.length > shownAtOnce || offerCustom) && (
+                      <div className="gly-qlinks">
+                        {matches.length > shownAtOnce && (
+                          <button type="button" className="gly-qlink" onClick={() => setRound((value) => value + 1)}>
+                            {f('others')}
+                          </button>
+                        )}
+                        {/* The visitor has already seen what there is: straight to the chat. */}
+                        {offerCustom && (
+                          <a className="gly-qlink" href={chat} target="_blank" rel="noopener">
+                            <SparkIcon />
+                            {f('or_custom')}
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </>
                 )}
                 <div className="gly-qnav">
-                  <button type="button" className="gly-restart" onClick={back}>
+                  <button type="button" className="gly-qlink" onClick={back}>
                     {f('back')}
                   </button>
-                  <button type="button" className="gly-restart" onClick={restart}>
+                  <button type="button" className="gly-qlink" onClick={restart}>
                     ↺ {f('restart')}
                   </button>
                 </div>
@@ -364,7 +369,7 @@ export function GiftFinder({ data }: { data?: BlockData }) {
                 </div>
                 {step !== 'category' && (
                   <div className="gly-qnav">
-                    <button type="button" className="gly-restart" onClick={back}>
+                    <button type="button" className="gly-qlink" onClick={back}>
                       {f('back')}
                     </button>
                   </div>
