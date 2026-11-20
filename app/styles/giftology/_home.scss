@@ -108,7 +108,8 @@
    store's two special paths as cards, the rest as plain links, contact at the foot. */
 .gly-mmenu{position:fixed;inset:0;z-index:85;background:var(--gly-cream);transform:translateX(100%);transition:.4s;display:flex;flex-direction:column;gap:1.6rem;padding:1.1rem 1.4rem 2rem}
 .gly-mmenu.open{transform:none}
-.gly-mmenu a{color:var(--gly-ink);text-decoration:none}
+/* not the WhatsApp button: it keeps its white on green */
+.gly-mmenu :where(a:not(.gly-btn)){color:var(--gly-ink);text-decoration:none}
 /* logo at the start, close at the far end (the button comes first in the page's order) */
 .gly-mmenu__top{display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between}
 .gly-mmenu__brand img{display:block;height:44px;width:auto}
@@ -117,8 +118,9 @@
 .gly-mmenu__head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:-.4rem}
 .gly-mmenu__head h2{font-family:var(--gly-font-display);font-weight:700;font-size:1.7rem;line-height:1.2;margin:0}
 .gly-mmenu__head a{font-weight:700;font-size:.92rem;color:var(--gly-teal-ink);padding:.6rem 0;text-decoration:underline;text-decoration-color:rgba(46,119,114,.35);text-underline-offset:5px}
-/* the categories: three circles to a row */
-.gly-mcats{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.1rem .6rem}
+/* the categories: three circles to a row, a short last row centred as on the home page */
+.gly-mcats{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:1.1rem .6rem}
+.gly-mcats li{flex:0 0 calc((100% - 1.2rem) / 3);min-width:0}
 .gly-mcat{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-align:center;font-weight:700;font-size:.9rem;line-height:1.35}
 .gly-mcat__ic{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid rgba(74,63,53,.08);box-shadow:var(--gly-shadow-sm);overflow:hidden;color:var(--gly-teal-deep)}
 .gly-mcat__ic img{width:42px;height:42px;object-fit:contain;display:block}
