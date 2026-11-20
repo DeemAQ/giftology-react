@@ -14,6 +14,8 @@ import { useGly } from './useGly';
 const LIMIT = 8;
 /** The counts the block offers. */
 const LIMITS = [4, 8, 12];
+/** How many a phone shows unless the block says otherwise; `all` is the count above. */
+const PHONE_LIMITS = ['4', '6', 'all'];
 const PLACEHOLDERS = Array.from({ length: 4 }, (_, index) => index);
 
 /**
@@ -29,6 +31,10 @@ export const latestProductsQuery = (count = LIMIT) =>
  * brand heading, with a "view all" button to the link picked in the block (the
  * store's latest-products page when unset). `id="gly-latest"` is the
  * target of the hero button and the menu link.
+ *
+ * A phone shows two to a row, so eight push the rest of the page two screens down:
+ * it shows four unless the block picks six or the full count (`limit_phone`). The
+ * stylesheet hides the rest, so the server's HTML is the same for every screen.
  */
 export function LatestProducts({ data: block }: { data?: BlockData }) {
   const { settings, t, homeUrl, locale } = useGly();
@@ -43,6 +49,8 @@ export function LatestProducts({ data: block }: { data?: BlockData }) {
   const reveal = useReveal();
   const chosen = Number(choiceValue(block?.limit));
   const limit = LIMITS.includes(chosen) ? chosen : LIMIT;
+  const onPhone = choiceValue(block?.limit_phone);
+  const phoneLimit = PHONE_LIMITS.includes(onPhone) ? onPhone : PHONE_LIMITS[0];
   const { data, isLoading } = useQuery(latestProductsQuery(limit));
   const products = (data?.items ?? []).slice(0, limit);
 
@@ -50,7 +58,7 @@ export function LatestProducts({ data: block }: { data?: BlockData }) {
     <section id="gly-latest" className="gly-section gly-latest">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={blockCopy(block, 'eyebrow', locale) || t('blocks.gly.latest.eyebrow')}
+          eyebrow={blockCopy(block, 'eyebrow', locale)}
           title={title}
         />
 
@@ -58,6 +66,7 @@ export function LatestProducts({ data: block }: { data?: BlockData }) {
           className="gly-latest-grid s-products-list-wrapper s-products-list-vertical-cards"
           aria-busy={isLoading}
           data-count={limit}
+          data-phone={phoneLimit}
         >
           {isLoading
             ? PLACEHOLDERS.map((index) => <ProductCardSkeleton key={index} />)

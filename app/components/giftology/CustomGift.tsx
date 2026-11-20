@@ -9,6 +9,10 @@ const STEPS = [1, 2, 3] as const;
 /**
  * Custom gift section. A custom gift is ordered by talking to the store first, so
  * the card opens a WhatsApp chat and shows no price or add-to-cart button.
+ *
+ * The three steps say how it works, once. A paragraph under the title, a badge on
+ * the card and a line under the card's title used to say it again; they show now
+ * only when the merchant typed them in the block.
  */
 export function CustomGift({ data }: { data?: BlockData }) {
   const { t, whatsappCustom, whatsappNumber, locale } = useGly();
@@ -25,6 +29,10 @@ export function CustomGift({ data }: { data?: BlockData }) {
   const steps = ownSteps.length
     ? ownSteps
     : STEPS.map((step) => ({ title: c(`step${step}_t`), text: c(`step${step}_d`) }));
+  // Optional texts: nothing shows in their place when the block leaves them empty.
+  const lede = blockCopy(data, 'lede', locale);
+  const badge = blockCopy(data, 'card_badge', locale);
+  const cardText = blockCopy(data, 'card_desc', locale);
 
   return (
     <section id="gly-custom" className="gly-section gly-custom">
@@ -35,7 +43,7 @@ export function CustomGift({ data }: { data?: BlockData }) {
           <h2>
             {c('title_pre')} <em>{c('title_em')}</em>
           </h2>
-          <p className="gly-custom__lede">{c('lede')}</p>
+          {lede && <p className="gly-custom__lede">{lede}</p>}
           <ol className="gly-csteps">
             {steps.map((step, index) => (
               // An ordered list with no ids; a step's place is its identity.
@@ -53,9 +61,9 @@ export function CustomGift({ data }: { data?: BlockData }) {
         </div>
 
         <div ref={card.ref} className={`gly-qcard-c ${card.className}`}>
-          <span className="gly-badge-soft">{c('card_badge')}</span>
+          {badge && <span className="gly-badge-soft">{badge}</span>}
           <h3>{c('card_title')}</h3>
-          <p>{c('card_desc')}</p>
+          {cardText && <p>{cardText}</p>}
           {chat && (
             <a className="gly-btn gly-btn-wa" href={chat} target="_blank" rel="noopener">
               <WhatsAppIcon />

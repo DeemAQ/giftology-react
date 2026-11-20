@@ -1,13 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
-import type { Category } from '@salla.sa/twilight-theme-engine/types';
+import logo from '../../assets/images/teal_logo_trim.webp';
 import { useDialogFocus } from '../../hooks/useDialogFocus';
 import { useScrollLock } from '../../hooks/useScrollLock';
-import { allProductsUrl, homeAnchor, menuLabel, settingText } from '../../lib/giftology';
+import { isCategory } from '../../lib/giftFinder';
+import {
+  allProductsUrl,
+  categoryCircles,
+  homeAnchor,
+  menuLabel,
+  settingChoice,
+  settingText,
+} from '../../lib/giftology';
+import { BrandIcon } from './BrandIcon';
+import type { BrandIconName } from './tileIcons';
 import { categoryTreeQuery } from './categoryTree';
 import { useHomeSections } from './homeSections';
-import { ChevronDownIcon, CloseIcon } from './icons';
+import { CloseIcon, InstagramIcon, SearchIcon, SparkIcon, WhatsAppIcon } from './icons';
 import { sectionLinks } from './navItems';
 import { useGly } from './useGly';
 
@@ -16,75 +26,33 @@ interface GlyMobileMenuProps {
   onClose: () => void;
 }
 
-/** One category in the drawer; a parent expands to "All" plus its children. */
-function CategoryNode({
-  node,
-  allLabel,
-  onNavigate,
-}: {
-  node: Category;
-  allLabel: string;
-  onNavigate: () => void;
-}) {
-  const { t } = useGly();
-  const [open, setOpen] = useState(false);
-  const children = node.sub_categories ?? node.items ?? [];
-  const name = menuLabel(node.name, t);
-
-  if (!children.length) {
-    return (
-      <li className="gly-catitem">
-        <Link to={node.url} onClick={onNavigate}>
-          {name}
-        </Link>
-      </li>
-    );
-  }
-
-  return (
-    <li className={`gly-catitem gly-has-sub${open ? ' open' : ''}`}>
-      <button
-        type="button"
-        className="gly-catrow"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <span>{name}</span>
-        <ChevronDownIcon className="gly-catchev" />
-      </button>
-      <ul className="gly-subcatlist">
-        <li>
-          <Link to={node.url} onClick={onNavigate}>
-            {allLabel}
-          </Link>
-        </li>
-        {children.map((child) => (
-          <CategoryNode key={child.id} node={child} allLabel={allLabel} onNavigate={onNavigate} />
-        ))}
-      </ul>
-    </li>
-  );
-}
+/** The two things only this store does: each gets a card of its own in the menu. */
+const FEATURED = ['gly-custom', 'gly-finder'];
 
 /**
- * Full-screen menu behind the header's menu button: Home, Latest products, the
- * "Sections" accordion, then the remaining home sections.
+ * Full-screen menu behind the header's menu button and the phone bar's Menu tab.
  *
- * The accordion lists the store's real category tree, fetched the first time the
- * menu opens (the home page already holds it). Until it arrives, or if it fails, a
- * single link to all products stands in.
+ * It is a shop's menu, so the categories come first and are shown, not folded away:
+ * the store's top-level categories as circles with their Salla images (the brand
+ * icon when a category has none), each opening its page, where its subcategories
+ * are. Then the custom gift and the gift finder as two cards, the remaining home
+ * sections and the store's own menu entries (offers, brands, blog) as plain links,
+ * and at the foot the WhatsApp button and Instagram.
+ *
+ * The tree is fetched the first time the menu opens (the home page already holds
+ * it). Until it arrives, or if it fails, the link to all products stands alone.
+ * `gly_subcats_style` says whether a category image fills its circle like a photo.
  *
  * While open it behaves as a modal dialog: the page behind doesn't scroll, Tab stays
  * inside it, Escape closes it, and focus returns to the button that opened it.
  */
 export function GlyMobileMenu({ open, onClose }: GlyMobileMenuProps) {
-  const { settings, t, homeUrl } = useGly();
+  const { settings, store, t, homeUrl, whatsappGeneral } = useGly();
   const shown = useHomeSections();
-  const [sectionsOpen, setSectionsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   // Once opened, the tree stays loaded for later openings.
   const [wanted, setWanted] = useState(false);
-  const { data: categories } = useQuery({ ...categoryTreeQuery(), enabled: wanted });
+  const { data: tree } = useQuery({ ...categoryTreeQuery(), enabled: wanted });
 
   useScrollLock(open);
   // Focuses the close button (the first control) on open, and the opener again on close.
@@ -100,9 +68,15 @@ export function GlyMobileMenu({ open, onClose }: GlyMobileMenuProps) {
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
-  const sections = sectionLinks(shown);
+  const circles = categoryCircles(tree, [], t);
+  const photos = settingChoice(settings, 'gly_subcats_style') === 'cover';
+  // Salla's list also carries the store's own menu entries, which are not categories.
+  const storeLinks = (tree ?? []).filter((node) => !isCategory(node) && node.url);
+  const sections = sectionLinks(shown).filter((section) => section.id !== 'gly-cats');
+  const featured = sections.filter((section) => FEATURED.includes(section.id));
+  const others = sections.filter((section) => !FEATURED.includes(section.id));
   const latestUrl = settingText(settings, 'gly_latest_url') || homeAnchor(homeUrl, 'gly-latest');
-  const allLabel = t('blocks.home.display_all', 'All');
+  const instagram = settingText(settings, 'gly_instagram') || store?.social?.instagram;
 
   return (
     <div
@@ -116,61 +90,106 @@ export function GlyMobileMenu({ open, onClose }: GlyMobileMenuProps) {
       // Off screen while closed: keep it out of the tab order and the reading order.
       inert={!open}
     >
-      <button
-        type="button"
-        className="gly-mclose"
-        id="gly-mclose"
-        aria-label={t('blocks.gly.nav.close')}
-        onClick={onClose}
-      >
-        <CloseIcon width={22} height={22} />
-      </button>
-
-      <Link to="/" onClick={onClose}>
-        {t('blocks.gly.nav.home')}
-      </Link>
-
-      {shown.has('latest') && (
-        <a href={latestUrl} onClick={onClose}>
-          {t('blocks.gly.nav.latest')}
-        </a>
-      )}
-
-      {/* The store's categories are worth a menu entry whether or not the home page shows circles. */}
-      <div className={`gly-msub${sectionsOpen ? ' open' : ''}`}>
+      <div className="gly-mmenu__top">
+        {/* First in the page's order, so it is what focus lands on; drawn at the far end. */}
         <button
           type="button"
-          className="gly-msub-toggle"
-          aria-expanded={sectionsOpen}
-          onClick={() => setSectionsOpen((value) => !value)}
+          className="gly-mclose"
+          id="gly-mclose"
+          aria-label={t('blocks.gly.nav.close')}
+          onClick={onClose}
         >
-          {t('blocks.gly.nav.sections')}
-          <ChevronDownIcon className="gly-msub-chev" />
+          <CloseIcon width={22} height={22} />
         </button>
-        <div className="gly-msub-panel">
-          <div className="gly-catmenu" id="gly-catmenu">
-            {categories?.length ? (
-              <ul className="gly-catlist">
-                {categories.map((node) => (
-                  <CategoryNode key={node.id} node={node} allLabel={allLabel} onNavigate={onClose} />
-                ))}
-              </ul>
-            ) : (
-              <Link to={allProductsUrl(homeUrl)} onClick={onClose}>
-                {allLabel}
-              </Link>
-            )}
-          </div>
-        </div>
+        <Link to="/" className="gly-mmenu__brand" onClick={onClose}>
+          <img src={logo} alt="" width={87} height={52} />
+          <span className="sr-only">{t('blocks.gly.nav.home')}</span>
+        </Link>
       </div>
 
-      {sections
-        .filter((section) => section.id !== 'gly-cats')
-        .map((section) => (
-          <a key={section.id} href={homeAnchor(homeUrl, section.id)} onClick={onClose}>
-            {t(section.label)}
-          </a>
-        ))}
+      <div className="gly-mmenu__body">
+        <div className="gly-mmenu__head">
+          <h2>{t('blocks.gly.nav.sections')}</h2>
+          <Link to={allProductsUrl(homeUrl)} onClick={onClose}>
+            {t('blocks.home.display_all', 'All')}
+          </Link>
+        </div>
+        {circles.length > 0 && (
+          <ul className={`gly-mcats${photos ? ' gly-mcats--photos' : ''}`}>
+            {circles.map((circle) => (
+              <li key={circle.url}>
+                <Link to={circle.url} className="gly-mcat" onClick={onClose}>
+                  <span className="gly-mcat__ic">
+                    {circle.image ? (
+                      <img src={circle.image} alt="" width={40} height={40} loading="lazy" />
+                    ) : (
+                      <BrandIcon name={circle.icon as BrandIconName} />
+                    )}
+                  </span>
+                  <span>{circle.name}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {featured.length > 0 && (
+          <div className="gly-mfeat">
+            {featured.map((section) => (
+              <a key={section.id} href={homeAnchor(homeUrl, section.id)} onClick={onClose}>
+                {section.id === 'gly-custom' ? <SparkIcon /> : <SearchIcon />}
+                {t(section.label)}
+              </a>
+            ))}
+          </div>
+        )}
+
+        <ul className="gly-mlinks">
+          {shown.has('latest') && (
+            <li>
+              <a href={latestUrl} onClick={onClose}>
+                {t('blocks.gly.nav.latest')}
+              </a>
+            </li>
+          )}
+          {others.map((section) => (
+            <li key={section.id}>
+              <a href={homeAnchor(homeUrl, section.id)} onClick={onClose}>
+                {t(section.label)}
+              </a>
+            </li>
+          ))}
+          {storeLinks.map((node) => (
+            <li key={node.id}>
+              <Link to={node.url} onClick={onClose}>
+                {menuLabel(node.name, t)}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {(whatsappGeneral || instagram) && (
+        <div className="gly-mmenu__foot">
+          {whatsappGeneral && (
+            <a className="gly-btn gly-btn-wa" href={whatsappGeneral} target="_blank" rel="noopener">
+              <WhatsAppIcon />
+              {t('blocks.gly.wa.float_label')}
+            </a>
+          )}
+          {instagram && (
+            <a
+              className="gly-mmenu__social"
+              href={instagram}
+              target="_blank"
+              rel="noopener"
+              aria-label={t('blocks.gly.footer.instagram')}
+            >
+              <InstagramIcon />
+            </a>
+          )}
+        </div>
+      )}
     </div>
   );
 }

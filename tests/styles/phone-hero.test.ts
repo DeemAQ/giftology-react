@@ -53,6 +53,26 @@ describe('home hero on a phone', () => {
     expect(decl(rest, 'display')).toBe('none');
   });
 
+  it('keeps two buttons and sets the figures two to a row', () => {
+    expect(decl(phoneRule('.gly-cta-row .gly-cta-latest'), 'display')).toBe('none');
+    const stats = phoneRule('.gly-hero-stats');
+    expect(decl(stats, 'display')).toBe('grid');
+    expect(decl(stats, 'grid-template-columns')).toBe('1fr 1fr');
+  });
+
+  it('shows four of the latest products, or six, as the block says', () => {
+    const hidden = (selector: string) => rulesFor(selector)[0];
+    expect(hidden('.gly-latest-grid[data-phone="4"] > :nth-child(n+5)').media).toContain('max-width: 639px');
+    expect(decl(hidden('.gly-latest-grid[data-phone="6"] > :nth-child(n+7)').rule, 'display')).toContain('none');
+    expect(rulesFor('.gly-latest-grid[data-phone="all"] > :nth-child(n+5)')).toHaveLength(0);
+  });
+
+  it("keeps the gift finder's answers two to a row", () => {
+    const narrow = rulesFor('.gly-qopts').filter((found) => found.media);
+    for (const found of narrow) expect(decl(found.rule, 'grid-template-columns')).toBeUndefined();
+    expect(decl(rulesFor('.gly-qopts').find((found) => !found.media)?.rule, 'grid-template-columns')).toBe('1fr 1fr');
+  });
+
   it('hides no promo phrase: on a phone they all show, moving when they do not fit', () => {
     expect(phoneRule('.gly-topbar__phrase:not(.gly-topbar__phrase--main)')).toBeUndefined();
     const moving = rulesFor('.gly-topbar--moving .gly-topbar__track');

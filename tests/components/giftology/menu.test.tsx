@@ -70,33 +70,58 @@ describe('GlyMobileMenu', () => {
     expect(menu?.classList.contains('open')).toBe(false);
   });
 
-  it("lists the store's category tree, with a link to all products until it loads", async () => {
+  it("shows the store's categories as circles, with a link to all products that is there before they load", async () => {
     state.categories = [
       {
         id: 1,
         name: 'Newborn',
         url: '/newborn/c1',
+        image: 'https://cdn.test/newborn.png',
         sub_categories: [{ id: 2, name: 'Baby Girl', url: '/baby-girl/c2' }],
       },
       { id: 3, name: 'Cards', url: '/cards/c3' },
+      // Holds nothing: not offered.
+      { id: 4, name: 'Empty', url: '/empty/c4', products_count: 0 },
     ];
-    renderMenu(true);
+    const { container } = renderMenu(true);
     expect(screen.getByText('All').getAttribute('href')).toBe('https://shop.test/en/products');
+    expect(container.querySelector('.gly-mcats')).toBeNull();
 
-    const parent = await screen.findByRole('button', { name: 'Newborn' });
-    expect(parent.getAttribute('aria-expanded')).toBe('false');
-    fireEvent.click(parent);
-    expect(parent.getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByText('Baby Girl').getAttribute('href')).toBe('/baby-girl/c2');
-    expect(screen.getByText('Cards').getAttribute('href')).toBe('/cards/c3');
+    const newborn = (await screen.findByText('Newborn')).closest('a');
+    expect(newborn?.getAttribute('href')).toBe('/newborn/c1');
+    // Its image from Salla; a category without one gets the brand icon.
+    expect(newborn?.querySelector('img')?.getAttribute('src')).toBe('https://cdn.test/newborn.png');
+    const cards = screen.getByText('Cards').closest('a');
+    expect(cards?.querySelector('img')).toBeNull();
+    expect(cards?.querySelector('.gly-ico')).toBeTruthy();
+    // Top-level categories only: a subcategory is on its parent's page.
+    expect(screen.queryByText('Baby Girl')).toBeNull();
+    expect(screen.queryByText('Empty')).toBeNull();
+    expect(container.querySelectorAll('.gly-mcat')).toHaveLength(2);
   });
 
-  it('links the home sections that are on the page, and closes on a link or Escape', () => {
+  it('fills a circle with its picture when the store says its category images are photos', async () => {
+    state.categories = [{ id: 1, name: 'Newborn', url: '/newborn/c1', image: 'https://cdn.test/newborn.jpg' }];
+    state.settings = { gly_subcats_style: 'cover' };
+    const { container } = renderMenu(true);
+    await screen.findByText('Newborn');
+    expect(container.querySelector('.gly-mcats')?.classList.contains('gly-mcats--photos')).toBe(true);
+  });
+
+  it('gives the custom gift and the gift finder a card each, and links the other sections plainly', () => {
     state.settings = { gly_show_how: false };
     let closed = 0;
-    renderMenu(true, () => {
+    const { container } = renderMenu(true, () => {
       closed += 1;
     });
+    expect([...container.querySelectorAll('.gly-mfeat a')].map((link) => link.textContent)).toEqual([
+      en['blocks.gly.nav.custom'],
+      en['blocks.gly.nav.finder'],
+    ]);
+    expect([...container.querySelectorAll('.gly-mlinks a')].map((link) => link.textContent)).toEqual([
+      en['blocks.gly.nav.latest'],
+      en['blocks.gly.nav.testimonials'],
+    ]);
     expect(screen.queryByText(en['blocks.gly.nav.how'])).toBeNull();
     const finder = screen.getByText(en['blocks.gly.nav.finder']);
     expect(finder.getAttribute('href')).toBe('https://shop.test/en/#gly-finder');
@@ -118,18 +143,38 @@ describe('GlyMobileMenu', () => {
     expect(screen.queryByText(en['blocks.gly.nav.finder'])).toBeNull();
     expect(screen.queryByText(en['blocks.gly.nav.latest'])).toBeNull();
     // The store's categories stay reachable from the menu either way.
-    expect(screen.getByRole('button', { name: en['blocks.gly.nav.sections'] })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: en['blocks.gly.nav.sections'] })).toBeTruthy();
+    expect(screen.getByText('All')).toBeTruthy();
   });
 
-  it("translates a store menu entry that is named by a translation key", async () => {
+  it("lists the store's own menu entries after the sections, translating one named by a translation key", async () => {
     state.categories = [
-      { id: 1, name: 'blocks.gly.nav.latest', url: '/offers' },
+      // As Salla sends a menu link: a word for an id, no category page.
+      { id: 'offers', name: 'blocks.gly.nav.latest', url: '/offers' },
       { id: 2, name: 'Cards', url: '/cards/c3' },
     ];
-    renderMenu(true);
-    const entry = await screen.findByText(en['blocks.gly.nav.latest'], { selector: '.gly-catitem a' });
-    expect(entry.getAttribute('href')).toBe('/offers');
+    const { container } = renderMenu(true);
+    await screen.findByText('Cards');
+    const entry = [...container.querySelectorAll('.gly-mlinks a')].pop();
+    expect(entry?.textContent).toBe(en['blocks.gly.nav.latest']);
+    expect(entry?.getAttribute('href')).toBe('/offers');
     expect(screen.queryByText('blocks.gly.nav.latest')).toBeNull();
+    // It is not a category, so it gets no circle.
+    expect(container.querySelectorAll('.gly-mcat')).toHaveLength(1);
+  });
+
+  it('ends on the WhatsApp button and Instagram when the store has them', () => {
+    const bare = renderMenu(true);
+    expect(bare.container.querySelector('.gly-mmenu__foot')).toBeNull();
+    bare.unmount();
+
+    state.settings = { gly_whatsapp: '966551234567', gly_instagram: 'https://instagram.com/giftology' };
+    const { container } = renderMenu(true);
+    expect(container.querySelector('.gly-mmenu__foot .gly-btn-wa')?.getAttribute('href')).toContain(
+      'https://wa.me/966551234567'
+    );
+    expect(container.querySelector('.gly-mmenu__social')?.getAttribute('href')).toBe('https://instagram.com/giftology');
+    expect(container.querySelector('.gly-mmenu__social')?.getAttribute('aria-label')).toBe(en['blocks.gly.footer.instagram']);
   });
 
   it('moves focus into the menu when it opens and back to the opener when it closes', () => {

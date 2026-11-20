@@ -243,10 +243,11 @@ export function GiftFinder({ data }: { data?: BlockData }) {
             <line x1="18" x2="21" y1="18" y2="21" />
           </svg>
           <div>
-            <span className="gly-eyebrow">{own('eyebrow')}</span>
-            <h2>
-              {own('title_pre')} <em>{own('title_em')}</em>
-            </h2>
+            {/* A small line above the title only when the merchant typed one. */}
+            {blockCopy(data, 'eyebrow', locale) && (
+              <span className="gly-eyebrow">{blockCopy(data, 'eyebrow', locale)}</span>
+            )}
+            <h2>{[own('title_pre'), own('title_em')].filter(Boolean).join(' ')}</h2>
             {/* The invitation to answer has done its job once the answer is up. */}
             {step !== 'result' && <p className="gly-qlede">{own('lede')}</p>}
           </div>

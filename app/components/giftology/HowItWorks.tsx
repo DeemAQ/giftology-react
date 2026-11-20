@@ -77,9 +77,9 @@ export function HowItWorks({ data }: { data?: BlockData }) {
     <section id="gly-how" className="gly-section gly-how">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={own('eyebrow')}
+          eyebrow={blockCopy(data, 'eyebrow', locale)}
           title={own('title_pre')}
-          emphasis={own('title_em')}
+          tail={own('title_em')}
         >
           <p>{own('sub')}</p>
         </SectionHead>

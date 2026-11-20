@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import en from '../../../locales/en.json';
@@ -323,6 +323,52 @@ describe('WhatsApp buttons', () => {
     render(<WhatsAppFloat />);
     const landmark = screen.getByRole('complementary', { name: en['blocks.gly.footer.contact'] });
     expect(landmark.querySelector('a.gly-wa')).not.toBeNull();
+  });
+
+  it('steps aside while another WhatsApp button of the page is on screen', async () => {
+    // Stand-in for the browser's observer: tells the float what is on screen when asked.
+    const seen = new Map<Element, IntersectionObserverCallback>();
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        callback: IntersectionObserverCallback;
+        constructor(callback: IntersectionObserverCallback) {
+          this.callback = callback;
+        }
+        observe(target: Element) {
+          seen.set(target, this.callback);
+        }
+        unobserve(target: Element) {
+          seen.delete(target);
+        }
+        disconnect() {
+          seen.clear();
+        }
+      }
+    );
+    const show = (target: Element, isIntersecting: boolean) =>
+      act(() => seen.get(target)?.([{ target, isIntersecting } as IntersectionObserverEntry], {} as IntersectionObserver));
+
+    state.settings = { gly_whatsapp: '966551112222' };
+    const other = document.createElement('a');
+    other.href = 'https://wa.me/966551112222?text=custom';
+    document.body.append(other);
+    const { container } = render(<WhatsAppFloat />);
+    const float = container.querySelector('a.gly-wa') as HTMLElement;
+    // It watches the page's other WhatsApp links, never itself.
+    expect([...seen.keys()]).toEqual([other]);
+    expect(float.classList.contains('gly-wa--away')).toBe(false);
+
+    show(other, true);
+    expect(float.classList.contains('gly-wa--away')).toBe(true);
+    expect(float.closest('aside')?.hasAttribute('inert')).toBe(true);
+
+    show(other, false);
+    expect(float.classList.contains('gly-wa--away')).toBe(false);
+    expect(float.closest('aside')?.hasAttribute('inert')).toBe(false);
+
+    other.remove();
+    vi.unstubAllGlobals();
   });
 
   it('hides them when there is no number to chat with', () => {
@@ -1028,5 +1074,54 @@ describe('Giftology sections as home blocks', () => {
     expect(screen.queryByText(en['blocks.gly.finder.or_custom'])).toBeNull();
     // Every text of the finder can be reworded in the block.
     expect(screen.getByRole('button', { name: 'More ideas' })).toBeTruthy();
+  });
+
+  it('gives a section one plain title, and a small line above it only when the block has one', () => {
+    for (const name of ['gly-latest', 'gly-circles', 'gly-how', 'gly-testimonials', 'gly-finder'] as const) {
+      const plain = block(name, {});
+      expect(plain.container.querySelector('.gly-eyebrow'), name).toBeNull();
+      // The script word is kept for the hero and the custom-gift section.
+      expect(plain.container.querySelector('h2 em'), name).toBeNull();
+      plain.unmount();
+
+      const labelled = block(name, { eyebrow_en: 'Just in' });
+      expect(labelled.container.querySelector('.gly-eyebrow')?.textContent, name).toBe('Just in');
+      labelled.unmount();
+    }
+    const circles = block('gly-circles', { title_pre_en: 'A gift for', title_em_en: 'every occasion' });
+    expect(circles.container.querySelector('h2')?.textContent).toBe('A gift for every occasion');
+    circles.unmount();
+    // The hero and the custom-gift section keep theirs.
+    const custom = block('gly-custom', {});
+    expect(custom.container.querySelector('.gly-eyebrow')?.textContent).toBe(en['blocks.gly.custom.eyebrow']);
+    expect(custom.container.querySelector('h2 em')?.textContent).toBe(en['blocks.gly.custom.title_em']);
+  });
+
+  it('says how a custom gift works once: the paragraph, the badge and the card line are optional', () => {
+    const bare = block('gly-custom', {});
+    expect(bare.container.querySelectorAll('.gly-cstep')).toHaveLength(3);
+    expect(bare.container.querySelector('.gly-custom__lede')).toBeNull();
+    expect(bare.container.querySelector('.gly-badge-soft')).toBeNull();
+    expect(bare.container.querySelector('.gly-qcard-c p')).toBeNull();
+    expect(bare.container.querySelector('.gly-qcard-c h3')?.textContent).toBe(en['blocks.gly.custom.card_title']);
+    bare.unmount();
+
+    const full = block('gly-custom', { lede_en: 'Any idea.', card_badge_en: 'Made to order', card_desc_en: 'We quote first.' });
+    expect(full.container.querySelector('.gly-custom__lede')?.textContent).toBe('Any idea.');
+    expect(full.container.querySelector('.gly-badge-soft')?.textContent).toBe('Made to order');
+    expect(full.container.querySelector('.gly-qcard-c p')?.textContent).toBe('We quote first.');
+  });
+
+  it('tells the stylesheet how many latest products a phone shows: four unless the block picks otherwise', () => {
+    const usual = block('gly-latest', {});
+    expect(usual.container.querySelector('.gly-latest-grid')?.getAttribute('data-phone')).toBe('4');
+    usual.unmount();
+    for (const picked of ['6', 'all']) {
+      const chosen = block('gly-latest', { limit_phone: [{ value: picked }] });
+      expect(chosen.container.querySelector('.gly-latest-grid')?.getAttribute('data-phone')).toBe(picked);
+      chosen.unmount();
+    }
+    const odd = block('gly-latest', { limit_phone: 'lots' });
+    expect(odd.container.querySelector('.gly-latest-grid')?.getAttribute('data-phone')).toBe('4');
   });
 });

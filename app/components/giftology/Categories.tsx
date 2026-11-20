@@ -69,9 +69,9 @@ export function Categories({ data }: { data?: BlockData }) {
     <section id="gly-cats" className="gly-section gly-cats">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={own('eyebrow')}
+          eyebrow={blockCopy(data, 'eyebrow', locale)}
           title={own('title_pre')}
-          emphasis={own('title_em')}
+          tail={own('title_em')}
         >
           <p>{own('sub')}</p>
         </SectionHead>

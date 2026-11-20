@@ -127,7 +127,7 @@ export function Hero({ data }: { data?: BlockData }) {
               )
             )}
             {data?.show_cta_latest !== false && shown.has('latest') && (
-              <a href="#gly-latest" className="gly-btn gly-btn-ghost">
+              <a href="#gly-latest" className="gly-btn gly-btn-ghost gly-cta-latest">
                 {own('cta_latest')}
                 <ArrowDownIcon />
               </a>

@@ -21,9 +21,9 @@ export function Testimonials({ data }: { data?: BlockData }) {
     <section id="gly-testi" className="gly-section gly-testi">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={own('eyebrow')}
+          eyebrow={blockCopy(data, 'eyebrow', locale)}
           title={own('title_pre')}
-          emphasis={own('title_em')}
+          tail={own('title_em')}
         />
         <div ref={reveal.ref} className={`gly-reviews ${reveal.className}`}>
           <SallaReviews type="store" limit={limit} sort="latest" />

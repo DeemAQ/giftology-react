@@ -64,6 +64,12 @@ app/assets/images/          logos, watermark pattern, category icons
   `conditions` entry on the block's `edit_en` switch, so they stay out of the way until asked for.
   The local editor has no per-language input, and Salla's has not been seen to offer one for
   theme fields; that is why the English box is its own field.
+- A few texts are optional: they show only when the merchant typed them, and nothing stands in
+  for an empty box. They are the small line above a section's title (every section but the hero
+  and the custom gift) and the custom gift's paragraph, badge and card line. Read them with
+  `blockCopy` alone, with no locale fallback, and say "optional" in the field's label. The
+  script word in a title is kept for the hero and the custom gift; elsewhere a title is one
+  plain line (`SectionHead`).
 - A block's list (hero figures, hero cards, custom-gift steps, how-it-works steps) ships filled
   with the ready-made rows in both languages, so the merchant edits them instead of facing an
   empty list. Change a ready-made text in the locale files, `lib/glyDefaults.ts` and the list's
@@ -92,7 +98,12 @@ app/assets/images/          logos, watermark pattern, category icons
   has one box per text (no per-language input). A setting nothing reads does not belong in the
   list; `tests/manifest/settings.test.ts` checks these rules.
 - Brand colours and the body font are locked in `app/styles/giftology/_tokens.scss`.
-- Phones keep the starter's bottom nav and page-title bar. Its Menu tab opens `GlyMobileMenu`.
+- Phones keep the starter's bottom nav and page-title bar. Its Menu tab opens `GlyMobileMenu`:
+  the store's top-level categories as circles, the custom gift and the gift finder as two cards,
+  the other home sections and the store's own menu entries as plain links, WhatsApp and
+  Instagram at the foot. A subcategory is reached from its parent's page, not from the menu.
+- The floating WhatsApp button steps aside while another WhatsApp link is on screen
+  (`WhatsAppFloat.tsx` watches every `wa.me` link of the page).
 - Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and
   `{whatsapp}` in their text; `page/PageSingle.tsx` fills them from the store's details.
 - The footer's "important links" are the store's footer menu (the pages the merchant adds in

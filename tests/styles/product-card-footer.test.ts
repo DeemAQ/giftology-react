@@ -87,3 +87,10 @@ describe('grid product card on the cream page', () => {
     expect(label?.selector).not.toMatch(/product-status=out\]/);
   });
 });
+
+describe('product card price', () => {
+  it('keeps red for a reduced price: a "starts from" price is the ordinary ink', () => {
+    const from = topLevelRule(/^\.s-product-card \.s-product-card-starting-price h4$/);
+    expect(decl(from, 'color')).toBe('var(--gly-ink)');
+  });
+});
