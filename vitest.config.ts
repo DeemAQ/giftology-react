@@ -13,6 +13,9 @@ export default defineConfig({
       'virtual:twilight/theme-translations': fileURLToPath(
         new URL('./tests/stubs/theme-translations.ts', import.meta.url)
       ),
+      'virtual:twilight/schema': fileURLToPath(
+        new URL('./tests/stubs/twilight-schema.ts', import.meta.url)
+      ),
     },
   },
   test: {

@@ -15,7 +15,8 @@ export async function storeBase(page: Page): Promise<string> {
   await page.waitForURL(/__twilight\/editor/);
   const path = new URL(page.url()).searchParams.get('path') ?? '';
   const base = path.replace(/\/(ar|en)\/?$/, '');
-  if (!base.startsWith('/')) throw new Error(`No store path in the editor's address: ${page.url()}`);
+  if (!base.startsWith('/'))
+    throw new Error(`No store path in the editor's address: ${page.url()}`);
   cachedBase = base;
   return base;
 }
@@ -32,7 +33,11 @@ export async function waitForApp(page: Page): Promise<void> {
 }
 
 /** Opens a page of the store in a language and waits until the app has taken over. */
-export async function openStore(page: Page, rest = '', locale: 'ar' | 'en' = 'ar'): Promise<string> {
+export async function openStore(
+  page: Page,
+  rest = '',
+  locale: 'ar' | 'en' = 'ar'
+): Promise<string> {
   const base = await storeBase(page);
   await page.goto(`${base}/${locale}${rest}`);
   await waitForApp(page);

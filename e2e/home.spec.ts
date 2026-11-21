@@ -2,7 +2,9 @@ import { expect, test } from '@playwright/test';
 import { openStore, storeBase } from './helpers';
 
 test.describe('home page', () => {
-  test('Arabic: right to left, the hero, latest products, the gift finder, the footer', async ({ page }) => {
+  test('Arabic: right to left, the hero, latest products, the gift finder, the footer', async ({
+    page,
+  }) => {
     await openStore(page);
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
@@ -21,7 +23,10 @@ test.describe('home page', () => {
     await expect(page.locator('.gly-hero h1')).not.toHaveText(/[؀-ۿ]/);
   });
 
-  test('latest products arrive in the server HTML, before any JavaScript', async ({ page, request }) => {
+  test('latest products arrive in the server HTML, before any JavaScript', async ({
+    page,
+    request,
+  }) => {
     const base = await storeBase(page);
     const html = await (await request.get(`${base}/ar`)).text();
     const latest = html.slice(html.indexOf('id="gly-latest"'));

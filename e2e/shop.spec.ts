@@ -22,7 +22,8 @@ test.describe('shopping', () => {
     await openFirstCategory(page);
     await expect(page.locator('h1').first()).toBeVisible();
     await expect(page.locator('.s-product-card').first()).toBeVisible();
-    if (!isPhone(page)) await expect(page.locator('salla-filters-widget, salla-filters').first()).toBeVisible();
+    if (!isPhone(page))
+      await expect(page.locator('salla-filters-widget, salla-filters').first()).toBeVisible();
   });
 
   test('product page: title, price and either "add to cart" or "sold out"', async ({ page }) => {

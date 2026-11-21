@@ -2,7 +2,9 @@ import { expect, test } from '@playwright/test';
 import { openStore } from './helpers';
 
 test.describe('gift finder', () => {
-  test('answering every question ends on an answer, and "start over" goes back', async ({ page }) => {
+  test('answering every question ends on an answer, and "start over" goes back', async ({
+    page,
+  }) => {
     await openStore(page);
     const finder = page.locator('#gly-finder');
     await finder.scrollIntoViewIfNeeded();
@@ -21,7 +23,9 @@ test.describe('gift finder', () => {
     await expect(result).toBeVisible();
 
     // The answer is suggestions, or a way into the category when it holds nothing in stock.
-    await expect(finder.locator('.gly-qpick').or(finder.locator('.gly-qlinks a')).first()).toBeVisible();
+    await expect(
+      finder.locator('.gly-qpick').or(finder.locator('.gly-qlinks a')).first()
+    ).toBeVisible();
     await expect(finder.locator('.gly-qloading')).toHaveCount(0);
 
     await finder.locator('.gly-qnav .gly-qlink').last().click();
@@ -51,6 +55,9 @@ test.describe('gift finder', () => {
     const custom = finder.locator('.gly-qopt--custom');
     test.skip((await custom.count()) === 0, 'the custom-gift answer is switched off in the block');
     await custom.click();
-    await expect(finder.locator('.gly-qresult a.gly-btn-wa')).toHaveAttribute('href', /wa\.me|whatsapp/);
+    await expect(finder.locator('.gly-qresult a.gly-btn-wa')).toHaveAttribute(
+      'href',
+      /wa\.me|whatsapp/
+    );
   });
 });
