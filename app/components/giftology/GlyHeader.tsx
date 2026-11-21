@@ -6,7 +6,7 @@ import { SallaCartSummary } from '@salla.sa/twilight-components-react/cart-summa
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import logo from '../../assets/images/teal_logo_trim.webp';
-import { homeAnchor } from '../../lib/giftology';
+import { homeAnchor, settingOn } from '../../lib/giftology';
 import { HOME_ROUTE_ID } from '../../lib/routeIds';
 import { ShoppingBagIcon } from '../icons';
 import { PageAdvertisements } from '../layout';
@@ -24,19 +24,21 @@ interface GlyHeaderProps {
 }
 
 /**
- * Giftology header: logo and the home-section links at the start, then search,
- * language, account, cart and the menu button. The section links follow the
- * sections that are on the home page, so the nav grows and shrinks with it.
+ * Giftology header: at the start the logo and the "الأقسام" button that opens the
+ * store's menu (on the same side, the right in Arabic); at the end search, language,
+ * account and cart.
  *
- * The bar turns solid once the page scrolls. Off the home page the links point back
- * to the home sections. The menu button is there on every screen, because the menu
- * is where the store's categories are; on small screens it replaces the links, and
- * on phones the bottom nav takes over everything but the language button
- * (`_home.scss`).
+ * The bar carries no other links unless the merchant turns them on
+ * (`gly_header_links`): then the home sections that are on the page are linked beside
+ * the button on wide screens, pointing back to the home page from any other page.
+ * The menu holds them either way, so by default nothing is said twice.
+ *
+ * The bar turns solid once the page scrolls. On phones the bottom nav takes over
+ * everything but the logo and the language button (`_home.scss`).
  * The `header:start` / `header:end` slots are kept for installed apps.
  */
 export function GlyHeader({ menuOpen, onOpenMenu }: GlyHeaderProps) {
-  const { store, t, homeUrl } = useGly();
+  const { store, settings, t, homeUrl } = useGly();
   const shown = useHomeSections();
   const [solid, setSolid] = useState(false);
   // The route match, which the server and the client agree on.
@@ -50,6 +52,11 @@ export function GlyHeader({ menuOpen, onOpenMenu }: GlyHeaderProps) {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Off unless asked for. The circles' own link is left out: the button beside them is "الأقسام".
+  const barLinks = settingOn(settings, 'gly_header_links', false)
+    ? sectionLinks(shown).filter((item) => item.id !== 'gly-cats')
+    : [];
 
   const showLocalization =
     !!store?.settings?.is_multilingual || !!store?.settings?.currencies_enabled;
@@ -69,13 +76,28 @@ export function GlyHeader({ menuOpen, onOpenMenu }: GlyHeaderProps) {
             <span className="sr-only">{store?.name || 'Giftology'}</span>
           </Link>
 
-          <div className="gly-menu">
-            {sectionLinks(shown).map((item) => (
-              <a key={item.id} href={isHome ? `#${item.id}` : homeAnchor(homeUrl, item.id)}>
-                {t(item.label)}
-              </a>
-            ))}
-          </div>
+          <button
+            type="button"
+            className="gly-menu-btn"
+            id="gly-burger"
+            aria-expanded={menuOpen}
+            aria-controls="gly-mmenu"
+            aria-haspopup="dialog"
+            onClick={onOpenMenu}
+          >
+            <BurgerIcon />
+            {t('blocks.gly.nav.sections')}
+          </button>
+
+          {barLinks.length > 0 && (
+            <div className="gly-menu">
+              {barLinks.map((item) => (
+                <a key={item.id} href={isHome ? `#${item.id}` : homeAnchor(homeUrl, item.id)}>
+                  {t(item.label)}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="gly-icons">
@@ -105,18 +127,6 @@ export function GlyHeader({ menuOpen, onOpenMenu }: GlyHeaderProps) {
           <SallaCartSummary>
             <ShoppingBagIcon slot="icon" aria-hidden="true" />
           </SallaCartSummary>
-
-          <button
-            type="button"
-            className="gly-ibtn gly-burger"
-            id="gly-burger"
-            aria-label={t('blocks.gly.nav.menu')}
-            aria-expanded={menuOpen}
-            aria-controls="gly-mmenu"
-            onClick={onOpenMenu}
-          >
-            <BurgerIcon />
-          </button>
         </div>
       </nav>
 

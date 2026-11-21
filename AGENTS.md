@@ -102,10 +102,11 @@ app/assets/images/          logos, watermark pattern, category icons
   the store's top-level categories as circles, the custom gift and the gift finder as two cards,
   the other home sections and the store's own menu entries as plain links, WhatsApp and
   Instagram at the foot. A subcategory is reached from its parent's page, not from the menu.
-  Wider than a phone the same menu opens as a side panel from the header's menu button, which
-  shows on every screen. The `gly_menu_*` settings say what appears in it: the categories
-  picked, switches for the section links, the store's menu entries and the foot, and links
-  added by hand.
+  Wider than a phone the same menu opens as a side panel from the header's "الأقسام" button,
+  which sits beside the logo on every page; the panel opens on that side (the right in
+  Arabic). The header bar carries no other links unless `gly_header_links` is on. The
+  `gly_menu_*` settings say what appears in the menu: the categories picked, switches for the
+  section links, the store's menu entries and the foot, and links added by hand.
 - The floating WhatsApp button steps aside while another WhatsApp link is on screen
   (`WhatsAppFloat.tsx` watches every `wa.me` link of the page).
 - Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and

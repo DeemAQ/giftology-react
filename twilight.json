@@ -323,7 +323,7 @@
             "type": "static",
             "format": "title",
             "id": "gly-band-menu",
-            "value": "<div class='rounded-lg' style='background-color: #2e7772; display: flex; justify-content: center; align-items: center;padding: 15px;margin-bottom: 20px !important; flex-direction: column;gap: 8px;'><h6 style='color: #ffffff;font-size: 15px; font-weight: bold;'>القائمة</h6><span style='color: #ffffff;font-size: 12px;opacity: .85;text-align: center;'>تفتح من زر القائمة أعلى الصفحة، ومن تبويب القائمة أسفل شاشة الجوال.</span></div>",
+            "value": "<div class='rounded-lg' style='background-color: #2e7772; display: flex; justify-content: center; align-items: center;padding: 15px;margin-bottom: 20px !important; flex-direction: column;gap: 8px;'><h6 style='color: #ffffff;font-size: 15px; font-weight: bold;'>القائمة</h6><span style='color: #ffffff;font-size: 12px;opacity: .85;text-align: center;'>تفتح من زر «الأقسام» بجانب الشعار، ومن تبويب القائمة أسفل شاشة الجوال.</span></div>",
             "variant": "h6",
             "groups": [
                 "header"
@@ -498,6 +498,20 @@
             "required": false,
             "value": true,
             "selected": true,
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "id": "gly_header_links",
+            "label": "إظهار روابط أقسام الصفحة الرئيسية في الشريط العلوي أيضاً",
+            "description": "مطفأ: الشريط العلوي فيه الشعار وزر «الأقسام» فقط، والروابط داخل القائمة. مفعّل: تظهر الروابط بجانب الزر على الشاشات الكبيرة.",
+            "type": "boolean",
+            "icon": "sicon-toggle-on",
+            "format": "switch",
+            "required": false,
+            "value": false,
+            "selected": false,
             "groups": [
                 "header"
             ]
