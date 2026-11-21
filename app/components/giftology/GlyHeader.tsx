@@ -29,9 +29,10 @@ interface GlyHeaderProps {
  * sections that are on the home page, so the nav grows and shrinks with it.
  *
  * The bar turns solid once the page scrolls. Off the home page the links point back
- * to the home sections and the menu button joins them (`.gly-header--inner`); on
- * small screens the button replaces the links, and on phones the bottom nav takes
- * over everything but the language button (`_home.scss`).
+ * to the home sections. The menu button is there on every screen, because the menu
+ * is where the store's categories are; on small screens it replaces the links, and
+ * on phones the bottom nav takes over everything but the language button
+ * (`_home.scss`).
  * The `header:start` / `header:end` slots are kept for installed apps.
  */
 export function GlyHeader({ menuOpen, onOpenMenu }: GlyHeaderProps) {

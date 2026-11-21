@@ -28,11 +28,18 @@ function find(root: postcss.Root, selector: string, prop: string): Found[] {
 const home = compile('_home.scss');
 
 describe('header links', () => {
-  it('stay on inner pages on wide screens, and give way to the menu button below 1024px', () => {
+  it('stay on inner pages on wide screens, give way below 1024px, and the menu button is always there', () => {
     expect(find(home, '.gly-header--inner .gly-menu', 'display')).toEqual([
       { media: '(max-width:1023px)', value: 'none' },
     ]);
-    expect(find(home, '.gly-header--inner .gly-burger', 'display')).toEqual([{ media: '', value: 'grid' }]);
+    // The menu button is there on every page and every screen: the menu holds the categories.
+    expect(find(home, '.gly-burger', 'display')).toEqual([{ media: '', value: 'grid' }]);
+    // Wider than a phone the menu is a side panel over a dimmed page.
+    expect(find(home, '.gly-mmenu', 'width')).toEqual([{ media: '(min-width:768px)', value: 'min(430px,100vw)' }]);
+    expect(find(home, '.gly-mscrim', 'display')).toEqual([
+      { media: '', value: 'none' },
+      { media: '(min-width:768px)', value: 'block' },
+    ]);
     expect(find(home, '.gly-menu a', 'white-space')).toContainEqual({ media: '', value: 'nowrap' });
   });
 });

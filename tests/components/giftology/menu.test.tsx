@@ -163,6 +163,57 @@ describe('GlyMobileMenu', () => {
     expect(container.querySelectorAll('.gly-mcat')).toHaveLength(1);
   });
 
+  it('shows the categories picked in the settings, in that order, and only those', async () => {
+    state.categories = [
+      { id: 1, name: 'Newborn', url: '/newborn/c1' },
+      { id: 2, name: 'Cards', url: '/cards/c2' },
+      { id: 3, name: 'Flowers', url: '/flowers/c3' },
+    ];
+    state.settings = { gly_menu_categories: [{ id: 3 }, { id: 1 }] };
+    const { container } = renderMenu(true);
+    await screen.findByText('Flowers');
+    expect([...container.querySelectorAll('.gly-mcat')].map((circle) => circle.textContent)).toEqual([
+      'Flowers',
+      'Newborn',
+    ]);
+  });
+
+  it('leaves out what the settings switch off, and adds the links typed by hand', async () => {
+    state.categories = [
+      { id: 'offers', name: 'Offers', url: '/offers' },
+      { id: 2, name: 'Cards', url: '/cards/c2' },
+    ];
+    state.settings = {
+      gly_whatsapp: '966551234567',
+      gly_menu_show_sections: false,
+      gly_menu_show_store_links: false,
+      gly_menu_show_contact: false,
+      gly_menu_links: [
+        { 'gly_menu_links.name': 'بطاقات', 'gly_menu_links.name_en': 'Gift cards', 'gly_menu_links.url': '/gift-cards' },
+        // No destination: not a link.
+        { 'gly_menu_links.name': 'ناقص' },
+      ],
+    };
+    const { container } = renderMenu(true);
+    await screen.findByText('Cards');
+    expect(container.querySelector('.gly-mfeat')).toBeNull();
+    expect(container.querySelector('.gly-mmenu__foot')).toBeNull();
+    const links = [...container.querySelectorAll('.gly-mlinks a')];
+    expect(links.map((link) => link.textContent)).toEqual(['Gift cards']);
+    expect(links[0].getAttribute('href')).toBe('/gift-cards');
+  });
+
+  it('closes when the dimmed page beside it is clicked', () => {
+    let closed = 0;
+    const { container } = renderMenu(true, () => {
+      closed += 1;
+    });
+    const scrim = container.querySelector('.gly-mscrim') as HTMLElement;
+    expect(scrim.classList.contains('open')).toBe(true);
+    fireEvent.click(scrim);
+    expect(closed).toBe(1);
+  });
+
   it('ends on the WhatsApp button and Instagram when the store has them', () => {
     const bare = renderMenu(true);
     expect(bare.container.querySelector('.gly-mmenu__foot')).toBeNull();

@@ -92,7 +92,7 @@ app/assets/images/          logos, watermark pattern, category icons
   their shape matters, not their colour.
 - Every merchant setting starts with `gly_`. Their ids match the Twig theme; do not rename them.
 - The theme editor's list (`settings` in `twilight.json`) opens with a "start here" note, then
-  contact, top bar, a pointer to the home tab, product card, product page, footer. A field that
+  contact, top bar, menu, a pointer to the home tab, product card, product page, footer. A field that
   depends on a switch carries `conditions` on it. Write each label so it makes sense without its
   heading: the local editor (`/__twilight/editor`) does not draw the `static` headings, and it
   has one box per text (no per-language input). A setting nothing reads does not belong in the
@@ -102,6 +102,10 @@ app/assets/images/          logos, watermark pattern, category icons
   the store's top-level categories as circles, the custom gift and the gift finder as two cards,
   the other home sections and the store's own menu entries as plain links, WhatsApp and
   Instagram at the foot. A subcategory is reached from its parent's page, not from the menu.
+  Wider than a phone the same menu opens as a side panel from the header's menu button, which
+  shows on every screen. The `gly_menu_*` settings say what appears in it: the categories
+  picked, switches for the section links, the store's menu entries and the foot, and links
+  added by hand.
 - The floating WhatsApp button steps aside while another WhatsApp link is on screen
   (`WhatsAppFloat.tsx` watches every `wa.me` link of the page).
 - Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and

@@ -77,8 +77,8 @@
    the home page, whose category circles do its job, and shown on every other page
    (.gly-header--inner), where it is the way to the store's categories. Up to 920px
    the links give way to the button everywhere (see the media query). */
-.gly-burger{display:none}
-.gly-header--inner .gly-burger{display:grid}
+/* the menu button shows on every screen: the menu holds the categories */
+.gly-burger{display:grid}
 .gly-menu a{white-space:nowrap}
 /* Up to 1023px an inner page has no room for the links beside the menu button. */
 @media(max-width:1023px){.gly-header--inner .gly-menu{display:none}}
@@ -349,8 +349,6 @@
   .gly-steps{grid-template-columns:repeat(2,1fr)}
   .gly-step:not(:last-child)::after{display:none}
   .gly-menu{display:none}
-  /* mobile (incl. home): the inline nav is hidden, so the burger takes over */
-  .gly-burger{display:grid}
   .gly-quiz__mag{display:none}
   .gly-fgrid{grid-template-columns:1fr 1fr}
 }
@@ -387,6 +385,16 @@
 /* closed menu: off screen and out of the tab order (the element is also `inert`) */
 .gly-mmenu{visibility:hidden;transition:transform .4s,visibility 0s .4s}
 .gly-mmenu.open{visibility:visible;transition:transform .4s}
+/* Wider than a phone, the menu is a side panel on the side of its button (the left in Arabic),
+   over a dimmed page; a click on the dimmed part closes it. */
+.gly-mscrim{display:none}
+@media (min-width:768px){
+  .gly-mmenu{inset-inline-start:auto;width:min(430px,100vw);padding:1.4rem 1.8rem 2rem;overflow-y:auto}
+  [dir='rtl'] .gly-mmenu:not(.open){transform:translateX(-100%)}
+  .gly-mmenu.open{box-shadow:0 0 60px rgba(51,48,43,.22)}
+  .gly-mscrim{display:block;position:fixed;inset:0;z-index:84;background:rgba(51,48,43,.38);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+  .gly-mscrim.open{opacity:1;visibility:visible;transition:opacity .3s}
+}
 /* language / currency button uses the shared icon button */
 .gly-icons .gly-loc{flex:0 0 auto}
 /* Latest products: the theme's product cards in the shared grid, always in full

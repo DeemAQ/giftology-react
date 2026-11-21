@@ -322,6 +322,189 @@
         {
             "type": "static",
             "format": "title",
+            "id": "gly-band-menu",
+            "value": "<div class='rounded-lg' style='background-color: #2e7772; display: flex; justify-content: center; align-items: center;padding: 15px;margin-bottom: 20px !important; flex-direction: column;gap: 8px;'><h6 style='color: #ffffff;font-size: 15px; font-weight: bold;'>القائمة</h6><span style='color: #ffffff;font-size: 12px;opacity: .85;text-align: center;'>تفتح من زر القائمة أعلى الصفحة، ومن تبويب القائمة أسفل شاشة الجوال.</span></div>",
+            "variant": "h6",
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "id": "gly_menu_categories",
+            "type": "items",
+            "format": "dropdown-list",
+            "label": "التصنيفات الظاهرة في القائمة",
+            "icon": "sicon-keyboard_arrow_down",
+            "selected": [],
+            "options": [],
+            "source": "categories",
+            "multichoice": true,
+            "searchable": true,
+            "required": false,
+            "description": "اختيارية. إن تُركت فارغة تظهر تصنيفات متجرك الرئيسية تلقائياً. إن اخترت تصنيفات تظهر هي فقط، بترتيب اختيارك. كل تصنيف يظهر باسمه وصورته في سلة.",
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "id": "gly_menu_show_sections",
+            "label": "إظهار روابط أقسام الصفحة الرئيسية في القائمة",
+            "description": "هدايا مخصّصة، مكتشف الهدايا، أحدث المنتجات، كيف نعمل، آراء العملاء. يظهر منها ما هو موجود في صفحتك الرئيسية فقط.",
+            "type": "boolean",
+            "icon": "sicon-toggle-on",
+            "format": "switch",
+            "required": false,
+            "value": true,
+            "selected": true,
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "id": "gly_menu_show_store_links",
+            "label": "إظهار روابط قائمة متجرك في سلة",
+            "description": "الروابط التي أضفتها إلى قائمة المتجر في سلة وليست تصنيفات، مثل التخفيضات والماركات والمدونة.",
+            "type": "boolean",
+            "icon": "sicon-toggle-on",
+            "format": "switch",
+            "required": false,
+            "value": true,
+            "selected": true,
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "id": "gly_menu_links",
+            "type": "collection",
+            "format": "collection",
+            "required": false,
+            "minLength": 0,
+            "maxLength": 8,
+            "label": "روابط إضافية في القائمة",
+            "item_label": "رابط إضافي",
+            "value": [],
+            "groups": [
+                "header"
+            ],
+            "description": "اختيارية. روابط تضيفها بنفسك: صفحة، منتج، تصنيف أو رابط خارجي. تظهر بعد روابط الأقسام.",
+            "fields": [
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص الرابط",
+                    "multilanguage": false,
+                    "id": "gly_menu_links.name",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "النص الظاهر في القائمة.",
+                    "placeholder": "بطاقات الإهداء",
+                    "minLength": 0,
+                    "maxLength": 40
+                },
+                {
+                    "type": "string",
+                    "icon": "sicon-format-text-alt",
+                    "label": "نص الرابط (بالإنجليزية)",
+                    "multilanguage": false,
+                    "id": "gly_menu_links.name_en",
+                    "value": null,
+                    "required": false,
+                    "format": "text",
+                    "description": "اختياري. إن تُرك فارغاً يظهر النص العربي في الصفحة الإنجليزية.",
+                    "placeholder": null,
+                    "minLength": 0,
+                    "maxLength": 40
+                },
+                {
+                    "type": "items",
+                    "icon": "sicon-link",
+                    "label": "وجهة الرابط",
+                    "id": "gly_menu_links.url",
+                    "value": null,
+                    "description": "ما يفتحه الرابط: صفحة، منتج، تصنيف، التخفيضات أو رابط خارجي.",
+                    "required": false,
+                    "format": "variable-list",
+                    "searchable": true,
+                    "source": "custom",
+                    "sources": [
+                        {
+                            "label": "منتج",
+                            "key": "products",
+                            "value": "products"
+                        },
+                        {
+                            "label": "منتجات مع وسم",
+                            "key": "products_tags",
+                            "value": "products_tags"
+                        },
+                        {
+                            "label": "تصنيف",
+                            "key": "categories",
+                            "value": "categories"
+                        },
+                        {
+                            "label": "ماركة تجارية",
+                            "key": "brands",
+                            "value": "brands"
+                        },
+                        {
+                            "label": "صفحة تعريفية",
+                            "key": "pages",
+                            "value": "pages"
+                        },
+                        {
+                            "label": "مقالة",
+                            "key": "blog_articles",
+                            "value": "blog_articles"
+                        },
+                        {
+                            "label": "تصنيف ضمن المدونة",
+                            "key": "blog_categories",
+                            "value": "blog_categories"
+                        },
+                        {
+                            "label": "التخفيضات",
+                            "key": "offers_link",
+                            "value": "offers_link"
+                        },
+                        {
+                            "label": "الماركات التجارية",
+                            "key": "brands_link",
+                            "value": "brands_link"
+                        },
+                        {
+                            "label": "المدونة",
+                            "key": "blog_link",
+                            "value": "blog_link"
+                        },
+                        {
+                            "label": "رابط خارجي",
+                            "key": "custom",
+                            "value": "custom"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "gly_menu_show_contact",
+            "label": "إظهار زر واتساب وإنستغرام أسفل القائمة",
+            "description": "يستخدمان رقم واتساب ورابط إنستغرام المكتوبين في «التواصل مع العملاء»، أو المسجّلين في سلة.",
+            "type": "boolean",
+            "icon": "sicon-toggle-on",
+            "format": "switch",
+            "required": false,
+            "value": true,
+            "selected": true,
+            "groups": [
+                "header"
+            ]
+        },
+        {
+            "type": "static",
+            "format": "title",
             "id": "gly-band-home",
             "value": "<div class='rounded-lg' style='background-color: #2e7772; display: flex; justify-content: center; align-items: center;padding: 15px;margin-bottom: 20px !important; flex-direction: column;gap: 8px;'><h6 style='color: #ffffff;font-size: 15px; font-weight: bold;'>الصفحة الرئيسية</h6><span style='color: #ffffff;font-size: 12px;opacity: .85;text-align: center;'>تُبنى من تبويب «الصفحة الرئيسية» في هذا المحرّر: أضف عناصر «جيفتولوجي» ورتّبها واكتب نصوصها هناك. قبل إضافة أي عنصر تظهر الصفحة الجاهزة كاملة.</span></div>",
             "variant": "h6"
@@ -501,7 +684,7 @@
             "type": "items",
             "format": "dropdown-list",
             "label": "شكل التصنيفات الفرعية في صفحة التصنيف",
-            "description": "تظهر التصنيفات الفرعية أعلى صفحة التصنيف تلقائياً من تصنيفات متجرك. الدوائر تظهر حين يكون لأحد التصنيفات الفرعية صورة في سلة.",
+            "description": "تظهر التصنيفات الفرعية أعلى صفحة التصنيف تلقائياً من تصنيفات متجرك. الدوائر تظهر حين يكون لأحد التصنيفات الفرعية صورة في سلة. دوائر التصنيفات في القائمة تتبع الاختيار نفسه: أيقونة وسط الدائرة أو صورة تملؤها.",
             "labelHTML": null,
             "icon": "sicon-list",
             "selected": [
