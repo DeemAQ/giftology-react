@@ -130,3 +130,59 @@ describe("the phone's add-to-cart block", () => {
     ]);
   });
 });
+
+describe('product page controls', () => {
+  it('put the options (date, colours, pictures, lists) on the page, not on a white strip', () => {
+    const options = 'body salla-product-options.s-product-options-wrapper';
+    expect(find('_inner.scss', options, 'background')).toEqual([{ media: '', value: 'transparent' }]);
+  });
+
+  it('ring a picked colour and name it in bold, without the pale dot', () => {
+    const picked = 'body .s-product-options-colors-item input:checked + label > span';
+    expect(find('_inner.scss', picked, 'box-shadow')[0].value).toContain('var(--gly-teal-deep)');
+    const dot = 'body .s-product-options-colors-item label > span::after';
+    expect(find('_inner.scss', dot, 'display')).toEqual([{ media: '', value: 'none' }]);
+  });
+
+  it('draw the minus in teal ink, and keep it readable at quantity 1', () => {
+    const minus = 'body .s-quantity-input .s-quantity-input-decrease-button';
+    expect(find('_inner.scss', minus, 'color')).toEqual([{ media: '', value: 'var(--gly-teal-ink)' }]);
+    const off = 'body .s-quantity-input .s-quantity-input-button:disabled';
+    expect(find('_inner.scss', off, 'opacity')).toEqual([{ media: '', value: '0.6' }]);
+  });
+
+  it('fill the outlined buttons white with bold labels, leaving their hover alone', () => {
+    const gift = 'body .s-gifting-widget-action.s-button-primary-outline:not(:hover):not(:disabled)';
+    expect(find('_inner.scss', gift, 'background')).toEqual([{ media: '', value: '#fff' }]);
+    expect(find('_inner.scss', 'body .s-add-product-button-mini-checkout', 'background')).toEqual([
+      { media: '', value: '#fff' },
+    ]);
+    const label = 'body .s-add-product-button-mini-checkout-content';
+    expect(find('_inner.scss', label, 'font-family')).toEqual([
+      { media: '', value: 'var(--gly-font-body)' },
+    ]);
+  });
+
+  it('say "sold out" once on a laptop', () => {
+    expect(find('_inner.scss', '.sticky-product-bar--sold-out .out-of-stock', 'display')).toEqual([
+      { media: '(min-width: 641px)', value: 'none' },
+    ]);
+  });
+});
+
+describe('category filters', () => {
+  it('show the options of a group marked open, whatever height the widget measured', () => {
+    const open =
+      'salla-filters .s-filters-widget-container:has(.s-filters-widget-plusminus-active) .s-filters-widget-content';
+    expect(find('_plist.scss', open, 'height')).toEqual([{ media: '', value: 'auto' }]);
+    const closed =
+      'salla-filters .s-filters-widget-container:not(:has(.s-filters-widget-plusminus-active)) .s-filters-widget-content';
+    expect(find('_plist.scss', closed, 'height')).toEqual([{ media: '', value: '0' }]);
+  });
+
+  it('let a filter column taller than the screen scroll on its own on a laptop', () => {
+    expect(find('_plist.scss', '#filters-menu', 'overflow-y')).toEqual([
+      { media: '(min-width: 1024px)', value: 'auto' },
+    ]);
+  });
+});

@@ -91,3 +91,41 @@ body:has(.profile-header) #main-content{background:transparent}
 @media (max-width:640px){
   html:not(.hydrated) .is-sticky-product-bar .sticky-product-bar{--tw-translate-y:1.5rem}
 }
+
+/* ============================================================
+   Product page controls.
+   ============================================================ */
+
+/* product options (a date, colours, pictures, a list) sit on the page wherever Salla draws them */
+body salla-product-options.s-product-options-wrapper{background:transparent}
+
+/* a picked colour: a ring around it and its name in bold. The starter marks it with a pale
+   dot in its middle, which is lost on a light colour. */
+body .s-product-options-colors-item label>span::after{display:none}
+body .s-product-options-colors-item input:checked+label>span{box-shadow:0 0 0 2px var(--gly-cream),0 0 0 4px var(--gly-teal-deep)}
+body .s-product-options-colors-item input:checked+label>div{font-weight:700;color:var(--gly-ink)}
+
+/* + and −: the minus was pale grey on pale grey, and fainter still at quantity 1 */
+body .s-quantity-input .s-quantity-input-container{border-color:var(--gly-hair)}
+body .s-quantity-input .s-quantity-input-decrease-button{background:var(--gly-teal-wash);color:var(--gly-teal-ink);fill:var(--gly-teal-ink)}
+body .s-quantity-input .s-quantity-input-decrease-button:hover:not(:disabled){background:#d3ecea;color:var(--gly-teal-ink);fill:var(--gly-teal-ink)}
+body .s-quantity-input .s-quantity-input-button:disabled{opacity:.6}
+
+/* Outlined buttons ("أرسل كهدية", "اشترِ الآن"): white with bold teal text, so they read as
+   buttons on the peach page. "اشترِ الآن" is drawn inside Salla's own widget; from out here
+   only its box and its label can be reached, and its label came in a font the theme does not have. */
+body .s-gifting-widget-action.s-button-primary-outline{font-weight:700}
+body .s-gifting-widget-action.s-button-primary-outline:not(:hover):not(:disabled){background:#fff}
+body .s-add-product-button-mini-checkout{background:#fff;border-radius:9999px}
+body .s-add-product-button-mini-checkout-content{font-family:var(--gly-font-body);font-weight:700;gap:.45rem}
+/* the words of both buttons sat higher than their icons: Tajawal's letters ride high in their
+   line. The gift button's words move down a little; "اشترِ الآن" has no element around its
+   words, so its icon moves up instead. */
+body .s-gifting-widget-action-content{gap:.5rem}
+body .s-gifting-widget-action-content>span:last-child{transform:translateY(.12em)}
+body .s-add-product-button-mini-checkout-content>span{transform:translateY(-1.5px)}
+
+/* Sold out on a laptop: the disabled button already says so; no second line above it */
+@media (min-width:641px){
+  .sticky-product-bar--sold-out .out-of-stock{display:none}
+}

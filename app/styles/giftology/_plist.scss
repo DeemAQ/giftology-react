@@ -52,3 +52,14 @@
 .gly-plist .s-product-card-title{font-family:var(--gly-font-display);font-weight:700}
 .gly-plist .s-product-card-price{font-family:var(--gly-font-display);color:var(--gly-ink);font-weight:700}
 .gly-plist .s-product-card-sale-price{color:var(--gly-teal-deep)}
+
+/* Filters. A group marked open shows its options. Salla's widget sets the options' height
+   itself and sometimes measures 0 (before they are drawn): the group then looked closed
+   under its "open" sign and could not be opened, also right after a filter was ticked. */
+salla-filters .s-filters-widget-container:has(.s-filters-widget-plusminus-active) .s-filters-widget-content{height:auto !important}
+salla-filters .s-filters-widget-container:not(:has(.s-filters-widget-plusminus-active)) .s-filters-widget-content{height:0 !important;overflow:hidden}
+/* laptop: the filter column stays beside the products; taller than the screen, it scrolls on
+   its own instead of keeping its last groups below the screen until the list ends */
+@media (min-width:1024px){
+  #filters-menu{max-height:calc(100vh - 6.5rem);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+}
