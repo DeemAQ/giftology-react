@@ -2,7 +2,9 @@
    Product list / category page — teal banner + toolbar (count + sort)
    + full-width product grid. (Filter removed.)
    ============================================================ */
-.gly-plist{padding:.6rem 0 3.4rem;font-family:var(--gly-font-body);color:var(--gly-ink)}
+/* top and bottom only: the side padding is the container's own (`px-2.5`). Zeroing it left the
+   title and the cards touching the screen's edge on a small laptop. */
+.gly-plist{padding-block:.6rem 3.4rem;font-family:var(--gly-font-body);color:var(--gly-ink)}
 
 /* breadcrumb (.crumbs) */
 .gly-crumbs{font-size:.9rem;color:var(--gly-soft);padding:1.2rem 0 .2rem}

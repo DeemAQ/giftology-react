@@ -516,8 +516,8 @@
   .gly-flinks a{display:inline-block;padding-block:.35rem;margin-block:-.35rem}
   /* the links two to a row and the contact details side by side: one column of them
      made the footer taller than the screen */
-  .gly-flinks{display:grid;grid-template-columns:1fr 1fr;column-gap:1rem}
-  .gly-fcontact{display:flex;flex-wrap:wrap;gap:.2rem 1.4rem}
+  .gly-footer .gly-flinks{display:grid;grid-template-columns:1fr 1fr;column-gap:1rem}
+  .gly-footer .gly-fcontact{flex-direction:row;flex-wrap:wrap;gap:.2rem 1.4rem}
   /* how it works: each step a row (icon, then title and line), not a 2×2 grid a screen tall */
   .gly-steps{grid-template-columns:1fr;gap:0;text-align:start;max-width:26rem;margin-inline:auto}
   .gly-step{display:grid;grid-template-columns:auto 1fr;column-gap:1rem;padding:.7rem 0}

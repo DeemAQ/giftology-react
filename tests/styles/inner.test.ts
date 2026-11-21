@@ -62,7 +62,8 @@ describe('home page on a phone', () => {
       media: '(max-width: 560px)',
       value: '1fr',
     });
-    expect(find('_home.scss', '.gly-flinks', 'grid-template-columns')).toEqual([
+    // Under `.gly-footer`: the footer's own list rule would otherwise win.
+    expect(find('_home.scss', '.gly-footer .gly-flinks', 'grid-template-columns')).toEqual([
       { media: '(max-width: 560px)', value: '1fr 1fr' },
     ]);
   });
