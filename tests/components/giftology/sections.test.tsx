@@ -246,14 +246,34 @@ describe('GlyFooter', () => {
     expect(screen.queryByText('VISA')).toBeNull();
     // Tamara is off until the merchant turns it on.
     expect(screen.queryByText('Tamara')).toBeNull();
-    expect(screen.getByText(en['blocks.gly.footer.instagram']).closest('a')?.getAttribute('href')).toBe('https://instagram.com/giftology');
+    // The account's handle is what shows; a screen reader still hears that it is Instagram.
+    const account = screen.getByText('@giftology').closest('a');
+    expect(account?.getAttribute('href')).toBe('https://instagram.com/giftology');
+    expect(account?.textContent).toBe(`${en['blocks.gly.footer.instagram']}@giftology`);
   });
 
   it('uses the Instagram link typed in the editor before the one saved in the store', () => {
     state.store = { ...state.store, social: { instagram: 'https://instagram.com/store' } };
     state.settings = { gly_instagram: 'https://instagram.com/typed' };
     renderWithQuery(<GlyFooter />);
-    expect(screen.getByText(en['blocks.gly.footer.instagram']).closest('a')?.getAttribute('href')).toBe('https://instagram.com/typed');
+    expect(screen.getByText('@typed').closest('a')?.getAttribute('href')).toBe('https://instagram.com/typed');
+  });
+
+  it('shows the WhatsApp number itself, and takes an Instagram handle typed without its link', () => {
+    state.settings = { gly_whatsapp: '966551234567', gly_instagram: '@giftology.sa' };
+    renderWithQuery(<GlyFooter />);
+    const chat = screen.getByText('+966 55 123 4567').closest('a');
+    expect(chat?.getAttribute('href')).toContain('https://wa.me/966551234567?text=');
+    expect(chat?.textContent).toBe(`${en['blocks.gly.footer.whatsapp']}+966 55 123 4567`);
+    expect(screen.getByText('@giftology.sa').closest('a')?.getAttribute('href')).toBe('https://instagram.com/giftology.sa');
+  });
+
+  it('keeps the word for an Instagram link that is not a profile', () => {
+    state.settings = { gly_instagram: 'https://instagram.com/p/Cabc123/' };
+    renderWithQuery(<GlyFooter />);
+    expect(screen.getByText(en['blocks.gly.footer.instagram']).closest('a')?.getAttribute('href')).toBe(
+      'https://instagram.com/p/Cabc123/'
+    );
   });
 
   it("names the payment methods in the page's language", () => {

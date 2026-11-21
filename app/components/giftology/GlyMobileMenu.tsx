@@ -12,6 +12,7 @@ import {
   blockRows,
   categoryCircles,
   homeAnchor,
+  instagramAccount,
   menuLabel,
   resolveCategoryUrl,
   rowText,
@@ -108,8 +109,9 @@ export function GlyMobileMenu({ open, onClose }: GlyMobileMenuProps) {
     .filter((link) => link.name && link.url);
   const showContact = settingOn(settings, 'gly_menu_show_contact');
   const chat = showContact ? whatsappGeneral : '';
+  // A profile link, or a handle typed by itself: either way the link to open.
   const instagram = showContact
-    ? settingText(settings, 'gly_instagram') || store?.social?.instagram
+    ? instagramAccount(settingText(settings, 'gly_instagram') || store?.social?.instagram)?.url
     : '';
 
   return (

@@ -4,6 +4,8 @@ import {
   blockCopy,
   settingCopy,
   categoryTiles,
+  displayPhone,
+  instagramAccount,
   fillStoreDetails,
   homeAnchor,
   resolveCategoryUrl,
@@ -217,5 +219,44 @@ describe('categoryTiles', () => {
 
   it('skips an enabled extra tile that has nothing to show', () => {
     expect(categoryTiles({ gly_tile7_enabled: true }, t, home, 'ar', ICONS)).toHaveLength(6);
+  });
+});
+
+describe('displayPhone', () => {
+  it('spaces a Saudi mobile the way it is read, and marks any other international number', () => {
+    expect(displayPhone('966551234567')).toBe('+966 55 123 4567');
+    expect(displayPhone('971501234567')).toBe('+971501234567');
+    // Typed in its local form: left as it is.
+    expect(displayPhone('0551234567')).toBe('0551234567');
+    expect(displayPhone('')).toBe('');
+  });
+});
+
+describe('instagramAccount', () => {
+  it('reads the handle out of a profile link', () => {
+    expect(instagramAccount('https://www.instagram.com/giftology.sa/?hl=ar')).toEqual({
+      handle: '@giftology.sa',
+      url: 'https://www.instagram.com/giftology.sa/?hl=ar',
+    });
+    expect(instagramAccount('instagram.com/giftology')).toEqual({
+      handle: '@giftology',
+      url: 'https://instagram.com/giftology',
+    });
+  });
+
+  it('takes a handle typed by itself, with or without its @', () => {
+    const account = { handle: '@giftology', url: 'https://instagram.com/giftology' };
+    expect(instagramAccount('@giftology')).toEqual(account);
+    expect(instagramAccount(' giftology ')).toEqual(account);
+  });
+
+  it('gives no handle for a link that is not a profile, and nothing for anything else', () => {
+    expect(instagramAccount('https://instagram.com/p/Cabc123/')).toEqual({
+      handle: '',
+      url: 'https://instagram.com/p/Cabc123/',
+    });
+    expect(instagramAccount('https://linktr.ee/giftology')).toEqual({ handle: '', url: 'https://linktr.ee/giftology' });
+    expect(instagramAccount('our instagram page')).toBeNull();
+    expect(instagramAccount(undefined)).toBeNull();
   });
 });

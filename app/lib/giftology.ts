@@ -247,6 +247,40 @@ export function whatsappNumber(...candidates: unknown[]): string {
   return '';
 }
 
+/**
+ * A phone number as a visitor reads it, from its digits: `+966 55 123 4567` for a Saudi
+ * mobile, `+` and the digits for any other international number, and a number typed in
+ * its local form (a leading zero) as it is.
+ */
+export function displayPhone(digits: string): string {
+  if (!digits) return '';
+  const saudi = digits.match(/^966(5\d)(\d{3})(\d{4})$/);
+  if (saudi) return `+966 ${saudi[1]} ${saudi[2]} ${saudi[3]}`;
+  return digits.startsWith('0') ? digits : `+${digits}`;
+}
+
+/** First parts of an Instagram address that are not an account: a post, a reel, a story. */
+const INSTAGRAM_PAGES = ['p', 'reel', 'reels', 'explore', 'stories', 'accounts', 'tv'];
+
+/**
+ * An Instagram account from what the store holds: a profile link, or a handle typed with
+ * or without its `@`. Gives the link to open and the handle to show (`@giftology`); the
+ * handle is empty when the link is not a profile's, and the result is `null` when the
+ * text is neither a link nor a handle.
+ */
+export function instagramAccount(value: unknown): { handle: string; url: string } | null {
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (!text) return null;
+  const linked = text.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+  if (linked) {
+    const url = /^https?:\/\//i.test(text) ? text : `https://${text.replace(/^\/+/, '')}`;
+    return { handle: INSTAGRAM_PAGES.includes(linked[1].toLowerCase()) ? '' : `@${linked[1]}`, url };
+  }
+  if (/^https?:\/\//i.test(text)) return { handle: '', url: text };
+  const name = text.replace(/^@/, '');
+  return /^[A-Za-z0-9._]{1,30}$/.test(name) ? { handle: `@${name}`, url: `https://instagram.com/${name}` } : null;
+}
+
 /** A `wa.me` chat link with a prefilled message; empty without a number, so the button can hide. */
 export function whatsappLink(number: string, message: string): string {
   return number ? `https://wa.me/${number}?text=${encodeURIComponent(message)}` : '';
