@@ -82,3 +82,12 @@ body .cart #free-shipping-bar{background:rgba(74,63,53,.14)}
 
 /* account pages: the page's own background behind the cards */
 body:has(.profile-header) #main-content{background:transparent}
+
+/* Phone product page: the floating price-and-buttons block waits below the screen until
+   Salla's components are ready (`html.hydrated`). The starter parks it 448px down, but its
+   quantity box and button only start loading within 200px of the screen, and they are what
+   makes the page ready: parked that far, the block never came up and a phone had no
+   "add to cart". Park it just under its place instead. */
+@media (max-width:640px){
+  html:not(.hydrated) .is-sticky-product-bar .sticky-product-bar{--tw-translate-y:1.5rem}
+}

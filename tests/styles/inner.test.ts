@@ -120,3 +120,13 @@ describe('inner-page surfaces', () => {
     expect(critical).toContain("@import './giftology/inner';");
   });
 });
+
+describe("the phone's add-to-cart block", () => {
+  it('waits close enough to the screen for its own button to start loading', () => {
+    // The button loads within 200px of the screen (HydrationBoundary's rootMargin).
+    const waiting = 'html:not(.hydrated) .is-sticky-product-bar .sticky-product-bar';
+    expect(find('_inner.scss', waiting, '--tw-translate-y')).toEqual([
+      { media: '(max-width: 640px)', value: '1.5rem' },
+    ]);
+  });
+});
