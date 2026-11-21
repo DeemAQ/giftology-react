@@ -180,6 +180,11 @@ describe('category filters', () => {
     expect(find('_plist.scss', closed, 'height')).toEqual([{ media: '', value: '0' }]);
   });
 
+  it("draw an open group's sign as a dash, not turned on its side", () => {
+    const sign = 'salla-filters .s-filters-widget-plusminus-active';
+    expect(find('_plist.scss', sign, 'transform')).toEqual([{ media: '', value: 'none' }]);
+  });
+
   it('let a filter column taller than the screen scroll on its own on a laptop', () => {
     expect(find('_plist.scss', '#filters-menu', 'overflow-y')).toEqual([
       { media: '(min-width: 1024px)', value: 'auto' },

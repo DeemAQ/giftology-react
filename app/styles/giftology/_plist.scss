@@ -63,3 +63,5 @@ salla-filters .s-filters-widget-container:not(:has(.s-filters-widget-plusminus-a
 @media (min-width:1024px){
   #filters-menu{max-height:calc(100vh - 6.5rem);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
 }
+/* an open group's sign is a dash everywhere; in the phone's sheet it came out turned, as a bar */
+salla-filters .s-filters-widget-plusminus-active{transform:none !important}
