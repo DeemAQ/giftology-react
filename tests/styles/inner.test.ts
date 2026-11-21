@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, it, expect } from 'vitest';
 import * as sass from 'sass';
@@ -66,5 +67,56 @@ describe('home page on a phone', () => {
     expect(find('_home.scss', '.gly-footer .gly-flinks', 'grid-template-columns')).toEqual([
       { media: '(max-width: 560px)', value: '1fr 1fr' },
     ]);
+  });
+});
+
+describe('inner-page surfaces', () => {
+  it('leave a section on the page: no white strip behind the price and buttons, the gift line or a store page', () => {
+    expect(find('_inner.scss', '.sticky-product-bar.bg-white', 'background-color')).toEqual([
+      { media: '', value: 'transparent' },
+    ]);
+    const gift = 'body.product-single .s-gifting-widget .s-list-tile-item';
+    expect(find('_inner.scss', gift, 'background')).toEqual([{ media: '', value: 'transparent' }]);
+    const sheet = '#main-content > .container > .flex.justify-center > .bg-white';
+    expect(find('_inner.scss', sheet, 'background')).toEqual([{ media: '', value: 'transparent' }]);
+    expect(find('_inner.scss', 'body .cart .cart-options', 'background')).toEqual([
+      { media: '', value: 'transparent' },
+    ]);
+  });
+
+  it("keep the phone's floating add-to-cart block white, like the bottom bar under it", () => {
+    const floating = '.is-sticky-product-bar .sticky-product-bar.bg-white';
+    expect(find('_inner.scss', floating, 'background-color')).toEqual([
+      { media: '(max-width: 640px)', value: '#fff' },
+    ]);
+  });
+
+  it('outline the offers instead of filling them pink, and tint what was grey', () => {
+    expect(find('_inner.scss', 'body .s-offer-wrapper', 'background')).toEqual([
+      { media: '', value: 'transparent' },
+    ]);
+    for (const selector of ['body .options-panel__more', 'body #cart-gifting', 'body .cart #free-shipping']) {
+      expect(find('_inner.scss', selector, 'background')).toEqual([{ media: '', value: 'var(--gly-tint)' }]);
+    }
+  });
+
+  it('make the bars that stay on screen cream, with the title in the display face', () => {
+    expect(find('_inner.scss', 'body .mobile-page-title', 'background')).toEqual([
+      { media: '', value: 'var(--gly-cream)' },
+    ]);
+    expect(find('_inner.scss', 'body .mobile-page-title__text', 'font-family')).toEqual([
+      { media: '', value: 'var(--gly-font-display)' },
+    ]);
+    expect(find('_inner.scss', 'body .s-catalog-toolbar-sticky', 'background')).toEqual([
+      { media: '(max-width: 767px)', value: 'var(--gly-cream)' },
+    ]);
+  });
+
+  it("are in the product page's first-paint CSS, so the page does not flash white panels", () => {
+    const critical = readFileSync(
+      fileURLToPath(new URL('../../app/styles/critical-product.scss', import.meta.url)),
+      'utf8'
+    );
+    expect(critical).toContain("@import './giftology/inner';");
   });
 });

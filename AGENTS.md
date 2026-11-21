@@ -115,6 +115,11 @@ app/assets/images/          logos, watermark pattern, category icons
 - Inner pages are the starter's; `gly-page-title` on their `<h1>` gives them the home page's
   display face. On a phone the top bar shows on the home page only, and the cart has its own
   checkout bar above the bottom nav (`CartCheckoutBar` in `cart/CartPage.tsx`).
+- A section on an inner page has no fill of its own: it sits on the peach page (`_inner.scss`,
+  "Surfaces"). White is for an item (a product card, an offer) and for what is typed in or
+  tapped; a bar that stays on screen is cream; what the starter painted grey takes `--gly-tint`.
+  Do not put `bg-white` on a new section. The product page paints first from
+  `critical-product.scss`, which imports `_inner.scss` for that reason.
 - Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and
   `{whatsapp}` in their text; `page/PageSingle.tsx` fills them from the store's details.
 - The footer's "important links" are the store's footer menu (the pages the merchant adds in

@@ -37,3 +37,48 @@
   .gly-cart{padding-bottom:5rem}
   body:has(.gly-cartbar:not(.gly-cartbar--away)){--gly-wa-bottom:calc(158px + var(--safe-bottom, 0px))}
 }
+
+/* ============================================================
+   Surfaces. The starter's pages were drawn for a white page: sections on white panels,
+   cold grey fills. Giftology's page is peach, so:
+   - a section has no fill of its own; a hairline or a faint warm tint sets it apart;
+   - white is kept for an item (a product card, an offer) and for what is typed in or tapped;
+   - a bar that stays on screen while the page scrolls is cream, the header's colour.
+   `body` in front of a selector is there to win over the starter's rule of the same weight.
+   ============================================================ */
+:root{--gly-hair:rgba(74,63,53,.12);--gly-tint:rgba(74,63,53,.05)}
+
+/* phones: the page-title bar and the catalogue toolbar pinned under it */
+body .mobile-page-title{background:var(--gly-cream);border-color:var(--gly-hair)}
+body .mobile-page-title__text{font-family:var(--gly-font-display);font-size:1.15rem;color:var(--gly-ink)}
+@media (max-width:767px){
+  body .s-catalog-toolbar-sticky{background:var(--gly-cream)}
+  body .s-catalog-toolbar-sticky .s-catalog-toolbar{background:transparent}
+}
+
+/* product page: price, quantity and the buttons sit on the page. On a phone the same block
+   floats above the bottom bar once the page scrolls, and stays white like that bar. */
+.sticky-product-bar.bg-white{background-color:transparent}
+@media (max-width:640px){
+  .is-sticky-product-bar .sticky-product-bar.bg-white{background-color:#fff}
+}
+/* "send it as a gift": a line above it, no white tile */
+body.product-single .s-gifting-widget .s-list-tile-item{background:transparent;border-top:1px solid var(--gly-hair);border-radius:0;padding-top:1.1rem}
+/* the product's offers: an outlined group of white offer cards, not a pink panel */
+body .s-offer-wrapper{background:transparent;border:1px solid var(--gly-hair)}
+/* option chips, "add a note", "attach a file": a warm tint, not grey */
+body .options-panel__chip:not(.is-missing),body .options-panel__more,body .btn-tab.btn--collapse{background:var(--gly-tint)}
+body.product-single textarea.form-input.bg-gray-50{background:#fff}
+body.product-single .filepond--panel-root{background:var(--gly-tint)}
+
+/* store pages and the reviews page: the text sits on the page, not on a white sheet */
+#main-content>.container>.flex.justify-center>.bg-white{background:transparent;padding-inline:0}
+body.testimonials #main-content h1{font-family:var(--gly-font-display)}
+
+/* cart: the order's options on the page; shipping, gifting and the summary on a warm tint */
+body .cart .cart-options,body .cart .cart-options salla-product-options{background:transparent}
+body #cart-gifting,body .cart .shadow-default.transition-height,body .cart #free-shipping{background:var(--gly-tint)}
+body .cart #free-shipping-bar{background:rgba(74,63,53,.14)}
+
+/* account pages: the page's own background behind the cards */
+body:has(.profile-header) #main-content{background:transparent}
