@@ -164,7 +164,7 @@
         {
             "id": "gly_show_promo",
             "label": "إظهار الشريط العلوي",
-            "description": "يعرض حتى ثلاث عبارات قصيرة. تظهر كلها على كل الشاشات: ثابتة في سطر واحد إن اتسع لها، ومتحركة إن لم يتسع، كما على الجوال.",
+            "description": "يعرض حتى ثلاث عبارات قصيرة. تظهر كلها: ثابتة في سطر واحد إن اتسع لها، ومتحركة إن لم يتسع. على الجوال يظهر الشريط في الصفحة الرئيسية فقط.",
             "type": "boolean",
             "icon": "sicon-toggle-on",
             "format": "switch",
@@ -3138,64 +3138,6 @@
                             "label": "رابط خارجي",
                             "key": "custom",
                             "value": "custom"
-                        }
-                    ]
-                },
-                {
-                    "type": "boolean",
-                    "icon": "sicon-toggle-off",
-                    "label": "إظهار الزر الثالث (أحدث المنتجات)",
-                    "description": "يظهر على الشاشات الكبيرة فقط: على الجوال قسم أحدث المنتجات تحت الواجهة مباشرة.",
-                    "id": "show_cta_latest",
-                    "format": "switch",
-                    "required": false,
-                    "value": true,
-                    "selected": true
-                },
-                {
-                    "type": "string",
-                    "icon": "sicon-format-text-alt",
-                    "label": "نص الزر الثالث",
-                    "multilanguage": false,
-                    "id": "cta_latest",
-                    "value": null,
-                    "required": false,
-                    "format": "text",
-                    "description": "إن تُركت فارغة يبقى النص الجاهز.",
-                    "placeholder": "أحدث المنتجات",
-                    "minLength": 0,
-                    "maxLength": 100,
-                    "conditions": [
-                        {
-                            "id": "show_cta_latest",
-                            "operation": "=",
-                            "value": true
-                        }
-                    ]
-                },
-                {
-                    "type": "string",
-                    "icon": "sicon-format-text-alt",
-                    "label": "نص الزر الثالث (بالإنجليزية)",
-                    "multilanguage": false,
-                    "id": "cta_latest_en",
-                    "value": null,
-                    "required": false,
-                    "format": "text",
-                    "description": "اختياري. إن تُرك فارغاً يظهر النص الإنجليزي الجاهز.",
-                    "placeholder": "Latest products",
-                    "minLength": 0,
-                    "maxLength": 100,
-                    "conditions": [
-                        {
-                            "id": "show_cta_latest",
-                            "operation": "=",
-                            "value": true
-                        },
-                        {
-                            "id": "edit_en",
-                            "operation": "=",
-                            "value": true
                         }
                     ]
                 },

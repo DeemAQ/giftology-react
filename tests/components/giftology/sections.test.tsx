@@ -20,12 +20,19 @@ const state = {
   products: [] as { id: number; name: string; price?: number; starting_price?: number; status?: string }[],
   categories: [] as Record<string, unknown>[],
   phone: false,
+  /** Which page the router says we are on: the home page, or any other. */
+  home: true,
   listCalls: [] as Record<string, unknown>[],
   footerMenu: [] as { id?: number | string; title: string; url: string; target?: string }[],
 };
 
 vi.mock('@salla.sa/twilight-theme-engine/providers', () => ({
   useTwilight: () => ({ store: state.store, theme: { settings: state.settings } }),
+}));
+vi.mock('@tanstack/react-router', async (original) => ({
+  ...(await original<typeof import('@tanstack/react-router')>()),
+  useRouterState: ({ select }: { select: (router: { matches: { routeId: string }[] }) => unknown }) =>
+    select({ matches: [{ routeId: state.home ? '/{-$locale}/' : '/{-$locale}/cart' }] }),
 }));
 vi.mock('@salla.sa/twilight-theme-engine/i18n', () => ({
   useTranslation: () => ({
@@ -115,7 +122,9 @@ beforeEach(() => {
   state.products = [];
   state.categories = [];
   state.phone = false;
+  state.home = true;
   state.listCalls = [];
+  window.sessionStorage.clear();
 });
 
 /** A small store: one category with two kinds, one without, one that is empty. */
@@ -175,6 +184,15 @@ describe('PromoBar', () => {
     expect(groups[1].getAttribute('aria-hidden')).toBe('true');
     // Several phrases: a phone moves them until the bar has measured itself.
     expect(container.querySelector('.gly-topbar')?.className).toBe('gly-topbar gly-topbar--many');
+  });
+
+  it('marks itself on every page but the home page, where a phone leaves it out', () => {
+    const home = render(<PromoBar />);
+    expect(home.container.querySelector('.gly-topbar')?.classList.contains('gly-topbar--inner')).toBe(false);
+    home.unmount();
+    state.home = false;
+    const inner = render(<PromoBar />);
+    expect(inner.container.querySelector('.gly-topbar')?.classList.contains('gly-topbar--inner')).toBe(true);
   });
 
   it('a single phrase stands still until measured', () => {
@@ -389,6 +407,23 @@ describe('WhatsApp buttons', () => {
 
     other.remove();
     vi.unstubAllGlobals();
+  });
+
+  it('can be hidden for the rest of the visit with its × button', () => {
+    state.settings = { gly_whatsapp: '966551112222' };
+    const first = render(<WhatsAppFloat />);
+    fireEvent.click(screen.getByRole('button', { name: en['blocks.gly.wa.dismiss'] }));
+    expect(first.container.querySelector('a.gly-wa')).toBeNull();
+    expect(window.sessionStorage.getItem('gly-wa-dismissed')).toBe('1');
+    first.unmount();
+    // The next page of the same visit: still hidden.
+    const next = render(<WhatsAppFloat />);
+    expect(next.container.querySelector('a.gly-wa')).toBeNull();
+    next.unmount();
+    // A new visit: back.
+    window.sessionStorage.clear();
+    const later = render(<WhatsAppFloat />);
+    expect(later.container.querySelector('a.gly-wa')?.classList.contains('gly-wa--away')).toBe(false);
   });
 
   it('hides them when there is no number to chat with', () => {
@@ -788,12 +823,11 @@ describe('Giftology sections as home blocks', () => {
     expect([...container.querySelectorAll('.gly-hero-stats b')].map((b) => b.textContent)).toEqual(['+5K']);
   });
 
-  it('hero: the third button, the floating cards and the picture are the block\'s too', () => {
+  it('hero: the floating cards and the picture are the block\'s too, and no button points at the section under it', () => {
     const { container } = renderWithQuery(
       <HomeSectionsProvider value={new Set(['hero', 'latest'] as const)}>
         <Hero
           data={{
-            cta_latest_en: 'New in',
             art_image: 'https://cdn.test/art.png',
             cards: [
               { 'cards.title': 'تغليف يدوي', 'cards.title_en': 'Wrapped by hand', 'cards.text_en': 'With care', 'cards.icon': 'truck' },
@@ -803,7 +837,8 @@ describe('Giftology sections as home blocks', () => {
         />
       </HomeSectionsProvider>
     );
-    expect(screen.getByText('New in').closest('a')?.getAttribute('href')).toBe('#gly-latest');
+    expect(container.querySelector('a[href="#gly-latest"]')).toBeNull();
+    expect(container.querySelectorAll('.gly-cta-row a')).toHaveLength(0);
     expect(container.querySelector('.gly-bow')?.getAttribute('src')).toBe('https://cdn.test/art.png');
     const cards = [...container.querySelectorAll('.gly-fcard')];
     expect(cards.map((card) => card.querySelector('b')?.textContent)).toEqual(['Wrapped by hand', 'بطاقة']);
@@ -813,10 +848,10 @@ describe('Giftology sections as home blocks', () => {
     expect(cards[1].querySelector('.gly-fcard__ph .gly-ico')).not.toBeNull();
   });
 
-  it('hero: the third button can be switched off, and the ready-made cards show until the list is filled', () => {
+  it('hero: the ready-made cards show until the list is filled', () => {
     const { container } = renderWithQuery(
       <HomeSectionsProvider value={new Set(['hero', 'latest'] as const)}>
-        <Hero data={{ show_cta_latest: false }} />
+        <Hero data={{}} />
       </HomeSectionsProvider>
     );
     expect(container.querySelector('a[href="#gly-latest"]')).toBeNull();

@@ -38,7 +38,8 @@ app/components/giftology/   header, full-screen menu, footer, promo bar, WhatsAp
 app/lib/giftology.ts        gly_* setting and home-block field readers, category circles, WhatsApp helpers
 app/lib/giftFinder.ts       the gift finder's rules: categories offered, budget ranges, suggestions
 app/lib/glyDefaults.ts      the ready-made rows the home blocks' lists arrive with
-app/styles/giftology/       brand tokens, section styles, category-page styles, product-card styles
+app/styles/giftology/       brand tokens, section styles, category-page styles, inner-page styles
+                            (`_inner.scss`: page titles, the phone cart's checkout bar), product-card styles
 app/assets/images/          logos, watermark pattern, category icons
 ```
 
@@ -108,7 +109,12 @@ app/assets/images/          logos, watermark pattern, category icons
   `gly_menu_*` settings say what appears in the menu: the categories picked, switches for the
   section links, the store's menu entries and the foot, and links added by hand.
 - The floating WhatsApp button steps aside while another WhatsApp link is on screen
-  (`WhatsAppFloat.tsx` watches every `wa.me` link of the page).
+  (`WhatsAppFloat.tsx` watches every `wa.me` link of the page), and its × hides it for the
+  rest of the visit (session storage). Anything that must sit above it raises
+  `--gly-wa-bottom`, which the button and its × both follow.
+- Inner pages are the starter's; `gly-page-title` on their `<h1>` gives them the home page's
+  display face. On a phone the top bar shows on the home page only, and the cart has its own
+  checkout bar above the bottom nav (`CartCheckoutBar` in `cart/CartPage.tsx`).
 - Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and
   `{whatsapp}` in their text; `page/PageSingle.tsx` fills them from the store's details.
 - The footer's "important links" are the store's footer menu (the pages the merchant adds in

@@ -1,0 +1,39 @@
+/* ============================================================
+   Inner pages: category, product, cart, store pages.
+   They are the starter's pages; these rules carry the brand's look onto them,
+   so they read as the same site as the home page.
+   ============================================================ */
+
+/* a page's title: the display face of the home page's headings */
+.gly-page-title{font-family:var(--gly-font-display);font-weight:700;font-size:clamp(1.7rem,2.6vw,2.3rem);line-height:1.35;color:var(--gly-ink)}
+.gly-page-title--product{font-size:clamp(1.5rem,2.2vw,2rem)}
+
+/* the trail: on the page's own background with a hairline under it, not on a tinted band */
+.breadcrumbs{background:none;border-bottom:1px solid rgba(74,63,53,.08)}
+
+/* category page, small laptops: three cards beside the filter column, not four.
+   Four left each card too narrow for its button's text ("أضف إلى ا…"). */
+@media (min-width:1024px) and (max-width:1279px){
+  .s-products-list-wrapper.s-products-list-vertical-cards.s-products-list-with-filters{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media (max-width:767px){
+  /* A store page's title is already in the sticky title bar. The heading stays for screen readers. */
+  .content--single-page>.gly-page-title{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+
+/* Cart on a phone: the total and "complete the order", held above the bottom bar.
+   The real button is more than a screen down, under the order's options, shipping and summary;
+   this bar steps aside once that button is on screen. */
+.gly-cartbar{display:none}
+@media (max-width:767px){
+  .gly-cartbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;position:fixed;inset-inline:12px;bottom:calc(80px + var(--safe-bottom, 0px));z-index:65;padding:.6rem .7rem;padding-inline-start:1.1rem;border-radius:22px;background:#fff;box-shadow:0 10px 30px rgba(51,48,43,.18);font-family:var(--gly-font-body);transition:opacity .25s,transform .25s,visibility 0s}
+  .gly-cartbar--away{opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;transition:opacity .25s,transform .25s,visibility 0s .25s}
+  .gly-cartbar__total{display:flex;flex-direction:column;line-height:1.3}
+  .gly-cartbar__total small{font-size:.8rem;color:var(--gly-soft)}
+  .gly-cartbar__total b{font-size:1.1rem;color:var(--gly-ink)}
+  .gly-cartbar .gly-btn{min-height:46px;padding:.6rem 1.4rem;box-shadow:none}
+  /* room for the bar under the page's last line, and the WhatsApp button clear of it */
+  .gly-cart{padding-bottom:5rem}
+  body:has(.gly-cartbar:not(.gly-cartbar--away)){--gly-wa-bottom:calc(158px + var(--safe-bottom, 0px))}
+}

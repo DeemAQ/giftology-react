@@ -70,7 +70,7 @@ export function ProductDetails({
 
       <div className="mb-2.5 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl leading-10 font-bold text-gray-800">{product.name}</h1>
+          <h1 className="gly-page-title gly-page-title--product">{product.name}</h1>
           {product.subtitle && (
             <h2 className="product-entry__sub-title text-sm text-gray-500 leading-6 font-normal">
               {product.subtitle}

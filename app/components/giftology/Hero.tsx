@@ -3,7 +3,7 @@ import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { blockCopy, blockLink, blockRows, choiceValue, rowText, settingOn, settingText } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import { BrandIcon } from './BrandIcon';
-import { ArrowDownIcon, ArrowIcon, SparkIcon, StarIcon, TruckIcon } from './icons';
+import { ArrowIcon, SparkIcon, StarIcon, TruckIcon } from './icons';
 import { useHomeSections } from './homeSections';
 import { TILE_ICONS } from './tileIcons';
 import type { BrandIconName } from './tileIcons';
@@ -42,8 +42,9 @@ function CardIcon({ name }: { name: string }) {
 }
 
 /**
- * Home hero: headline, the calls to action (jump to the categories, the custom
- * gift and the latest products sections), the four stats, and the decorative art.
+ * Home hero: headline, two calls to action (to the categories and to the custom
+ * gift), the four stats, and the decorative art. There is no button to the latest
+ * products: that section sits right under the hero.
  * First screen, so it is visible in the server HTML with no reveal animation, and
  * its headline is the home page's `<h1>`.
  */
@@ -125,12 +126,6 @@ export function Hero({ data }: { data?: BlockData }) {
                   {own('cta_custom')}
                 </a>
               )
-            )}
-            {data?.show_cta_latest !== false && shown.has('latest') && (
-              <a href="#gly-latest" className="gly-btn gly-btn-ghost gly-cta-latest">
-                {own('cta_latest')}
-                <ArrowDownIcon />
-              </a>
             )}
           </div>
           {showStats && (

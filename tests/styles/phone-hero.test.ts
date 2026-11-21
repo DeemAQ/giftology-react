@@ -53,8 +53,7 @@ describe('home hero on a phone', () => {
     expect(decl(rest, 'display')).toBe('none');
   });
 
-  it('keeps two buttons and sets the figures two to a row', () => {
-    expect(decl(phoneRule('.gly-cta-row .gly-cta-latest'), 'display')).toBe('none');
+  it('sets the figures two to a row', () => {
     const stats = phoneRule('.gly-hero-stats');
     expect(decl(stats, 'display')).toBe('grid');
     expect(decl(stats, 'grid-template-columns')).toBe('1fr 1fr');

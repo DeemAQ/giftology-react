@@ -131,7 +131,7 @@ function BrandHeader({ source }: { source: ProductListLoaderData['source'] }) {
           aspectRatio="5/3"
         />
         <div className="px-5 pt-3 rtl:text-right">
-          <h1 className="text-2xl font-bold mb-1">{brand.name}</h1>
+          <h1 className="gly-page-title mb-1">{brand.name}</h1>
           {brand.description && (
             <p
               className="text-base text-gray-500 font-medium"
@@ -548,7 +548,7 @@ export function ProductListPage({
         scope={blockScope}
       />
 
-      <h1 className="font-bold text-xl mb-4" id="page-main-title">
+      <h1 className="gly-page-title mb-4" id="page-main-title">
         {isBrand ? t('common.titles.products') : page.title}
       </h1>
 

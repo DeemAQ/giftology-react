@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
-import { WhatsAppBubbleIcon } from './icons';
+import { CloseIcon, WhatsAppBubbleIcon } from './icons';
 import { useGly } from './useGly';
 
 /** Every WhatsApp link of the page: the custom-gift button, the gift finder's, the footer's. */
@@ -60,6 +60,9 @@ function useOtherWhatsAppInView(own: RefObject<HTMLElement | null>): boolean {
   return inView;
 }
 
+/** Where a visitor's "hide this button" is kept: for this visit, in this tab. */
+const DISMISSED = 'gly-wa-dismissed';
+
 /**
  * Floating "contact us" WhatsApp button, on every page. Uses `gly_whatsapp`, else
  * the store's own number (see `useGly`); renders nothing when there is none.
@@ -68,17 +71,46 @@ function useOtherWhatsAppInView(own: RefObject<HTMLElement | null>): boolean {
  * It steps aside while another WhatsApp button is on screen (the custom-gift
  * section's, the gift finder's, the footer's): two of them side by side said the
  * same thing, and on a phone the floating one sat on top of the other.
+ *
+ * A small × on its corner hides it for the rest of the visit: on a phone it sits
+ * over whatever the page puts in that corner, and the visitor is the one who knows
+ * when it is in the way. The choice is kept in session storage, so the button only
+ * shows once the browser has said it was not dismissed (no flash on the next page).
+ * WhatsApp stays one tap away in the footer and the menu.
  */
 export function WhatsAppFloat() {
   const { t, whatsappGeneral } = useGly();
   const own = useRef<HTMLElement>(null);
   const away = useOtherWhatsAppInView(own);
-  if (!whatsappGeneral) return null;
+  // `null` until the browser has been asked.
+  const [dismissed, setDismissed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let kept = false;
+    try {
+      kept = window.sessionStorage.getItem(DISMISSED) === '1';
+    } catch {
+      // Storage is off (private mode, an embedded preview): the button just shows.
+    }
+    setDismissed(kept);
+  }, []);
+
+  const dismiss = () => {
+    setDismissed(true);
+    try {
+      window.sessionStorage.setItem(DISMISSED, '1');
+    } catch {
+      // Not kept: it comes back on the next full page load.
+    }
+  };
+
+  if (!whatsappGeneral || dismissed) return null;
+  const hidden = away || dismissed === null;
   return (
-    // `inert` while it is away: not something to tab to or tap through to.
-    <aside ref={own} aria-label={t('blocks.gly.footer.contact')} inert={away}>
+    // `inert` while it is out of sight: not something to tab to or tap through to.
+    <aside ref={own} aria-label={t('blocks.gly.footer.contact')} inert={hidden}>
       <a
-        className={`gly-wa${away ? ' gly-wa--away' : ''}`}
+        className={`gly-wa${hidden ? ' gly-wa--away' : ''}`}
         href={whatsappGeneral}
         target="_blank"
         rel="noopener"
@@ -88,6 +120,14 @@ export function WhatsAppFloat() {
         <WhatsAppBubbleIcon />
         <span className="gly-label">{t('blocks.gly.wa.float_label')}</span>
       </a>
+      <button
+        type="button"
+        className={`gly-wa-x${hidden ? ' gly-wa--away' : ''}`}
+        aria-label={t('blocks.gly.wa.dismiss')}
+        onClick={dismiss}
+      >
+        <CloseIcon width={12} height={12} />
+      </button>
     </aside>
   );
 }

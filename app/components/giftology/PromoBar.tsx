@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
+import { useRouterState } from '@tanstack/react-router';
 import { settingCopy, settingOn } from '../../lib/giftology';
+import { HOME_ROUTE_ID } from '../../lib/routeIds';
 import { useGly } from './useGly';
 
 const PROMO_SETTINGS = ['gly_promo_1', 'gly_promo_2', 'gly_promo_3'] as const;
@@ -29,7 +31,9 @@ const END_MARK = 24;
  * two cases apart. Before it has, the stylesheet assumes a phone needs them to move.
  * The loop pauses under a pointer or a held finger, and a visitor who asked for less
  * motion gets the phrases wrapped onto lines instead.
- * `gly_show_promo` turns the bar off.
+ * `gly_show_promo` turns the bar off. On a phone it shows on the home page only:
+ * every other page already opens with the logo bar and its own title bar, and a third
+ * bar above them left a fifth of the screen gone before any content.
  */
 export function PromoBar() {
   const { settings, t, locale } = useGly();
@@ -38,6 +42,10 @@ export function PromoBar() {
   // `null` until measured in the browser.
   const [fits, setFits] = useState<boolean | null>(null);
   const [seconds, setSeconds] = useState(0);
+  // The route match, which the server and the client agree on.
+  const isHome = useRouterState({
+    select: (state) => state.matches.some((match) => match.routeId === HOME_ROUTE_ID),
+  });
 
   const on = settingOn(settings, 'gly_show_promo');
   // The phrases typed for this language (`gly_promo_N`, or `gly_promo_N_en` in English).
@@ -90,7 +98,7 @@ export function PromoBar() {
   return (
     <aside
       ref={bar}
-      className={`gly-topbar${phrases.length > 1 ? ' gly-topbar--many' : ''}${state}`}
+      className={`gly-topbar${isHome ? '' : ' gly-topbar--inner'}${phrases.length > 1 ? ' gly-topbar--many' : ''}${state}`}
       aria-label={t('blocks.gly.promo.label')}
       style={seconds ? ({ '--gly-ticker': `${seconds}s` } as CSSProperties) : undefined}
     >
