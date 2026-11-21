@@ -203,3 +203,21 @@ pnpm check:manifest   # after editing twilight.json: duplicate ids, missing opti
 ```
 
 Do not start `pnpm dev` yourself; ask the user to run it. Typecheck needs `app/routeTree.gen.ts`, which `pnpm build` or `pnpm dev` generates.
+
+### End-to-end tests
+
+`e2e/` drives a real browser (Playwright) against the dev server and Salla's demo store, at
+phone (375px) and laptop (1440px) width: home in both languages, products in the server HTML,
+the menu, the gift finder, a category, a product, the cart, the floating WhatsApp button.
+
+```bash
+pnpm exec playwright install chromium   # once per machine
+pnpm test:e2e                           # with the user's `pnpm dev` already running
+pnpm typecheck:e2e
+```
+
+Locally the suite uses the dev server already running; only when none is, it starts its
+own and stops it afterwards. On CI (`.github/workflows/ci.yml`) it always starts `pnpm dev`. It finds the preview's path
+(`/dev-…`) from the address `/` redirects to; set `E2E_STORE_PATH` to skip that. The tests
+read the demo store's data, so they check shapes (a category has products, the finder ends on
+an answer), never names or prices. They never press checkout.

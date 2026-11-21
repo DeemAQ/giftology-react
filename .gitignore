@@ -12,3 +12,8 @@ tsconfig.tsbuildinfo
 app/routeTree.gen.ts
 # playwright-cli skill output (snapshots, traces)
 .playwright-cli/
+
+# Playwright end-to-end output
+playwright-report/
+test-results/
+blob-report/
