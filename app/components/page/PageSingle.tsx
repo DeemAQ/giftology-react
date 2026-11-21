@@ -71,7 +71,7 @@ export function PageSingle({ page }: PageSingleProps) {
 
       <div className="flex justify-center">
         <div className="content content--single-page w-full lg:w-10/12 bg-white rounded p-6 lg:p-8 mt-4 lg:mt-12">
-          <h1 className="font-bold text-2xl mb-6">{page.title}</h1>
+          <h1 className="gly-page-title mb-6">{page.title}</h1>
           {cleanContent && (
             <div className="content-entry" dangerouslySetInnerHTML={{ __html: cleanContent }} />
           )}

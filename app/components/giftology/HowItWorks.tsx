@@ -1,10 +1,14 @@
 import type { ReactNode } from 'react';
 import { useReveal } from '../../hooks/useReveal';
-import { blockRows, blockText } from '../../lib/giftology';
+import { blockCopy, blockLink, blockRows, choiceValue, rowText } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
+import { BrandIcon } from './BrandIcon';
 import { SectionHead } from './SectionHead';
+import { TILE_ICONS } from './tileIcons';
+import type { BrandIconName } from './tileIcons';
 import { useGly } from './useGly';
 
+/** The four ready-made steps, in order: locale key and drawing. */
 const STEPS: { key: string; icon: ReactNode }[] = [
   {
     key: 'discover',
@@ -34,29 +38,48 @@ const STEPS: { key: string; icon: ReactNode }[] = [
   },
 ];
 
-/** "How it works": the four steps, numbered 01 to 04. */
+const DRAWINGS: Record<string, ReactNode> = Object.fromEntries(STEPS.map((step) => [step.key, step.icon]));
+
+/**
+ * A step's picture: the image the merchant uploaded, else the icon picked for the
+ * step (one of the four step drawings or a brand icon), else the drawing that goes
+ * with the step's place in the list.
+ */
+function StepIcon({ icon, image, index }: { icon: string; image: string; index: number }) {
+  if (image) return <img src={image} alt="" width={35} height={35} loading="lazy" />;
+  if (icon in TILE_ICONS) return <BrandIcon name={icon as BrandIconName} />;
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+      {DRAWINGS[icon] ?? STEPS[index % STEPS.length].icon}
+    </svg>
+  );
+}
+
+/** "How it works": the steps, numbered from 01, each with its picture. */
 export function HowItWorks({ data }: { data?: BlockData }) {
   const { t, locale } = useGly();
   const reveal = useReveal();
   // A block field the merchant filled, else the theme's own text.
-  const own = (key: string) => blockText(data, key, locale) || t(`blocks.gly.how.${key}`);
+  const own = (key: string) => blockCopy(data, key, locale) || t(`blocks.gly.how.${key}`);
   const ownSteps = blockRows(data, 'steps')
-    .map((row) => ({ title: blockText(row, 'title', locale), text: blockText(row, 'text', locale) }))
+    .map((row) => ({
+      title: rowText(row, 'title', locale, t),
+      text: rowText(row, 'text', locale, t),
+      icon: choiceValue(row.icon),
+      image: blockLink(row.image),
+    }))
     .filter((step) => step.title);
-  // The four drawings stay in order; a longer list starts them again.
-  const steps = (
-    ownSteps.length
-      ? ownSteps
-      : STEPS.map((step) => ({ title: own(`${step.key}_t`), text: own(`${step.key}_d`) }))
-  ).map((step, index) => ({ ...step, icon: STEPS[index % STEPS.length].icon }));
+  const steps = ownSteps.length
+    ? ownSteps
+    : STEPS.map((step) => ({ title: own(`${step.key}_t`), text: own(`${step.key}_d`), icon: step.key, image: '' }));
 
   return (
     <section id="gly-how" className="gly-section gly-how">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={own('eyebrow')}
+          eyebrow={blockCopy(data, 'eyebrow', locale)}
           title={own('title_pre')}
-          emphasis={own('title_em')}
+          tail={own('title_em')}
         >
           <p>{own('sub')}</p>
         </SectionHead>
@@ -69,15 +92,7 @@ export function HowItWorks({ data }: { data?: BlockData }) {
                 0{index + 1}
               </div>
               <div className="gly-step__ic">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  aria-hidden="true"
-                >
-                  {step.icon}
-                </svg>
+                <StepIcon icon={step.icon} image={step.image} index={index} />
               </div>
               <h3>{step.title}</h3>
               {step.text && <p>{step.text}</p>}

@@ -1,5 +1,5 @@
 import { useReveal } from '../../hooks/useReveal';
-import { blockRows, blockText } from '../../lib/giftology';
+import { blockCopy, blockRows, rowText, whatsappLink } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import { WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
@@ -9,19 +9,30 @@ const STEPS = [1, 2, 3] as const;
 /**
  * Custom gift section. A custom gift is ordered by talking to the store first, so
  * the card opens a WhatsApp chat and shows no price or add-to-cart button.
+ *
+ * The three steps say how it works, once. A paragraph under the title, a badge on
+ * the card and a line under the card's title used to say it again; they show now
+ * only when the merchant typed them in the block.
  */
 export function CustomGift({ data }: { data?: BlockData }) {
-  const { t, whatsappCustom, locale } = useGly();
+  const { t, whatsappCustom, whatsappNumber, locale } = useGly();
   const copy = useReveal();
   const card = useReveal();
   // A block field the merchant filled, else the theme's own text.
-  const c = (key: string) => blockText(data, key, locale) || t(`blocks.gly.custom.${key}`);
+  const c = (key: string) => blockCopy(data, key, locale) || t(`blocks.gly.custom.${key}`);
+  // The chat opens with the message typed in the block, else the theme's own.
+  const message = blockCopy(data, 'wa_message', locale);
+  const chat = message ? whatsappLink(whatsappNumber, message) : whatsappCustom;
   const ownSteps = blockRows(data, 'steps')
-    .map((row) => ({ title: blockText(row, 'title', locale), text: blockText(row, 'text', locale) }))
+    .map((row) => ({ title: rowText(row, 'title', locale, t), text: rowText(row, 'text', locale, t) }))
     .filter((step) => step.title);
   const steps = ownSteps.length
     ? ownSteps
     : STEPS.map((step) => ({ title: c(`step${step}_t`), text: c(`step${step}_d`) }));
+  // Optional texts: nothing shows in their place when the block leaves them empty.
+  const lede = blockCopy(data, 'lede', locale);
+  const badge = blockCopy(data, 'card_badge', locale);
+  const cardText = blockCopy(data, 'card_desc', locale);
 
   return (
     <section id="gly-custom" className="gly-section gly-custom">
@@ -32,7 +43,7 @@ export function CustomGift({ data }: { data?: BlockData }) {
           <h2>
             {c('title_pre')} <em>{c('title_em')}</em>
           </h2>
-          <p className="gly-custom__lede">{c('lede')}</p>
+          {lede && <p className="gly-custom__lede">{lede}</p>}
           <ol className="gly-csteps">
             {steps.map((step, index) => (
               // An ordered list with no ids; a step's place is its identity.
@@ -50,11 +61,11 @@ export function CustomGift({ data }: { data?: BlockData }) {
         </div>
 
         <div ref={card.ref} className={`gly-qcard-c ${card.className}`}>
-          <span className="gly-badge-soft">{c('card_badge')}</span>
+          {badge && <span className="gly-badge-soft">{badge}</span>}
           <h3>{c('card_title')}</h3>
-          <p>{c('card_desc')}</p>
-          {whatsappCustom && (
-            <a className="gly-btn gly-btn-wa" href={whatsappCustom} target="_blank" rel="noopener">
+          {cardText && <p>{cardText}</p>}
+          {chat && (
+            <a className="gly-btn gly-btn-wa" href={chat} target="_blank" rel="noopener">
               <WhatsAppIcon />
               {c('card_btn')}
             </a>

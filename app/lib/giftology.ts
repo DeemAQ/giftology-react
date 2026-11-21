@@ -3,6 +3,10 @@
  * bespoke sections share (category pages, WhatsApp). No React in here.
  */
 
+import { defaultTextKey } from './glyDefaults';
+import { offered, sameCategory } from './giftFinder';
+import type { CategoryNode } from './giftFinder';
+
 export type GlySettings = Record<string, unknown> | undefined | null;
 
 /**
@@ -15,6 +19,25 @@ export const WA_PLACEHOLDER = '966500000000';
 export function settingOn(settings: GlySettings, id: string, fallback = true): boolean {
   const value = settings?.[id];
   return typeof value === 'boolean' ? value : fallback;
+}
+
+/** A filter group as Salla lists it for a products page (`category_id`, `brand_id`, `price`, or a product option). */
+export interface FilterGroup {
+  key?: unknown;
+  type?: unknown;
+}
+
+/**
+ * The filter groups the merchant left on (`gly_filter_*`). Salla decides which groups a page
+ * has; a group the theme has no switch for stays as it is.
+ */
+export function shownFilters<T extends FilterGroup>(filters: readonly T[], settings: GlySettings): T[] {
+  const off = (group: T) =>
+    (group.key === 'price' && !settingOn(settings, 'gly_filter_price')) ||
+    (group.key === 'category_id' && !settingOn(settings, 'gly_filter_categories')) ||
+    (group.key === 'brand_id' && !settingOn(settings, 'gly_filter_brands')) ||
+    (group.type === 'variants' && !settingOn(settings, 'gly_filter_options'));
+  return filters.filter((group) => !off(group));
 }
 
 /** A text setting, trimmed; empty when unset. */
@@ -79,6 +102,50 @@ export function blockRows(data: BlockData, id: string): Record<string, unknown>[
     .filter((row) => Object.values(row).some((value) => value !== null && value !== '' && value !== false));
 }
 
+/** Whether the page is in Arabic, the language the merchant writes the main text boxes in. */
+const isArabic = (lang: string | undefined) => !lang || lang.toLowerCase().startsWith('ar');
+
+/**
+ * A block text in the visitor's language. Every text has two boxes in the editor:
+ * `id` for Arabic and `id_en` for English (shown for every language but Arabic).
+ * Empty when the box for that language is empty, so the caller falls back to the
+ * theme's own wording in that language.
+ */
+export function blockCopy(data: BlockData, id: string, lang?: string): string {
+  if (isArabic(lang)) return blockText(data, id, lang);
+  const english = blockText(data, `${id}_en`, lang);
+  if (english) return english;
+  // A value Salla holds per language (`{ ar, en }`) carries its own English.
+  const main = data?.[id];
+  return main && typeof main === 'object' ? blockText(data, id, lang) : '';
+}
+
+/** A setting's text in the visitor's language: `id` for Arabic, `id_en` otherwise. */
+export function settingCopy(settings: GlySettings, id: string, lang?: string): string {
+  return settingText(settings, isArabic(lang) ? id : `${id}_en`);
+}
+
+/**
+ * A text of a list row, in the visitor's language. A row has an Arabic box and an
+ * English one (`id`, `id_en`). An English page with no English text shows the
+ * theme's own English when the Arabic is still one of the ready-made texts
+ * (`glyDefaults.ts`), and the Arabic as written otherwise: a row the merchant wrote
+ * has no ready-made English to fall back on.
+ */
+export function rowText(
+  row: BlockData,
+  id: string,
+  lang: string | undefined,
+  t: (key: string) => string
+): string {
+  const arabic = blockText(row, id, lang);
+  if (isArabic(lang)) return arabic;
+  const english = blockText(row, `${id}_en`, lang);
+  if (english) return english;
+  const key = arabic ? defaultTextKey(arabic) : undefined;
+  return key ? t(key) : arabic;
+}
+
 /** A block's link field (the editor's link picker): a URL, `{ url }` or a list of them; empty when unset. */
 export function blockLink(value: unknown): string {
   const first = Array.isArray(value) ? value[0] : value;
@@ -113,17 +180,11 @@ export function resolveCategoryUrl(value: unknown, fallback: string, lang?: stri
   return url;
 }
 
-/** Salla category pages end in `/c{id}`; the id, or `null`. */
-export function categoryIdFromUrl(url: string | null | undefined): number | null {
-  const match = String(url ?? '').match(/\/c(\d+)(?:[/?#]|$)/);
-  return match ? Number(match[1]) : null;
-}
-
 /**
- * The circles a merchant listed in the "category circles" home block. An unknown icon
- * falls back to the gift. A circle left without a name takes its icon's own name
- * (the baby icon is "newborn gifts"), in the visitor's language, so the six ready
- * circles need only a link each.
+ * The extra circles a merchant listed by hand in the "category circles" home block,
+ * for things that are not categories (the offers page, a store page). A row needs a
+ * link, a name or an image; one that only has an icon is skipped. An unknown icon
+ * falls back to the gift, and a circle left without a name takes its icon's own name.
  */
 export function blockTiles(
   data: BlockData,
@@ -132,15 +193,63 @@ export function blockTiles(
   lang: string | undefined,
   icons: Record<string, string>
 ): CategoryTile[] {
-  return blockRows(data, 'circles').map((row) => {
-    const chosen = choiceValue(row.icon);
-    const icon = icons[chosen] ? chosen : 'gift';
-    const preset = TILE_DEFAULTS.find((tile) => tile.icon === icon);
+  return blockRows(data, 'circles')
+    .filter((row) => blockLink(row.url) || rowText(row, 'name', lang, t) || blockLink(row.image))
+    .map((row) => {
+      const chosen = choiceValue(row.icon);
+      const icon = icons[chosen] ? chosen : 'gift';
+      const preset = TILE_DEFAULTS.find((tile) => tile.icon === icon);
+      return {
+        name: rowText(row, 'name', lang, t) || (preset ? t(preset.nameKey) : ''),
+        url: resolveCategoryUrl(row.url, allProductsUrl(homeUrl), lang),
+        image: blockLink(row.image),
+        icon,
+      };
+    });
+}
+
+/** The most circles drawn from the store's categories when the merchant picked none. */
+export const AUTO_CIRCLES = 12;
+
+/** Every category of a tree, parents before their children. */
+function flatten(nodes: readonly CategoryNode[]): CategoryNode[] {
+  return nodes.flatMap((node) => [node, ...flatten(node.sub_categories ?? node.items ?? [])]);
+}
+
+/**
+ * Circles for the store's own categories: each takes its category's name, page and
+ * image from Salla, so nothing is typed in the theme. A category without an image
+ * shows one of the brand icons: the one whose ready-made name it carries, else the gift.
+ *
+ * `picked` is what the merchant chose in the circles block, in their order; each is
+ * looked up in the store's tree for its current name and image. With nothing picked
+ * the circles are the top-level categories that hold products.
+ */
+export function categoryCircles(
+  tree: readonly CategoryNode[] | null | undefined,
+  picked: readonly Partial<CategoryNode>[],
+  t: (key: string, fallback?: string) => string
+): CategoryTile[] {
+  const all = flatten(tree ?? []);
+  const chosen = picked.length
+    ? picked
+        .filter((item) => item && typeof item === 'object')
+        .map((item) => {
+          const current = all.find(
+            (node) => sameCategory(item, node) || (!!item.url && node.url === item.url)
+          );
+          return { ...item, ...current };
+        })
+        .filter((item): item is CategoryNode => !!item.name && !!item.url)
+    : offered(tree).slice(0, AUTO_CIRCLES);
+
+  return chosen.map((node) => {
+    const preset = TILE_DEFAULTS.find((tile) => t(tile.nameKey) === node.name.trim());
     return {
-      name: blockText(row, 'name', lang) || (preset ? t(preset.nameKey) : ''),
-      url: resolveCategoryUrl(row.url, allProductsUrl(homeUrl), lang),
-      image: blockLink(row.image),
-      icon,
+      name: node.name,
+      url: node.url,
+      image: typeof node.image === 'string' ? node.image : '',
+      icon: preset?.icon ?? 'gift',
     };
   });
 }
@@ -155,6 +264,40 @@ export function whatsappNumber(...candidates: unknown[]): string {
     if (digits.length >= 8 && digits !== WA_PLACEHOLDER) return digits;
   }
   return '';
+}
+
+/**
+ * A phone number as a visitor reads it, from its digits: `+966 55 123 4567` for a Saudi
+ * mobile, `+` and the digits for any other international number, and a number typed in
+ * its local form (a leading zero) as it is.
+ */
+export function displayPhone(digits: string): string {
+  if (!digits) return '';
+  const saudi = digits.match(/^966(5\d)(\d{3})(\d{4})$/);
+  if (saudi) return `+966 ${saudi[1]} ${saudi[2]} ${saudi[3]}`;
+  return digits.startsWith('0') ? digits : `+${digits}`;
+}
+
+/** First parts of an Instagram address that are not an account: a post, a reel, a story. */
+const INSTAGRAM_PAGES = ['p', 'reel', 'reels', 'explore', 'stories', 'accounts', 'tv'];
+
+/**
+ * An Instagram account from what the store holds: a profile link, or a handle typed with
+ * or without its `@`. Gives the link to open and the handle to show (`@giftology`); the
+ * handle is empty when the link is not a profile's, and the result is `null` when the
+ * text is neither a link nor a handle.
+ */
+export function instagramAccount(value: unknown): { handle: string; url: string } | null {
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (!text) return null;
+  const linked = text.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+  if (linked) {
+    const url = /^https?:\/\//i.test(text) ? text : `https://${text.replace(/^\/+/, '')}`;
+    return { handle: INSTAGRAM_PAGES.includes(linked[1].toLowerCase()) ? '' : `@${linked[1]}`, url };
+  }
+  if (/^https?:\/\//i.test(text)) return { handle: '', url: text };
+  const name = text.replace(/^@/, '');
+  return /^[A-Za-z0-9._]{1,30}$/.test(name) ? { handle: `@${name}`, url: `https://instagram.com/${name}` } : null;
 }
 
 /** A `wa.me` chat link with a prefilled message; empty without a number, so the button can hide. */
@@ -176,17 +319,6 @@ export function allProductsUrl(homeUrl: string | undefined): string {
 }
 
 const TRANSLATION_KEY = /^[a-z_]+(\.[a-z_]+)+$/;
-
-/** Where the merchant's home blocks sit among the Giftology sections. */
-export type BlocksPosition = 'top' | 'after_hero' | 'after_latest' | 'bottom';
-
-const BLOCKS_POSITIONS: readonly BlocksPosition[] = ['top', 'after_hero', 'after_latest', 'bottom'];
-
-/** `gly_blocks_position`; under the hero until the merchant picks another place. */
-export function blocksPosition(settings: GlySettings): BlocksPosition {
-  const chosen = settingChoice(settings, 'gly_blocks_position') as BlocksPosition;
-  return BLOCKS_POSITIONS.includes(chosen) ? chosen : 'after_hero';
-}
 
 /**
  * The label of a store menu entry. Salla names a few built-in entries by translation

@@ -28,12 +28,40 @@ function find(root: postcss.Root, selector: string, prop: string): Found[] {
 const home = compile('_home.scss');
 
 describe('header links', () => {
-  it('stay on inner pages on wide screens, and give way to the menu button below 1024px', () => {
-    expect(find(home, '.gly-header--inner .gly-menu', 'display')).toEqual([
-      { media: '(max-width:1023px)', value: 'none' },
+  it('show as many as fit on one line above phone width; the button stays, and phones use the bottom bar', () => {
+    expect(find(home, '.gly-menu', 'display')).toEqual([
+      { media: '', value: 'flex' },
+      { media: '(max-width:767px)', value: 'none' },
     ]);
-    expect(find(home, '.gly-header--inner .gly-burger', 'display')).toEqual([{ media: '', value: 'grid' }]);
+    // One line: a link that does not fit wraps below it and is cut off (the menu has them all).
+    expect(find(home, '.gly-menu', 'flex-wrap')).toEqual([{ media: '', value: 'wrap' }]);
+    expect(find(home, '.gly-menu', 'overflow')).toEqual([{ media: '', value: 'hidden' }]);
+    expect(find(home, '.gly-menu', 'height')).toEqual([{ media: '', value: '2.5rem' }]);
+    expect(find(home, '.gly-nav-start', 'min-width')).toEqual([{ media: '', value: '0' }]);
+    // "الأقسام" beside the logo, on every page; a phone opens the menu from its bottom bar.
+    expect(find(home, '.gly-menu-btn', 'display')).toEqual([
+      { media: '', value: 'inline-flex' },
+      { media: '(max-width:767px)', value: 'none' },
+    ]);
+    expect(find(home, '.gly-menu-btn', 'min-height')).toEqual([{ media: '', value: '44px' }]);
+    // A text button: no outline and no fill.
+    expect(find(home, '.gly-menu-btn', 'border')).toEqual([{ media: '', value: 'none' }]);
+    expect(find(home, '.gly-menu-btn', 'background')).toEqual([{ media: '', value: 'none' }]);
     expect(find(home, '.gly-menu a', 'white-space')).toContainEqual({ media: '', value: 'nowrap' });
+  });
+
+  it("keeps the menu's title modest", () => {
+    expect(find(home, '.gly-mmenu__head h2', 'font-size')).toEqual([{ media: '', value: '1.3rem' }]);
+  });
+
+  it('opens the menu as a side panel on the side of its button, over a dimmed page', () => {
+    expect(find(home, '.gly-mmenu', 'width')).toEqual([{ media: '(min-width:768px)', value: 'min(430px,100vw)' }]);
+    // The start side: the right in Arabic.
+    expect(find(home, '.gly-mmenu', 'inset-inline-end')).toEqual([{ media: '(min-width:768px)', value: 'auto' }]);
+    expect(find(home, '.gly-mscrim', 'display')).toEqual([
+      { media: '', value: 'none' },
+      { media: '(min-width:768px)', value: 'block' },
+    ]);
   });
 });
 
@@ -62,7 +90,8 @@ describe('latest products grid', () => {
   });
 
   it('leaves the last two out where three fit, so no row is short', () => {
-    const lastTwo = '.gly-latest-grid > :nth-child(n+7)';
+    // Twelve products fill four rows of three, so only the eight-product grid drops its last two.
+    const lastTwo = '.gly-latest-grid:not([data-count="12"]) > :nth-child(n+7)';
     expect(find(home, lastTwo, 'display')).toEqual([
       { media: '(min-width:640px)and(max-width:959px)', value: 'none' },
     ]);

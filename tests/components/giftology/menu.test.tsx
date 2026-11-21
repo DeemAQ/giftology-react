@@ -29,6 +29,13 @@ vi.mock('@salla.sa/twilight-theme-engine/common', () => ({
     </a>
   ),
 }));
+vi.mock('@salla.sa/twilight-theme-engine/api/home', () => ({
+  home: {
+    queries: {
+      components: () => ({ queryKey: ['home', 'components'], queryFn: async () => [] }),
+    },
+  },
+}));
 vi.mock('@salla.sa/twilight-theme-engine/api/category', () => ({
   category: {
     queries: {
@@ -63,33 +70,58 @@ describe('GlyMobileMenu', () => {
     expect(menu?.classList.contains('open')).toBe(false);
   });
 
-  it('lists the curated tiles until the category tree loads, then the tree', async () => {
+  it("shows the store's categories as circles, with a link to all products that is there before they load", async () => {
     state.categories = [
       {
         id: 1,
         name: 'Newborn',
         url: '/newborn/c1',
+        image: 'https://cdn.test/newborn.png',
         sub_categories: [{ id: 2, name: 'Baby Girl', url: '/baby-girl/c2' }],
       },
       { id: 3, name: 'Cards', url: '/cards/c3' },
+      // Holds nothing: not offered.
+      { id: 4, name: 'Empty', url: '/empty/c4', products_count: 0 },
     ];
-    renderMenu(true);
-    expect(screen.getByText(en['blocks.gly.cats.men'])).toBeTruthy();
+    const { container } = renderMenu(true);
+    expect(screen.getByText('All').getAttribute('href')).toBe('https://shop.test/en/products');
+    expect(container.querySelector('.gly-mcats')).toBeNull();
 
-    const parent = await screen.findByRole('button', { name: 'Newborn' });
-    expect(parent.getAttribute('aria-expanded')).toBe('false');
-    fireEvent.click(parent);
-    expect(parent.getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByText('Baby Girl').getAttribute('href')).toBe('/baby-girl/c2');
-    expect(screen.getByText('Cards').getAttribute('href')).toBe('/cards/c3');
+    const newborn = (await screen.findByText('Newborn')).closest('a');
+    expect(newborn?.getAttribute('href')).toBe('/newborn/c1');
+    // Its image from Salla; a category without one gets the brand icon.
+    expect(newborn?.querySelector('img')?.getAttribute('src')).toBe('https://cdn.test/newborn.png');
+    const cards = screen.getByText('Cards').closest('a');
+    expect(cards?.querySelector('img')).toBeNull();
+    expect(cards?.querySelector('.gly-ico')).toBeTruthy();
+    // Top-level categories only: a subcategory is on its parent's page.
+    expect(screen.queryByText('Baby Girl')).toBeNull();
+    expect(screen.queryByText('Empty')).toBeNull();
+    expect(container.querySelectorAll('.gly-mcat')).toHaveLength(2);
   });
 
-  it('links the home sections that are on, and closes on a link or Escape', () => {
+  it('fills a circle with its picture when the store says its category images are photos', async () => {
+    state.categories = [{ id: 1, name: 'Newborn', url: '/newborn/c1', image: 'https://cdn.test/newborn.jpg' }];
+    state.settings = { gly_subcats_style: 'cover' };
+    const { container } = renderMenu(true);
+    await screen.findByText('Newborn');
+    expect(container.querySelector('.gly-mcats')?.classList.contains('gly-mcats--photos')).toBe(true);
+  });
+
+  it('gives the custom gift and the gift finder a card each, and links the other sections plainly', () => {
     state.settings = { gly_show_how: false };
     let closed = 0;
-    renderMenu(true, () => {
+    const { container } = renderMenu(true, () => {
       closed += 1;
     });
+    expect([...container.querySelectorAll('.gly-mfeat a')].map((link) => link.textContent)).toEqual([
+      en['blocks.gly.nav.custom'],
+      en['blocks.gly.nav.finder'],
+    ]);
+    expect([...container.querySelectorAll('.gly-mlinks a')].map((link) => link.textContent)).toEqual([
+      en['blocks.gly.nav.latest'],
+      en['blocks.gly.nav.testimonials'],
+    ]);
     expect(screen.queryByText(en['blocks.gly.nav.how'])).toBeNull();
     const finder = screen.getByText(en['blocks.gly.nav.finder']);
     expect(finder.getAttribute('href')).toBe('https://shop.test/en/#gly-finder');
@@ -98,15 +130,102 @@ describe('GlyMobileMenu', () => {
     expect(closed).toBe(2);
   });
 
-  it("translates a store menu entry that is named by a translation key", async () => {
+  it('links only the sections placed in the home tab, once the home blocks are known', () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    // What the home route's loader leaves in the cache.
+    client.setQueryData(['home', 'components'], [{ path: 'home.gly-hero' }, { path: 'home.gly-how' }]);
+    render(
+      <QueryClientProvider client={client}>
+        <GlyMobileMenu open onClose={() => {}} />
+      </QueryClientProvider>
+    );
+    expect(screen.getByText(en['blocks.gly.nav.how'])).toBeTruthy();
+    expect(screen.queryByText(en['blocks.gly.nav.finder'])).toBeNull();
+    expect(screen.queryByText(en['blocks.gly.nav.latest'])).toBeNull();
+    // The store's categories stay reachable from the menu either way.
+    expect(screen.getByRole('heading', { name: en['blocks.gly.nav.sections'] })).toBeTruthy();
+    expect(screen.getByText('All')).toBeTruthy();
+  });
+
+  it("lists the store's own menu entries after the sections, translating one named by a translation key", async () => {
     state.categories = [
-      { id: 1, name: 'blocks.gly.nav.latest', url: '/offers' },
+      // As Salla sends a menu link: a word for an id, no category page.
+      { id: 'offers', name: 'blocks.gly.nav.latest', url: '/offers' },
       { id: 2, name: 'Cards', url: '/cards/c3' },
     ];
-    renderMenu(true);
-    const entry = await screen.findByText(en['blocks.gly.nav.latest'], { selector: '.gly-catitem a' });
-    expect(entry.getAttribute('href')).toBe('/offers');
+    const { container } = renderMenu(true);
+    await screen.findByText('Cards');
+    const entry = [...container.querySelectorAll('.gly-mlinks a')].pop();
+    expect(entry?.textContent).toBe(en['blocks.gly.nav.latest']);
+    expect(entry?.getAttribute('href')).toBe('/offers');
     expect(screen.queryByText('blocks.gly.nav.latest')).toBeNull();
+    // It is not a category, so it gets no circle.
+    expect(container.querySelectorAll('.gly-mcat')).toHaveLength(1);
+  });
+
+  it('shows the categories picked in the settings, in that order, and only those', async () => {
+    state.categories = [
+      { id: 1, name: 'Newborn', url: '/newborn/c1' },
+      { id: 2, name: 'Cards', url: '/cards/c2' },
+      { id: 3, name: 'Flowers', url: '/flowers/c3' },
+    ];
+    state.settings = { gly_menu_categories: [{ id: 3 }, { id: 1 }] };
+    const { container } = renderMenu(true);
+    await screen.findByText('Flowers');
+    expect([...container.querySelectorAll('.gly-mcat')].map((circle) => circle.textContent)).toEqual([
+      'Flowers',
+      'Newborn',
+    ]);
+  });
+
+  it('leaves out what the settings switch off, and adds the links typed by hand', async () => {
+    state.categories = [
+      { id: 'offers', name: 'Offers', url: '/offers' },
+      { id: 2, name: 'Cards', url: '/cards/c2' },
+    ];
+    state.settings = {
+      gly_whatsapp: '966551234567',
+      gly_menu_show_sections: false,
+      gly_menu_show_store_links: false,
+      gly_menu_show_contact: false,
+      gly_menu_links: [
+        { 'gly_menu_links.name': 'بطاقات', 'gly_menu_links.name_en': 'Gift cards', 'gly_menu_links.url': '/gift-cards' },
+        // No destination: not a link.
+        { 'gly_menu_links.name': 'ناقص' },
+      ],
+    };
+    const { container } = renderMenu(true);
+    await screen.findByText('Cards');
+    expect(container.querySelector('.gly-mfeat')).toBeNull();
+    expect(container.querySelector('.gly-mmenu__foot')).toBeNull();
+    const links = [...container.querySelectorAll('.gly-mlinks a')];
+    expect(links.map((link) => link.textContent)).toEqual(['Gift cards']);
+    expect(links[0].getAttribute('href')).toBe('/gift-cards');
+  });
+
+  it('closes when the dimmed page beside it is clicked', () => {
+    let closed = 0;
+    const { container } = renderMenu(true, () => {
+      closed += 1;
+    });
+    const scrim = container.querySelector('.gly-mscrim') as HTMLElement;
+    expect(scrim.classList.contains('open')).toBe(true);
+    fireEvent.click(scrim);
+    expect(closed).toBe(1);
+  });
+
+  it('ends on the WhatsApp button and Instagram when the store has them', () => {
+    const bare = renderMenu(true);
+    expect(bare.container.querySelector('.gly-mmenu__foot')).toBeNull();
+    bare.unmount();
+
+    state.settings = { gly_whatsapp: '966551234567', gly_instagram: 'https://instagram.com/giftology' };
+    const { container } = renderMenu(true);
+    expect(container.querySelector('.gly-mmenu__foot .gly-btn-wa')?.getAttribute('href')).toContain(
+      'https://wa.me/966551234567'
+    );
+    expect(container.querySelector('.gly-mmenu__social')?.getAttribute('href')).toBe('https://instagram.com/giftology');
+    expect(container.querySelector('.gly-mmenu__social')?.getAttribute('aria-label')).toBe(en['blocks.gly.footer.instagram']);
   });
 
   it('moves focus into the menu when it opens and back to the opener when it closes', () => {

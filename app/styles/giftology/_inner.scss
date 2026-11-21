@@ -1,0 +1,138 @@
+/* ============================================================
+   Inner pages: category, product, cart, store pages.
+   They are the starter's pages; these rules carry the brand's look onto them,
+   so they read as the same site as the home page.
+   ============================================================ */
+
+/* a page's title: the display face of the home page's headings */
+.gly-page-title{font-family:var(--gly-font-display);font-weight:700;font-size:clamp(1.7rem,2.6vw,2.3rem);line-height:1.35;color:var(--gly-ink)}
+.gly-page-title--product{font-size:clamp(1.5rem,2.2vw,2rem)}
+
+/* the trail: on the page's own background with a hairline under it, not on a tinted band */
+.breadcrumbs{background:none;border-bottom:1px solid rgba(74,63,53,.08)}
+
+/* category page, small laptops: three cards beside the filter column, not four.
+   Four left each card too narrow for its button's text ("أضف إلى ا…"). */
+@media (min-width:1024px) and (max-width:1279px){
+  .s-products-list-wrapper.s-products-list-vertical-cards.s-products-list-with-filters{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@media (max-width:767px){
+  /* A store page's title is already in the sticky title bar. The heading stays for screen readers. */
+  .content--single-page>.gly-page-title{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+
+/* Cart on a phone: the total and "complete the order", held above the bottom bar.
+   The real button is more than a screen down, under the order's options, shipping and summary;
+   this bar steps aside once that button is on screen. */
+.gly-cartbar{display:none}
+@media (max-width:767px){
+  .gly-cartbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;position:fixed;inset-inline:12px;bottom:calc(80px + var(--safe-bottom, 0px));z-index:65;padding:.6rem .7rem;padding-inline-start:1.1rem;border-radius:22px;background:#fff;box-shadow:0 10px 30px rgba(51,48,43,.18);font-family:var(--gly-font-body);transition:opacity .25s,transform .25s,visibility 0s}
+  .gly-cartbar--away{opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;transition:opacity .25s,transform .25s,visibility 0s .25s}
+  .gly-cartbar__total{display:flex;flex-direction:column;line-height:1.3}
+  .gly-cartbar__total small{font-size:.8rem;color:var(--gly-soft)}
+  .gly-cartbar__total b{font-size:1.1rem;color:var(--gly-ink)}
+  .gly-cartbar .gly-btn{min-height:46px;padding:.6rem 1.4rem;box-shadow:none}
+  /* room for the bar under the page's last line, and the WhatsApp button clear of it */
+  .gly-cart{padding-bottom:5rem}
+  body:has(.gly-cartbar:not(.gly-cartbar--away)){--gly-wa-bottom:calc(158px + var(--safe-bottom, 0px))}
+}
+
+/* ============================================================
+   Surfaces. The starter's pages were drawn for a white page: sections on white panels,
+   cold grey fills. Giftology's page is peach, so:
+   - a section has no fill of its own; a hairline or a faint warm tint sets it apart;
+   - white is kept for an item (a product card, an offer) and for what is typed in or tapped;
+   - a bar that stays on screen while the page scrolls is cream, the header's colour.
+   `body` in front of a selector is there to win over the starter's rule of the same weight.
+   ============================================================ */
+:root{--gly-hair:rgba(74,63,53,.12);--gly-tint:rgba(74,63,53,.05)}
+
+/* phones: the page-title bar and the catalogue toolbar pinned under it */
+body .mobile-page-title{background:var(--gly-cream);border-color:var(--gly-hair)}
+body .mobile-page-title__text{font-family:var(--gly-font-display);font-size:1.15rem;color:var(--gly-ink)}
+@media (max-width:767px){
+  body .s-catalog-toolbar-sticky{background:var(--gly-cream)}
+  body .s-catalog-toolbar-sticky .s-catalog-toolbar{background:transparent}
+}
+
+/* product page: price, quantity and the buttons sit on the page. On a phone the same block
+   floats above the bottom bar once the page scrolls, and stays white like that bar. */
+.sticky-product-bar.bg-white{background-color:transparent}
+@media (max-width:640px){
+  .is-sticky-product-bar .sticky-product-bar.bg-white{background-color:#fff}
+}
+/* "send it as a gift": a line above it, no white tile */
+body.product-single .s-gifting-widget .s-list-tile-item{background:transparent;border-top:1px solid var(--gly-hair);border-radius:0;padding-top:1.1rem}
+/* the product's offers: an outlined group of white offer cards, not a pink panel */
+body .s-offer-wrapper{background:transparent;border:1px solid var(--gly-hair)}
+/* option chips, "add a note", "attach a file": a warm tint, not grey */
+body .options-panel__chip:not(.is-missing),body .options-panel__more,body .btn-tab.btn--collapse{background:var(--gly-tint)}
+body.product-single textarea.form-input.bg-gray-50{background:#fff}
+body.product-single .filepond--panel-root{background:var(--gly-tint)}
+
+/* store pages and the reviews page: the text sits on the page, not on a white sheet */
+#main-content>.container>.flex.justify-center>.bg-white{background:transparent;padding-inline:0}
+body.testimonials #main-content h1{font-family:var(--gly-font-display)}
+
+/* cart: the order's options on the page; shipping, gifting and the summary on a warm tint */
+body .cart .cart-options,body .cart .cart-options salla-product-options{background:transparent}
+body #cart-gifting,body .cart .shadow-default.transition-height,body .cart #free-shipping{background:var(--gly-tint)}
+body .cart #free-shipping-bar{background:rgba(74,63,53,.14)}
+
+/* account pages: the page's own background behind the cards */
+body:has(.profile-header) #main-content{background:transparent}
+
+/* Phone product page: the floating price-and-buttons block waits below the screen until
+   Salla's components are ready (`html.hydrated`). The starter parks it 448px down, but its
+   quantity box and button only start loading within 200px of the screen, and they are what
+   makes the page ready: parked that far, the block never came up and a phone had no
+   "add to cart". Park it just under its place instead. */
+@media (max-width:640px){
+  html:not(.hydrated) .is-sticky-product-bar .sticky-product-bar{--tw-translate-y:1.5rem}
+}
+
+/* ============================================================
+   Product page controls.
+   ============================================================ */
+
+/* product options (a date, colours, pictures, a list) sit on the page wherever Salla draws them */
+body salla-product-options.s-product-options-wrapper{background:transparent}
+
+/* a picked colour: a ring around it and its name in bold. The starter marks it with a pale
+   dot in its middle, which is lost on a light colour. */
+body .s-product-options-colors-item label>span::after{display:none}
+body .s-product-options-colors-item input:checked+label>span{box-shadow:0 0 0 2px var(--gly-cream),0 0 0 4px var(--gly-teal-deep)}
+body .s-product-options-colors-item input:checked+label>div{font-weight:700;color:var(--gly-ink)}
+
+/* + and −: the minus was pale grey on pale grey, and fainter still at quantity 1 */
+body .s-quantity-input .s-quantity-input-container{border-color:var(--gly-hair)}
+body .s-quantity-input .s-quantity-input-decrease-button{background:var(--gly-teal-wash);color:var(--gly-teal-ink);fill:var(--gly-teal-ink)}
+body .s-quantity-input .s-quantity-input-decrease-button:hover:not(:disabled){background:#d3ecea;color:var(--gly-teal-ink);fill:var(--gly-teal-ink)}
+body .s-quantity-input .s-quantity-input-button:disabled{opacity:.6}
+
+/* Outlined buttons ("أرسل كهدية", "اشترِ الآن"): white with bold teal text, so they read as
+   buttons on the peach page. "اشترِ الآن" is drawn inside Salla's own widget; from out here
+   only its box and its label can be reached, and its label came in a font the theme does not have. */
+body .s-gifting-widget-action.s-button-primary-outline{font-weight:700}
+body .s-gifting-widget-action.s-button-primary-outline:not(:hover):not(:disabled){background:#fff}
+body .s-add-product-button-mini-checkout{background:#fff;border-radius:9999px}
+body .s-add-product-button-mini-checkout-content{font-family:var(--gly-font-body);font-weight:700;gap:.45rem}
+/* the words of both buttons sat higher than their icons: Tajawal's letters ride high in their
+   line. The gift button's words move down a little; "اشترِ الآن" has no element around its
+   words, so its icon moves up instead. */
+body .s-gifting-widget-action-content{gap:.5rem}
+body .s-gifting-widget-action-content>span:last-child{transform:translateY(.12em)}
+body .s-add-product-button-mini-checkout-content>span{transform:translateY(-1.5px)}
+
+/* Sold out on a laptop: the disabled button already says so; no second line above it */
+@media (min-width:641px){
+  .sticky-product-bar--sold-out .out-of-stock{display:none}
+}
+
+/* A product without options: the price beside the quantity only repeats the one under the
+   title (with its "including VAT" line), so a laptop shows it once. The phone's floating
+   block keeps its price: it floats away from the title. */
+@media (min-width:641px){
+  .sticky-product-bar--no-options .price-wrapper{display:none}
+}

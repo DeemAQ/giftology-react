@@ -38,6 +38,14 @@ const OPTION_FIELD = /^options\[([^\]]+)\](?:\[\])?$/;
 const isSelected = (detail: NonNullable<PanelOption['details']>[number]) =>
   detail.is_selected ?? Number(detail.is_default) === 1;
 
+/**
+ * A choice's `color` when it really is one. A picture choice (`thumbnail`) also arrives
+ * with a `color`, which is not a color: drawn as a circle it was an empty ring.
+ */
+const CSS_COLOR = /^(?:#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})|(?:rgb|hsl)a?\([^()]+\))$/i;
+const swatchColor = (color: unknown): string | null =>
+  typeof color === 'string' && CSS_COLOR.test(color.trim()) ? color.trim() : null;
+
 /** A picked color as a circle alone, without its name or code. */
 function ColorSwatch({ color, label }: { color: string; label: string }) {
   return (
@@ -55,16 +63,17 @@ function ColorSwatch({ color, label }: { color: string; label: string }) {
 function optionAnswer(option: PanelOption, added: string): ReactNode | null {
   const selected = option.details?.filter(isSelected) ?? [];
   if (selected.length) {
-    return selected.map((detail, index) =>
+    return selected.map((detail, index) => {
       // A color shows as its circle alone; its name stays for screen readers and on hover.
-      detail.color ? (
-        <ColorSwatch key={index} color={detail.color} label={detail.name ?? detail.color} />
+      const color = swatchColor(detail.color);
+      return color ? (
+        <ColorSwatch key={index} color={color} label={detail.name ?? color} />
       ) : (
         <span key={index} className="options-panel__answer">
           {detail.name}
         </span>
-      )
-    );
+      );
+    });
   }
 
   const value = typeof option.value === 'number' ? String(option.value) : option.value;

@@ -2,6 +2,8 @@
 .gly-wrap{width:min(1200px,92vw);margin-inline:auto}
 .gly-eyebrow{font-size:.82rem;letter-spacing:.06em;font-weight:700;color:var(--gly-teal-deep)}
 .gly-section{position:relative;font-family:var(--gly-font-body);color:var(--gly-ink)}
+/* a link to a section stops with its title clear of the sticky header */
+.gly-section[id],.gly-section [id^='gly-']{scroll-margin-top:84px}
 /* arrow points "forward" per reading direction — only flip in RTL */
 [dir="rtl"] .gly-arr{transform:scaleX(-1)}
 
@@ -16,7 +18,7 @@
 .gly-shead{text-align:center;max-width:640px;margin:0 auto 2.6rem}
 .gly-shead h2{font-family:var(--gly-font-display);font-weight:700;font-size:clamp(2rem,3.8vw,3rem);line-height:1.25;margin:.4rem 0 .6rem}
 .gly-shead p{color:var(--gly-soft)}
-.gly-shead h2 em{font-family:var(--gly-font-script);font-style:normal;color:var(--gly-teal-deep);font-size:1.06em}
+/* A section title is one plain line: the script word is kept for the hero and the custom-gift section. */
 
 /* ---- buttons ---- */
 .gly-btn{display:inline-flex;align-items:center;gap:.55rem;font-weight:700;font-size:1rem;padding:.95rem 1.7rem;border-radius:50px;transition:.28s;white-space:nowrap;font-family:var(--gly-font-body);cursor:pointer}
@@ -31,8 +33,27 @@
 /* ============================================================
    Top promo bar (§5.1)
    ============================================================ */
-.gly-topbar{background:var(--gly-teal-ink);color:#eafaf8;font-size:.86rem;text-align:center;padding:.6rem 1rem;font-weight:600;font-family:var(--gly-font-body)}
+.gly-topbar{background:var(--gly-teal-ink);color:#eafaf8;font-size:.86rem;text-align:center;padding:.6rem 1rem;font-weight:600;font-family:var(--gly-font-body);overflow:hidden}
 .gly-topbar b{color:var(--gly-gold-soft)}
+/* every phrase on one line, centred, while they fit */
+.gly-topbar__track{display:flex;justify-content:center;white-space:nowrap}
+.gly-topbar__group{flex:0 0 auto}
+/* the second copy is only there to close the loop when the phrases move */
+.gly-topbar__group + .gly-topbar__group{display:none}
+/* Where the phrases do not fit they travel across the bar in a loop, so all of them show
+   and the bar stays one line. `PromoBar` measures and says which (`--moving` / `--still`).
+   The track is two copies wide and slides by exactly one: towards the left in English,
+   towards the right in Arabic, so the start of a phrase comes in first either way. */
+@keyframes gly-ticker{to{transform:translateX(var(--gly-ticker-to,-50%))}}
+[dir='rtl'] .gly-topbar{--gly-ticker-to:50%}
+@media (prefers-reduced-motion: no-preference){
+  .gly-topbar--moving .gly-topbar__track{justify-content:flex-start;width:max-content;animation:gly-ticker var(--gly-ticker,22s) linear infinite}
+  .gly-topbar--moving .gly-topbar__group{padding-inline-end:2.5rem}
+  .gly-topbar--moving .gly-topbar__group + .gly-topbar__group{display:block}
+  .gly-topbar--moving .gly-topbar__end{display:none}
+  /* a pointer over the bar, or a finger held on it, stops the phrases to be read */
+  .gly-topbar:hover .gly-topbar__track,.gly-topbar:active .gly-topbar__track{animation-play-state:paused}
+}
 
 /* ============================================================
    Header / nav (§5.2)
@@ -54,15 +75,21 @@
 .gly-ibtn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--gly-ink);transition:.25s;position:relative;background:none;border:none}
 .gly-ibtn:hover{background:var(--gly-teal-wash);color:var(--gly-teal-ink)}
 .gly-ibtn svg{width:21px;height:21px}
-/* Wide screens show the inline links on every page. The menu button is hidden on
-   the home page, whose category circles do its job, and shown on every other page
-   (.gly-header--inner), where it is the way to the store's categories. Up to 920px
-   the links give way to the button everywhere (see the media query). */
-.gly-burger{display:none}
-.gly-header--inner .gly-burger{display:grid}
+/* "الأقسام": the menu button, beside the logo on every page: plain text with the menu icon,
+   no outline or fill (Deem's choice: cleaner). It opens the store's menu on
+   the same side. The links beside it show only when the merchant turns them on, and give
+   way to the button below 1024px. */
+.gly-menu-btn{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:0;border:none;background:none;color:var(--gly-ink);font-family:inherit;font-weight:700;font-size:1.05rem;cursor:pointer;transition:color .25s}
+.gly-menu-btn:hover,.gly-menu-btn[aria-expanded='true']{color:var(--gly-teal-ink)}
+.gly-menu-btn svg{width:20px;height:20px;flex:0 0 auto}
 .gly-menu a{white-space:nowrap}
 /* Up to 1023px an inner page has no room for the links beside the menu button. */
-@media(max-width:1023px){.gly-header--inner .gly-menu{display:none}}
+/* The bar's own links (`gly_header_links`): wider than a phone, as many as fit on the bar's one
+   line. A link that does not fit wraps to a second line, which is cut off; the menu has them all.
+   They used to wait for 1024px, so the switch seemed to do nothing in the editor's narrower preview. */
+.gly-nav-start{flex:1 1 auto;min-width:0}
+.gly-menu{flex:1 1 0;min-width:0;flex-wrap:wrap;height:2.5rem;row-gap:1.5rem;overflow:hidden}
+@media(max-width:767px){.gly-menu{display:none}}
 /* style the Salla cart/user web-components to fit the icon row */
 .gly-icons salla-cart-summary,.gly-icons salla-user-menu{display:inline-flex}
 .gly-icons .sicon-shopping-bag,.gly-icons .sicon-user{font-size:21px}
@@ -85,38 +112,41 @@
 .gly-icons salla-localization-modal button{background:none!important;border:none!important;color:inherit!important;font:inherit;cursor:pointer;padding:.3rem .5rem;border-radius:999px;transition:.25s}
 .gly-icons salla-localization-modal button:hover{background:var(--gly-teal-wash);color:var(--gly-teal-ink)}
 
-/* mobile menu — full-screen overlay */
-.gly-mmenu{position:fixed;inset:0;z-index:85;background:var(--gly-cream);transform:translateX(100%);transition:.4s;display:flex;flex-direction:column;padding:5rem 2rem 2rem}
+/* mobile menu: full-screen overlay. A shop's menu: the categories shown as circles, the
+   store's two special paths as cards, the rest as plain links, contact at the foot. */
+.gly-mmenu{position:fixed;inset:0;z-index:85;background:var(--gly-cream);transform:translateX(100%);transition:.4s;display:flex;flex-direction:column;gap:1.6rem;padding:1.1rem 1.4rem 2rem}
 .gly-mmenu.open{transform:none}
-.gly-mmenu a{font-family:var(--gly-font-display);font-size:1.7rem;font-weight:700;padding:.7rem 0;border-bottom:1px solid rgba(74,63,53,.08);color:var(--gly-ink)}
-.gly-mclose{position:absolute;top:1.4rem;inset-inline-end:1.4rem;width:44px;height:44px;border-radius:50%;background:var(--gly-teal-wash);display:grid;place-items:center;border:none}
-/* mobile "Sections" accordion */
-.gly-msub{border-bottom:1px solid rgba(74,63,53,.08)}
-.gly-msub-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;font-family:var(--gly-font-display);font-size:1.7rem;font-weight:700;padding:.7rem 0;color:var(--gly-ink)}
-.gly-msub-chev{width:24px;height:24px;transition:transform .3s}
-.gly-msub.open .gly-msub-chev{transform:rotate(180deg)}
-.gly-msub-panel{max-height:0;overflow:hidden;transition:max-height .35s ease;display:flex;flex-direction:column}
-.gly-msub.open .gly-msub-panel{max-height:60vh}
-.gly-msub-panel a{font-family:var(--gly-font-body)!important;font-size:1.12rem!important;font-weight:600!important;padding:.5rem 0 .5rem 1rem!important;border-bottom:none!important;color:var(--gly-soft)!important}
-.gly-msub-panel a:hover{color:var(--gly-teal-deep)!important}
-/* live category tree (categories + subcategories) rendered by giftology.js initCatMenu()
-   inside the drawer "الأقسام" panel. Scoped + !important so it beats .gly-msub-panel a. */
-.gly-msub.open .gly-msub-panel{overflow-y:auto}
-.gly-catmenu{display:flex;flex-direction:column}  /* fallback tile links stack vertically too */
-.gly-catmenu .gly-catlist,.gly-catmenu .gly-subcatlist{list-style:none;margin:0;padding:0}
-/* NOTE: physical left/right + [dir=rtl] overrides on purpose — postcss-preset-env
-   compiles logical props (inline-start / text-align:start) into LTR-only physical CSS,
-   which put the subcategory indent on the wrong side in RTL. */
-.gly-catmenu .gly-catitem>a,.gly-catmenu .gly-catrow{display:flex!important;align-items:center;justify-content:space-between;gap:.6rem;width:100%;font-family:var(--gly-font-body)!important;font-weight:700!important;font-size:1.15rem!important;color:var(--gly-soft)!important;padding:.5rem 0!important;background:none;border:none!important;cursor:pointer;text-align:left;text-decoration:none}
-[dir="rtl"] .gly-catmenu .gly-catitem>a,[dir="rtl"] .gly-catmenu .gly-catrow{text-align:right}
-.gly-catmenu .gly-catitem>a:hover,.gly-catmenu .gly-catrow:hover{color:var(--gly-teal-deep)!important}
-.gly-catmenu .gly-catchev{width:18px;height:18px;transition:transform .3s;flex:0 0 auto}
-.gly-catmenu .gly-catitem.open>.gly-catrow .gly-catchev{transform:rotate(180deg)}
-.gly-catmenu .gly-subcatlist{display:none;padding-left:.9rem;margin-left:.3rem;border-left:1.5px solid rgba(74,63,53,.12)}
-[dir="rtl"] .gly-catmenu .gly-subcatlist{padding-left:0;margin-left:0;border-left:0;padding-right:.9rem;margin-right:.3rem;border-right:1.5px solid rgba(74,63,53,.12)}
-.gly-catmenu .gly-catitem.open>.gly-subcatlist{display:block}
-.gly-catmenu .gly-subcatlist a{display:block!important;font-size:1rem!important;font-weight:600!important;color:var(--gly-soft)!important;padding:.4rem 0!important;border:none!important;text-decoration:none}
-.gly-catmenu .gly-subcatlist a:hover{color:var(--gly-teal-deep)!important}
+/* not the WhatsApp button: it keeps its white on green */
+.gly-mmenu :where(a:not(.gly-btn)){color:var(--gly-ink);text-decoration:none}
+/* logo at the start, close at the far end (the button comes first in the page's order) */
+.gly-mmenu__top{display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between}
+.gly-mmenu__brand img{display:block;height:44px;width:auto}
+.gly-mclose{width:44px;height:44px;border-radius:50%;background:var(--gly-teal-wash);display:grid;place-items:center;border:none;color:var(--gly-teal-ink);cursor:pointer}
+.gly-mmenu__body{display:flex;flex-direction:column;gap:1.5rem}
+.gly-mmenu__head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:-.4rem}
+.gly-mmenu__head h2{font-family:var(--gly-font-display);font-weight:700;font-size:1.3rem;line-height:1.2;margin:0}
+.gly-mmenu__head a{font-weight:700;font-size:.92rem;color:var(--gly-teal-ink);padding:.6rem 0;text-decoration:underline;text-decoration-color:rgba(46,119,114,.35);text-underline-offset:5px}
+/* the categories: three circles to a row, a short last row centred as on the home page */
+.gly-mcats{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:1.1rem .6rem}
+.gly-mcats li{flex:0 0 calc((100% - 1.2rem) / 3);min-width:0}
+.gly-mcat{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-align:center;font-weight:700;font-size:.9rem;line-height:1.35}
+.gly-mcat__ic{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid rgba(74,63,53,.08);box-shadow:var(--gly-shadow-sm);overflow:hidden;color:var(--gly-teal-deep)}
+.gly-mcat__ic img{width:42px;height:42px;object-fit:contain;display:block}
+.gly-mcats--photos .gly-mcat__ic img{width:100%;height:100%;object-fit:cover}
+.gly-mcat__ic .gly-ico{width:32px;height:32px}
+/* the custom gift and the gift finder, side by side */
+.gly-mfeat{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:.7rem}
+.gly-mfeat a{display:flex;align-items:center;gap:.5rem;min-height:56px;padding:.7rem .9rem;border-radius:16px;background:var(--gly-teal-wash);color:var(--gly-teal-ink);font-family:var(--gly-font-display);font-weight:700;font-size:1.12rem;line-height:1.3}
+.gly-mfeat svg{width:20px;height:20px;flex:0 0 auto}
+/* everything else: quiet links that wrap */
+.gly-mlinks{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0 1.4rem}
+.gly-mlinks a{display:block;padding:.65rem 0;font-weight:600;font-size:1rem;color:var(--gly-soft)}
+.gly-mlinks:empty{display:none}
+/* contact, held at the foot of the screen when the menu is short */
+.gly-mmenu__foot{margin-top:auto;display:flex;align-items:center;gap:.7rem}
+.gly-mmenu__foot .gly-btn{flex:1 1 auto;justify-content:center;box-shadow:none}
+.gly-mmenu__social{flex:0 0 auto;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid rgba(74,63,53,.1)}
+.gly-mmenu__social svg{width:22px;height:22px}
 
 /* ============================================================
    Hero (§5.3)
@@ -168,6 +198,8 @@
 .gly-cat-ico{width:44px;height:44px;display:block;background:var(--gly-teal-deep);transition:.3s;-webkit-mask:var(--gly-ico) center/contain no-repeat;mask:var(--gly-ico) center/contain no-repeat}
 /* merchant-uploaded icon (overrides the preset) — shown in its own colours */
 .gly-cat-img{width:58px;height:58px;object-fit:contain;display:block}
+/* a photo fills its circle (the circles block's "image fills the circle" choice) */
+.gly-cat--photo .gly-cat-img{width:100%;height:100%;object-fit:cover}
 .gly-cat:hover .gly-cat-ic{transform:translateY(-7px);border-color:var(--gly-teal);box-shadow:var(--gly-shadow-teal)}
 .gly-cat:hover .gly-cat-ico{background:var(--gly-teal)}
 .gly-cat span{font-weight:700;font-size:.96rem;text-align:center}
@@ -179,10 +211,11 @@
 .gly-custom::before{content:"";position:absolute;inset:0;background:linear-gradient(150deg,var(--gly-teal-deep),var(--gly-teal-ink));z-index:-2}
 .gly-custom__deco{position:absolute;inset:0;z-index:-1;background-image:var(--gly-pat);background-size:380px;opacity:.6;mix-blend-mode:overlay}
 .gly-custom__grid{display:grid;grid-template-columns:1fr 1fr;gap:2.6rem;align-items:center}
-.gly-custom h2{font-family:var(--gly-font-display);font-weight:700;font-size:clamp(2rem,3.8vw,3rem);line-height:1.25;margin:.4rem 0 .7rem}
+.gly-custom h2{font-family:var(--gly-font-display);font-weight:700;font-size:clamp(2rem,3.8vw,3rem);line-height:1.25;margin:.4rem 0 1.5rem}
 .gly-custom h2 em{font-family:var(--gly-font-script);font-style:normal;color:var(--gly-gold-soft)}
 .gly-custom .gly-eyebrow{color:var(--gly-gold-soft)}
-.gly-custom__lede{opacity:.92;max-width:42ch;margin-bottom:1.6rem;font-size:1.05rem;line-height:1.8}
+/* the paragraph under the title and the card's badge and line are optional: the steps already say it */
+.gly-custom__lede{opacity:.92;max-width:42ch;margin:-.8rem 0 1.6rem;font-size:1.05rem;line-height:1.8}
 .gly-csteps{display:flex;flex-direction:column;gap:.9rem;list-style:none;margin:0;padding:0}
 .gly-cstep{display:flex;gap:.9rem;align-items:flex-start}
 .gly-cstep__n{flex:0 0 auto;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center;font-weight:800;font-size:.9rem;font-family:var(--gly-font-display)}
@@ -190,8 +223,8 @@
 .gly-cstep small{display:block;opacity:.84;font-size:.9rem;line-height:1.6}
 .gly-qcard-c{background:rgba(255,255,255,.97);color:var(--gly-ink);border-radius:24px;padding:2rem;box-shadow:var(--gly-shadow-md);text-align:center}
 .gly-badge-soft{display:inline-block;background:var(--gly-peach);color:#6b4630;font-weight:700;font-size:.82rem;padding:.35rem .9rem;border-radius:50px;margin-bottom:1rem}
-.gly-qcard-c h3{font-family:var(--gly-font-display);font-weight:700;font-size:1.5rem;margin-bottom:.6rem}
-.gly-qcard-c p{color:var(--gly-soft);margin-bottom:1.4rem}
+.gly-qcard-c h3{font-family:var(--gly-font-display);font-weight:700;font-size:1.5rem;margin-bottom:1.2rem}
+.gly-qcard-c p{color:var(--gly-soft);margin:-.6rem 0 1.4rem}
 .gly-note{background:var(--gly-teal-wash);color:var(--gly-teal-ink);border-radius:14px;padding:.8rem 1rem;font-size:.9rem;font-weight:600;margin-bottom:1.4rem;display:flex;gap:.5rem;align-items:center;text-align:start}
 .gly-note svg{flex:0 0 auto}
 .gly-qcard-c .gly-btn{width:100%;justify-content:center;margin-bottom:.6rem}
@@ -207,6 +240,10 @@
 .gly-step:hover .gly-step__ic{transform:rotate(4deg) scale(1.05);background:var(--gly-teal-deep)}
 .gly-step:hover .gly-step__ic svg{color:#fff}
 .gly-step__ic svg{width:35px;height:35px;color:var(--gly-teal-ink);transition:.3s}
+/* a brand icon or an uploaded picture in place of the drawing */
+.gly-step__ic .gly-ico{width:35px;height:35px;color:var(--gly-teal-ink);transition:.3s}
+.gly-step:hover .gly-step__ic .gly-ico{color:#fff}
+.gly-step__ic img{width:35px;height:35px;object-fit:contain;display:block}
 .gly-step h4,.gly-step h3{font-family:var(--gly-font-display);font-size:1.3rem;font-weight:700;margin-bottom:.3rem}
 .gly-step p{font-size:.94rem;color:var(--gly-soft)}
 .gly-step:not(:last-child)::after{content:"";position:absolute;top:64px;inset-inline-end:-12px;width:24px;height:2px;background:repeating-linear-gradient(90deg,var(--gly-gold) 0 5px,transparent 5px 10px)}
@@ -218,7 +255,6 @@
 .gly-quiz-box{background:linear-gradient(135deg,var(--gly-peach),#fff);border-radius:30px;padding:3rem;display:grid;grid-template-columns:1fr 1.1fr;gap:2rem;align-items:center;box-shadow:var(--gly-shadow-sm);border:1px solid rgba(74,63,53,.06);overflow:hidden;position:relative}
 .gly-quiz__mag{position:absolute;inset-inline-end:-30px;top:-30px;width:200px;color:var(--gly-teal);opacity:.18;transform:rotate(-12deg)}
 .gly-quiz h2{font-family:var(--gly-font-display);font-weight:700;font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.25;margin:.4rem 0 .6rem}
-.gly-quiz h2 em{font-family:var(--gly-font-script);font-style:normal;color:var(--gly-teal-deep)}
 .gly-qlede{color:var(--gly-soft);margin-bottom:1.4rem;max-width:42ch}
 .gly-qcard{background:#fff;border-radius:20px;padding:1.7rem;box-shadow:var(--gly-shadow-md);position:relative;z-index:1}
 .gly-qprog{display:flex;gap:.4rem;margin-bottom:1.1rem}
@@ -233,17 +269,35 @@
 .gly-qresult .em .gly-ico,.gly-qresult .em svg{width:40px;height:40px}
 .gly-qresult b{font-family:var(--gly-font-display);font-size:1.45rem;display:block;color:var(--gly-teal-ink);margin-bottom:.3rem}
 .gly-qresult p{margin:0 auto 1.1rem;color:var(--gly-soft)}
-/* finder → random-product result */
+/* finder → the answer: up to three suggested products */
 .gly-qloading{display:flex;align-items:center;justify-content:center;gap:.5rem;color:var(--gly-soft);margin:0 auto 1.1rem}
 .gly-qloading::before{content:"";width:18px;height:18px;border-radius:50%;border:2px solid rgba(63,156,150,.25);border-top-color:var(--color-primary,#35837d);animation:gly-spin .8s linear infinite}
 @keyframes gly-spin{to{transform:rotate(360deg)}}
-.gly-qpwrap{max-width:240px;margin:.2rem auto 0}
-.gly-qpwrap .s-product-card-entry{margin:0 auto;width:100%}
-/* keep the result card compact: cap the product image so the card doesn't balloon */
-.gly-qpwrap .s-product-card-image,.gly-qpwrap .s-product-card-image-full{height:150px!important;min-height:0!important;padding:0!important;aspect-ratio:auto!important;overflow:hidden;border-radius:14px}
-.gly-qpwrap .s-product-card-image a{display:block;width:100%;height:100%}
-.gly-qpwrap .s-product-card-image img{width:100%!important;height:100%!important;object-fit:cover!important}
-.gly-restart{margin-top:.6rem;padding:.5rem 1.1rem;border-radius:50px;font-weight:700;font-size:.88rem;background:#fff;border:1.4px solid rgba(74,63,53,.14);color:var(--gly-soft);font-family:var(--gly-font-body);cursor:pointer}
+/* the box becomes one column, so the cards have the full width */
+.gly-quiz-box--answer{grid-template-columns:1fr}
+/* the suggestions side by side and centred, however many there are: three, or one on a phone.
+   Each is a picture, a name and a price, and the whole of it opens the product: no buttons,
+   so the gifts are the only thing with weight in the answer */
+.gly-qpicks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,230px));justify-content:center;gap:1.2rem;margin:1rem 0 .8rem}
+.gly-qpick{display:flex;flex-direction:column;gap:.1rem;text-align:center;color:var(--gly-ink);text-decoration:none;border-radius:16px}
+.gly-qpick__img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:14px;background:var(--gly-cream);margin-bottom:.6rem}
+.gly-qpick__name{font-weight:700;font-size:.98rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gly-qpick__price{color:var(--gly-soft);font-size:.92rem}
+.gly-qpick:hover .gly-qpick__name{color:var(--gly-teal-ink);text-decoration:underline;text-underline-offset:4px}
+/* the custom-gift answer stands apart from the categories */
+.gly-qopt--custom{display:flex;align-items:center;gap:.45rem;border-style:dashed;border-color:var(--gly-teal-deep);color:var(--gly-teal-ink)}
+/* after an even number of categories it takes the whole row; after an odd number, the cell left over */
+.gly-qopt--custom:nth-child(odd){grid-column:1/-1;justify-content:center}
+.gly-qopt--custom svg{width:18px;height:18px;flex:0 0 auto}
+/* everything under the suggestions is a text link */
+.gly-qlinks{display:flex;flex-wrap:wrap;gap:.1rem 1.5rem;justify-content:center}
+.gly-qlink{display:inline-flex;align-items:center;gap:.35rem;min-height:44px;padding:.4rem .3rem;background:none;border:0;font-family:var(--gly-font-body);font-weight:700;font-size:.95rem;color:var(--gly-teal-ink);text-decoration:underline;text-decoration-color:rgba(46,119,114,.35);text-underline-offset:5px;cursor:pointer}
+.gly-qlink:hover{text-decoration-color:currentColor}
+.gly-qlink svg{width:16px;height:16px;flex:0 0 auto}
+/* start over, and back on the questions: quieter still */
+.gly-qnav{display:flex;flex-wrap:wrap;gap:.1rem 1.4rem;justify-content:center;margin-top:.3rem}
+.gly-qnav .gly-qlink{font-size:.86rem;font-weight:600;color:var(--gly-soft);text-decoration:none}
+.gly-qnav .gly-qlink:hover{color:var(--gly-ink);text-decoration:underline}
 
 /* ============================================================
    Testimonials (§5.8)
@@ -284,8 +338,16 @@
 /* ============================================================
    Floating WhatsApp (§5.10)
    ============================================================ */
-.gly-wa{position:fixed;bottom:22px;right:22px;z-index:70;display:flex;align-items:center;gap:.5rem;background:#25D366;color:#fff;padding:.75rem 1rem;border-radius:50px;box-shadow:0 14px 30px rgba(37,211,102,.42);font-weight:700;font-size:.94rem;transition:.25s;font-family:var(--gly-font-body);text-decoration:none}
+.gly-wa{position:fixed;bottom:var(--gly-wa-bottom,22px);right:22px;z-index:70;display:flex;align-items:center;gap:.5rem;background:#25D366;color:#fff;padding:.75rem 1rem;border-radius:50px;box-shadow:0 14px 30px rgba(37,211,102,.42);font-weight:700;font-size:.94rem;transition:.25s;font-family:var(--gly-font-body);text-decoration:none}
 .gly-wa:hover{transform:translateY(-3px);background:#1eb858;color:#fff}
+/* its "hide" button: a small × over the button's top corner. It follows the same bottom offset
+   (`--gly-wa-bottom`), which the phone's bottom bar, the product page's buy bar and the cart's
+   checkout bar each raise. 22px to look at, 34px to hit. */
+.gly-wa-x{position:fixed;right:10px;bottom:calc(var(--gly-wa-bottom,22px) + 34px);z-index:71;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;padding:0;border:1px solid rgba(74,63,53,.14);background:#fff;color:var(--gly-soft);box-shadow:0 2px 8px rgba(51,48,43,.16);cursor:pointer;transition:.25s}
+.gly-wa-x::before{content:"";position:absolute;inset:-6px}
+.gly-wa-x:hover{color:var(--gly-ink)}
+/* out of the way while another WhatsApp button is on screen */
+.gly-wa--away{opacity:0;visibility:hidden;transform:translateY(10px);pointer-events:none;transition:opacity .25s,transform .25s,visibility 0s .25s}
 .gly-wa svg{width:26px;height:26px;flex:0 0 auto;position:relative;z-index:1}
 .gly-ring{position:absolute;inset:0;border-radius:50px;border:2px solid #25D366;animation:gly-waring 2.2s ease-out infinite;pointer-events:none}
 @keyframes gly-waring{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.3);opacity:0}}
@@ -300,15 +362,17 @@
   .gly-hero__art{height:360px;order:-1;margin-bottom:1rem}
   .gly-steps{grid-template-columns:repeat(2,1fr)}
   .gly-step:not(:last-child)::after{display:none}
-  .gly-menu{display:none}
-  /* mobile (incl. home): the inline nav is hidden, so the burger takes over */
-  .gly-burger{display:grid}
   .gly-quiz__mag{display:none}
   .gly-fgrid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:560px){
-  .gly-custom,.gly-quiz-box{padding:2rem 1.4rem}
-  .gly-qopts{grid-template-columns:1fr}
+  .gly-quiz-box{padding:2rem 1.4rem}
+  /* A full-width section: its content already sits in the 92vw column, so it takes no side
+     padding of its own (with some, the column overflowed and sat off centre). */
+  .gly-custom{padding:2rem 0}
+  /* the answers stay two to a row, so a question and its answers fit one screen */
+  .gly-qopts{gap:.5rem}
+  .gly-qopt{padding:.8rem .7rem;font-size:.92rem}
   .gly-fgrid{grid-template-columns:1fr}
   .gly-hero h1{font-size:2.5rem}
   .gly-cat{width:104px}
@@ -334,16 +398,34 @@
 /* closed menu: off screen and out of the tab order (the element is also `inert`) */
 .gly-mmenu{visibility:hidden;transition:transform .4s,visibility 0s .4s}
 .gly-mmenu.open{visibility:visible;transition:transform .4s}
+/* Wider than a phone, the menu is a side panel on the side of its button and the logo (the
+   right in Arabic, the left in English), over a dimmed page; a click on the dimmed part closes it. */
+.gly-mscrim{display:none}
+@media (min-width:768px){
+  .gly-mmenu{inset-inline-end:auto;width:min(430px,100vw);padding:1.4rem 1.8rem 2rem;overflow-y:auto}
+  html:not([dir='rtl']) .gly-mmenu:not(.open){transform:translateX(-100%)}
+  .gly-mmenu.open{box-shadow:0 0 60px rgba(51,48,43,.22)}
+  .gly-mscrim{display:block;position:fixed;inset:0;z-index:84;background:rgba(51,48,43,.38);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+  .gly-mscrim.open{opacity:1;visibility:visible;transition:opacity .3s}
+}
 /* language / currency button uses the shared icon button */
 .gly-icons .gly-loc{flex:0 0 auto}
 /* Latest products: the theme's product cards in the shared grid, always in full
    rows. Eight cards: 2 across on phones, 4 across from 960px. In between 3 fit, so
    the last two are left out and the rows stay even. */
 .gly-latest-grid.s-products-list-wrapper{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+/* a phone shows four (or six) of them, two to a row; "view all" sits right under.
+   !important: each card's wrapper carries an inline `display:contents` */
+@media (max-width:639px){
+  .gly-latest-grid[data-phone="4"]>:nth-child(n+5){display:none!important}
+  .gly-latest-grid[data-phone="6"]>:nth-child(n+7){display:none!important}
+}
 @media (min-width:640px) and (max-width:959px){
   .gly-latest-grid.s-products-list-wrapper{grid-template-columns:repeat(3,minmax(0,1fr))}
   /* !important: each card's wrapper carries an inline `display:contents` */
-  .gly-latest-grid>:nth-child(n+7){display:none!important}
+  .gly-latest-grid:not([data-count="12"])>:nth-child(n+7){display:none!important}
+  /* four shown: three fit, so the fourth is left out; twelve fill four rows */
+  .gly-latest-grid[data-count="4"]>:nth-child(n+4){display:none!important}
 }
 @media (min-width:960px){
   .gly-latest-grid.s-products-list-wrapper{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -356,11 +438,13 @@
   .gly-header--inner{position:relative}
   /* The bottom nav already has search, account, cart and the menu, so the header
      keeps only the logo and the language button. */
-  .gly-icons>:not(.gly-loc){display:none}
+  .gly-icons>:not(.gly-loc),.gly-menu-btn{display:none}
   /* a full-size tap target */
   .gly-ibtn{width:44px;height:44px}
   /* the WhatsApp button and the open menu clear the bottom nav */
-  .gly-wa{bottom:calc(88px + var(--safe-bottom, 0px))}
+  :root{--gly-wa-bottom:calc(88px + var(--safe-bottom, 0px))}
+  /* the top bar is the home page's: other pages open with the logo bar and their own title bar */
+  .gly-topbar--inner{display:none}
   .gly-mmenu{padding-bottom:calc(96px + var(--safe-bottom, 0px));overflow-y:auto}
 }
 
@@ -371,7 +455,7 @@
    as in product.scss), the WhatsApp button moves above it (nav + bar = 190px)
    instead of sitting on top of its button. */
 @media (max-width:640px){
-  .hydrated .is-sticky-product-bar.product-single .gly-wa{bottom:calc(200px + var(--safe-bottom, 0px))}
+  .hydrated .is-sticky-product-bar.product-single{--gly-wa-bottom:calc(200px + var(--safe-bottom, 0px))}
 }
 /* The footer's last row keeps clear of the WhatsApp button, which rests over the
    page's bottom-right corner in both directions (hence the physical side). */
@@ -404,12 +488,19 @@
   .gly-hero .gly-lede{margin:.8rem 0 1.3rem;font-size:1.05rem;max-width:none}
   .gly-cta-row{gap:.6rem}
   .gly-cta-row .gly-btn{padding:.75rem 1.15rem;font-size:.95rem}
-  /* the four stats share one row */
-  .gly-hero-stats{margin-top:1.5rem;gap:.8rem .5rem;justify-content:space-between}
-  .gly-hero-stats b{font-size:1.3rem}
-  .gly-hero-stats span{font-size:.72rem}
-  /* one promo phrase, so the bar stays one line */
-  .gly-topbar__phrase:not(.gly-topbar__phrase--main),.gly-topbar__phrase--main .gly-topbar__sep{display:none}
+  /* the figures two to a row, at a size that can be read; an odd last one takes the row */
+  .gly-hero-stats{display:grid;grid-template-columns:1fr 1fr;margin-top:1.6rem;gap:1rem 1.2rem}
+  .gly-hero-stats>:last-child:nth-child(odd){grid-column:1/-1}
+  .gly-hero-stats b{font-size:1.55rem}
+  .gly-hero-stats span{font-size:.84rem}
+}
+/* Before the bar has measured itself (the page as the server sent it), several phrases on a
+   phone are taken not to fit, so they move from the first paint instead of being cut off. */
+@media (prefers-reduced-motion: no-preference) and (max-width:767px){
+  .gly-topbar--many:not(.gly-topbar--still) .gly-topbar__track{justify-content:flex-start;width:max-content;animation:gly-ticker var(--gly-ticker,22s) linear infinite}
+  .gly-topbar--many:not(.gly-topbar--still) .gly-topbar__group{padding-inline-end:2.5rem}
+  .gly-topbar--many:not(.gly-topbar--still) .gly-topbar__group + .gly-topbar__group{display:block}
+  .gly-topbar--many:not(.gly-topbar--still) .gly-topbar__end{display:none}
 }
 
 /* ============================================================
@@ -428,6 +519,19 @@
   .gly-fgrid--links{grid-template-columns:1fr}
   /* a taller tap area for each link without moving the rows */
   .gly-flinks a{display:inline-block;padding-block:.35rem;margin-block:-.35rem}
+  /* the links two to a row and the contact details side by side: one column of them
+     made the footer taller than the screen */
+  .gly-footer .gly-flinks{display:grid;grid-template-columns:1fr 1fr;column-gap:1rem}
+  .gly-footer .gly-fcontact{flex-direction:row;flex-wrap:wrap;gap:.2rem 1.4rem}
+  /* how it works: each step a row (icon, then title and line), not a 2×2 grid a screen tall */
+  .gly-steps{grid-template-columns:1fr;gap:0;text-align:start;max-width:26rem;margin-inline:auto}
+  .gly-step{display:grid;grid-template-columns:auto 1fr;column-gap:1rem;padding:.7rem 0}
+  .gly-step__num{display:none}
+  .gly-step__ic{grid-row:1/3;align-self:center;width:60px;height:60px;margin:0;border-radius:18px}
+  .gly-step__ic svg,.gly-step__ic .gly-ico,.gly-step__ic img{width:28px;height:28px}
+  .gly-step h3{align-self:end;margin:0;font-size:1.2rem}
+  .gly-step h3:last-child{grid-row:1/3;align-self:center}
+  .gly-step p{grid-column:2;align-self:start}
 }
 
 /* ============================================================
@@ -445,5 +549,9 @@
   /* The full-screen menu opens and closes without sliding across. */
   .gly-mmenu,.gly-mmenu.open{transition:none}
   /* The gift finder's loading spinner keeps turning: it says something is happening. */
+  /* The top bar's phrases never move: where they do not fit one line they wrap onto more. */
+  .gly-topbar__track{animation:none;white-space:normal}
+  .gly-topbar__group{flex:0 1 auto}
+  .gly-topbar__phrase{white-space:nowrap}
 }
 

@@ -144,6 +144,25 @@ describe('ProductOptionsPanel', () => {
     expect(swatches[0].getAttribute('style')).toContain('background-color');
   });
 
+  it('names a picked picture choice instead of drawing an empty circle', () => {
+    // A `thumbnail` choice arrives with a `color` that is not a color.
+    const pattern: PanelOption = {
+      id: 7,
+      name: 'Pattern',
+      type: 'thumbnail',
+      required: true,
+      details: [{ id: 71, name: 'First', is_selected: true, color: 'https://cdn.example/1.jpg' }],
+    };
+    const { container } = render(
+      <CollapsibleOptions options={[pattern]}>
+        <OptionFields ids={[]} />
+      </CollapsibleOptions>
+    );
+
+    expect(container.querySelector('.options-panel__swatch')).toBeNull();
+    expect(chipTexts(container)).toEqual(['PatternFirst']);
+  });
+
   it('stays collapsed, and flags the chip, while a required option is unanswered', () => {
     const unanswered = { ...size, details: size.details!.map((d) => ({ ...d, is_selected: false })) };
     const { container } = render(

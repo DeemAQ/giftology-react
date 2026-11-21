@@ -1,9 +1,10 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { SallaConditionalOffer } from '@salla.sa/twilight-components-react/conditional-offer';
 import { SallaOffer } from '@salla.sa/twilight-components-react/offer';
 import { HookSlot, usePageConfig } from '@salla.sa/twilight-theme-engine/hooks';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
+import { useMoney } from '@salla.sa/twilight-theme-engine/hooks/useMoney';
 import { Breadcrumb, NoContent } from '@salla.sa/twilight-theme-engine/common';
 import { CartSummary, SeoCartWidget } from '@salla.sa/twilight-theme-engine/cart';
 import { useTwilight } from '@salla.sa/twilight-theme-engine/providers';
@@ -122,7 +123,7 @@ function CartPageContent({ page }: CartPageProps) {
   }
 
   return (
-    <div className="container">
+    <div className="container gly-cart">
       {/* Analytics — no visible UI, fires GTM checkout events */}
       <SeoCartWidget cart={cartData} />
 
@@ -193,6 +194,55 @@ function CartPageContent({ page }: CartPageProps) {
       </div>
 
       <HookSlot name="cart:end" />
+      <CartCheckoutBar key={cartData.id} total={cartData.total} />
+    </div>
+  );
+}
+
+/**
+ * Giftology, phones only (`_inner.scss`): the order's total and "complete the order",
+ * held above the bottom bar. The engine's own button sits at the end of the summary,
+ * more than a screen down on a phone; this bar does the same thing (checks the
+ * order's option forms, then hands over to Salla's checkout) and steps aside once
+ * that button is on screen, so the two never show together.
+ * Its two texts are Salla's own, the ones the summary uses.
+ */
+function CartCheckoutBar({ total }: { total: number | string }) {
+  const { t } = useTranslation();
+  const { format } = useMoney();
+  const [realInView, setRealInView] = useState(false);
+
+  useEffect(() => {
+    const real = document.getElementById('cart-submit');
+    if (!real || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => setRealInView(entry.isIntersecting));
+    observer.observe(real);
+    return () => observer.disconnect();
+  }, []);
+
+  const submit = async () => {
+    // As the summary's button does: every option form must be valid first.
+    const forms = [...document.querySelectorAll<HTMLFormElement>('form[id^="item-"]')];
+    if (!forms.every((form) => form.reportValidity())) {
+      window.salla?.notify.error(window.salla.lang.get('common.messages.required_fields'));
+      return;
+    }
+    try {
+      await window.salla?.cart.submit();
+    } catch {
+      // The SDK shows its own message.
+    }
+  };
+
+  return (
+    <div className={`gly-cartbar${realInView ? ' gly-cartbar--away' : ''}`} inert={realInView}>
+      <span className="gly-cartbar__total">
+        <small>{t('pages.cart.final_total', 'Total')}</small>
+        <b>{format(total)}</b>
+      </span>
+      <button type="button" className="gly-btn gly-btn-primary" onClick={submit}>
+        {t('pages.cart.complete_order', 'Complete Order')}
+      </button>
     </div>
   );
 }

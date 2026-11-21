@@ -1,6 +1,6 @@
 import { useTwilight } from '@salla.sa/twilight-theme-engine/providers';
 import { useTranslation } from '@salla.sa/twilight-theme-engine/i18n';
-import { settingText, whatsappLink, whatsappNumber, type GlySettings } from '../../lib/giftology';
+import { settingCopy, settingText, whatsappLink, whatsappNumber, type GlySettings } from '../../lib/giftology';
 
 /**
  * What every Giftology section reads: the theme settings, the store's home URL,
@@ -28,7 +28,15 @@ export function useGly() {
     t: translate,
     homeUrl: store?.url || '/',
     whatsappNumber: number,
-    whatsappGeneral: whatsappLink(number, translate('blocks.gly.wa.general_msg')),
-    whatsappCustom: whatsappLink(number, translate('blocks.gly.wa.custom_msg')),
+    // The message a chat opens with: the one typed in the settings, else the theme's own.
+    whatsappGeneral: whatsappLink(
+      number,
+      settingCopy(settings, 'gly_whatsapp_msg', locale) || translate('blocks.gly.wa.general_msg')
+    ),
+    // The custom-gift message set in the theme settings; a block's own message still wins.
+    whatsappCustom: whatsappLink(
+      number,
+      settingCopy(settings, 'gly_whatsapp_custom_msg', locale) || translate('blocks.gly.wa.custom_msg')
+    ),
   };
 }

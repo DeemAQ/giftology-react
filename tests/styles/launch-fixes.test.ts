@@ -30,9 +30,14 @@ function decl(rule: Rule, prop: string): string | undefined {
 describe('floating WhatsApp button', () => {
   it('rises above the sticky add-to-cart bar on a phone product page, once the bar shows', () => {
     // `.hydrated` is what reveals the bar (product.scss), so the two move together.
-    const [raised] = rulesFor('.hydrated .is-sticky-product-bar.product-single .gly-wa');
+    // The button and its × both sit at `--gly-wa-bottom`; the page raises that.
+    const [raised] = rulesFor('.hydrated .is-sticky-product-bar.product-single');
     expect(raised?.media).toBe('(max-width:640px)');
-    expect(decl(raised.rule, 'bottom')).toContain('200px');
+    expect(decl(raised.rule, '--gly-wa-bottom')).toContain('200px');
+    const [button] = rulesFor('.gly-wa');
+    expect(decl(button.rule, 'bottom')).toBe('var(--gly-wa-bottom, 22px)');
+    const [dismiss] = rulesFor('.gly-wa-x');
+    expect(decl(dismiss.rule, 'bottom')).toContain('var(--gly-wa-bottom, 22px)');
   });
 
   it("leaves room for itself beside the footer's last row", () => {

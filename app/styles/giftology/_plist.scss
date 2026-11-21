@@ -2,7 +2,9 @@
    Product list / category page — teal banner + toolbar (count + sort)
    + full-width product grid. (Filter removed.)
    ============================================================ */
-.gly-plist{padding:.6rem 0 3.4rem;font-family:var(--gly-font-body);color:var(--gly-ink)}
+/* top and bottom only: the side padding is the container's own (`px-2.5`). Zeroing it left the
+   title and the cards touching the screen's edge on a small laptop. */
+.gly-plist{padding-block:.6rem 3.4rem;font-family:var(--gly-font-body);color:var(--gly-ink)}
 
 /* breadcrumb (.crumbs) */
 .gly-crumbs{font-size:.9rem;color:var(--gly-soft);padding:1.2rem 0 .2rem}
@@ -13,6 +15,16 @@
 .gly-subcats:empty{display:none}
 .gly-subcat{display:inline-flex;align-items:center;font-weight:700;font-size:.92rem;padding:.5rem 1.15rem;border-radius:50px;border:1.6px solid rgba(74,63,53,.16);background:#fff;color:var(--gly-ink);transition:.25s;white-space:nowrap}
 .gly-subcat:hover{border-color:var(--gly-teal-deep);color:var(--gly-teal-ink);background:var(--gly-teal-wash)}
+/* subcategories that have an image in Salla: small circles with the image instead of pills */
+.gly-subcats--circles{gap:1rem 1.2rem}
+.gly-subcirc{display:flex;flex-direction:column;align-items:center;gap:.45rem;width:84px;font-weight:700;font-size:.86rem;line-height:1.3;text-align:center;color:var(--gly-ink)}
+.gly-subcirc__ic{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid rgba(74,63,53,.1);box-shadow:var(--gly-shadow-sm);overflow:hidden;color:var(--gly-teal-deep);transition:.25s}
+.gly-subcirc__ic img{width:40px;height:40px;object-fit:contain;display:block}
+/* photos fill the circle (the "image fills the circle" choice in the theme settings) */
+.gly-subcats--photos .gly-subcirc__ic img{width:100%;height:100%;object-fit:cover}
+.gly-subcirc__ic .gly-ico{width:30px;height:30px}
+.gly-subcirc:hover .gly-subcirc__ic{border-color:var(--gly-teal);transform:translateY(-3px)}
+.gly-subcirc:hover{color:var(--gly-teal-ink)}
 
 /* toolbar (.ptoolbar): count on the start side, sort on the end */
 .gly-ptoolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
@@ -40,3 +52,33 @@
 .gly-plist .s-product-card-title{font-family:var(--gly-font-display);font-weight:700}
 .gly-plist .s-product-card-price{font-family:var(--gly-font-display);color:var(--gly-ink);font-weight:700}
 .gly-plist .s-product-card-sale-price{color:var(--gly-teal-deep)}
+
+/* Filters. A group marked open shows its options. Salla's widget sets the options' height
+   itself and sometimes measures 0 (before they are drawn): the group then looked closed
+   under its "open" sign and could not be opened, also right after a filter was ticked. */
+salla-filters .s-filters-widget-container:has(.s-filters-widget-plusminus-active) .s-filters-widget-content{height:auto !important}
+salla-filters .s-filters-widget-container:not(:has(.s-filters-widget-plusminus-active)) .s-filters-widget-content{height:0 !important;overflow:hidden}
+/* laptop: the filter column stays beside the products; taller than the screen, it scrolls on
+   its own instead of keeping its last groups below the screen until the list ends. It ends
+   above the floating WhatsApp button, which sits on the same side and covered the price boxes. */
+@media (min-width:1024px){
+  #filters-menu{max-height:calc(100vh - 11.5rem);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+}
+/* an open group's sign is a dash everywhere; in the phone's sheet it came out turned, as a bar */
+salla-filters .s-filters-widget-plusminus-active{transform:none !important}
+
+/* laptop: air between the filter groups, which sat almost touching */
+@media (min-width:768px){
+  #filters-menu .s-filters-widget-container+.s-filters-widget-container{margin-top:.85rem}
+}
+/* the price group: its two boxes and the apply button share the group's width; they ran past
+   its edge, cutting one box and hiding the button */
+salla-filters .s-price-range-inputs{display:flex;align-items:center;gap:6px}
+salla-filters .s-price-range-relative{flex:1 1 0;min-width:0}
+salla-filters .s-price-range-number-input{width:100%;min-width:0}
+salla-filters .s-price-range-inputs salla-button{flex:none}
+
+/* the phone's filter sheet: "show results" stays in reach above the bottom bar. The sheet's
+   body already keeps 4.5rem clear for that bar, and a sticky element stops at that edge. */
+.gly-filter-done{position:sticky;bottom:0;z-index:1;display:flex;justify-content:center;padding:.9rem 0 .2rem;background:linear-gradient(to top,#fff 70%,rgba(255,255,255,0))}
+.gly-filter-done .gly-btn{width:100%;justify-content:center;min-height:48px;padding:.6rem 1.4rem;box-shadow:none}

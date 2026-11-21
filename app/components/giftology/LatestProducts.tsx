@@ -3,31 +3,43 @@ import { ProductCardSkeleton } from '@salla.sa/twilight-components-react';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { product } from '@salla.sa/twilight-theme-engine/api/product';
 import { useReveal } from '../../hooks/useReveal';
-import { blockLink, blockText, settingText, storePage } from '../../lib/giftology';
+import { blockCopy, blockLink, choiceValue, settingText, storePage } from '../../lib/giftology';
 import type { BlockData } from '../../lib/giftology';
 import { ProductCard } from '../product';
 import { ArrowIcon } from './icons';
 import { SectionHead } from './SectionHead';
 import { useGly } from './useGly';
 
+/** How many products the section shows unless the block says otherwise. */
 const LIMIT = 8;
+/** The counts the block offers. */
+const LIMITS = [4, 8, 12];
+/** How many a phone shows unless the block says otherwise; `all` is the count above. */
+const PHONE_LIMITS = ['4', '6', 'all'];
 const PLACEHOLDERS = Array.from({ length: 4 }, (_, index) => index);
 
 /**
  * The section's query. The home route's loader fetches the same one first
  * (`app/routes/index.tsx`), so the products are already there when this renders.
+ * A block that asks for more than the usual eight fetches its own, larger page.
  */
-export const latestProductsQuery = () => product.queries.list({ source: 'latest', perPage: LIMIT });
+export const latestProductsQuery = (count = LIMIT) =>
+  product.queries.list({ source: 'latest', perPage: Math.max(count, LIMIT) });
 
 /**
- * Latest products: the store's 8 newest, under a brand heading, with a "view all"
- * button to `gly_latest_url` (the store's latest-products page when unset). `id="gly-latest"` is the
+ * Latest products: the store's newest (8, or the count picked in the block), under a
+ * brand heading, with a "view all" button to the link picked in the block (the
+ * store's latest-products page when unset). `id="gly-latest"` is the
  * target of the hero button and the menu link.
+ *
+ * A phone shows two to a row, so eight push the rest of the page two screens down:
+ * it shows four unless the block picks six or the full count (`limit_phone`). The
+ * stylesheet hides the rest, so the server's HTML is the same for every screen.
  */
 export function LatestProducts({ data: block }: { data?: BlockData }) {
   const { settings, t, homeUrl, locale } = useGly();
   const title =
-    blockText(block, 'title', locale) ||
+    blockCopy(block, 'title', locale) ||
     settingText(settings, 'gly_latest_title') ||
     t('blocks.gly.latest.title');
   const viewAll =
@@ -35,20 +47,26 @@ export function LatestProducts({ data: block }: { data?: BlockData }) {
     settingText(settings, 'gly_latest_url') ||
     storePage(homeUrl, 'latest-products');
   const reveal = useReveal();
-  const { data, isLoading } = useQuery(latestProductsQuery());
-  const products = (data?.items ?? []).slice(0, LIMIT);
+  const chosen = Number(choiceValue(block?.limit));
+  const limit = LIMITS.includes(chosen) ? chosen : LIMIT;
+  const onPhone = choiceValue(block?.limit_phone);
+  const phoneLimit = PHONE_LIMITS.includes(onPhone) ? onPhone : PHONE_LIMITS[0];
+  const { data, isLoading } = useQuery(latestProductsQuery(limit));
+  const products = (data?.items ?? []).slice(0, limit);
 
   return (
     <section id="gly-latest" className="gly-section gly-latest">
       <div className="gly-wrap">
         <SectionHead
-          eyebrow={blockText(block, 'eyebrow', locale) || t('blocks.gly.latest.eyebrow')}
+          eyebrow={blockCopy(block, 'eyebrow', locale)}
           title={title}
         />
 
         <div
           className="gly-latest-grid s-products-list-wrapper s-products-list-vertical-cards"
           aria-busy={isLoading}
+          data-count={limit}
+          data-phone={phoneLimit}
         >
           {isLoading
             ? PLACEHOLDERS.map((index) => <ProductCardSkeleton key={index} />)
@@ -57,7 +75,7 @@ export function LatestProducts({ data: block }: { data?: BlockData }) {
 
         <div ref={reveal.ref} className={`gly-latest-more ${reveal.className}`}>
           <Link className="gly-btn gly-btn-primary" to={viewAll}>
-            {t('blocks.gly.latest.view_all')}
+            {blockCopy(block, 'view_all', locale) || t('blocks.gly.latest.view_all')}
             <ArrowIcon className="gly-arr" />
           </Link>
         </div>

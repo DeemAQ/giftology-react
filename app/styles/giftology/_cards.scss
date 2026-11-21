@@ -7,6 +7,10 @@
    edge. On Giftology's cream page the card is a white box, so they need padding. */
 .s-product-card.s-product-card-vertical .s-product-card-content{padding:1rem .75rem .75rem}
 
+/* Red is for a reduced price only. The starter also paints a "starts from" price red,
+   which read as a sale on every card of a product sold with options. */
+.s-product-card .s-product-card-starting-price h4{color:var(--gly-ink)}
+
 /* The footer measures itself, so the rules below follow the card's own width. */
 .s-product-card.s-product-card-vertical .s-product-card-content-footer{container-type:inline-size}
 

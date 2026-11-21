@@ -3,7 +3,14 @@ import { menu } from '@salla.sa/twilight-theme-engine/api/menu';
 import { Link } from '@salla.sa/twilight-theme-engine/common';
 import { HookSlot } from '@salla.sa/twilight-theme-engine/hooks';
 import logo from '../../assets/images/white_logo_trim.webp';
-import { menuLabel, settingOn, settingText } from '../../lib/giftology';
+import {
+  displayPhone,
+  instagramAccount,
+  menuLabel,
+  settingCopy,
+  settingOn,
+  settingText,
+} from '../../lib/giftology';
 import { InstagramIcon, MailIcon, WhatsAppIcon } from './icons';
 import { useGly } from './useGly';
 
@@ -36,10 +43,12 @@ const plainText = (html: string | undefined) => (html ?? '').replace(/<[^>]*>/g,
  *
  * About text: `gly_footer_about`, else the store description, else the locale
  * default. Email: `gly_email`, else the store's. Instagram: `gly_instagram`, else
- * the store's. The `footer:start` / `footer:end` slots are kept for apps.
+ * the store's. The contact list shows the details themselves, not their names: the
+ * address, the WhatsApp number and the Instagram handle (the word "Instagram" only
+ * when the link is not a profile's); a screen reader still hears which is which. The `footer:start` / `footer:end` slots are kept for apps.
  */
 export function GlyFooter() {
-  const { store, settings, t, locale, whatsappGeneral } = useGly();
+  const { store, settings, t, locale, whatsappGeneral, whatsappNumber } = useGly();
   // The same cache entry the starter's own footer reads (`layout/Footer.tsx`).
   const { data: links = [] } = useQuery({
     queryKey: ['menus', 'footer', locale],
@@ -49,11 +58,11 @@ export function GlyFooter() {
   const commercialNumber = store?.settings?.commercial_number;
   const taxNumber = store?.settings?.tax?.number;
   const about =
-    settingText(settings, 'gly_footer_about') ||
+    settingCopy(settings, 'gly_footer_about', locale) ||
     plainText(store?.description) ||
     t('blocks.gly.footer.about');
   const email = settingText(settings, 'gly_email') || store?.contacts?.email;
-  const instagram = settingText(settings, 'gly_instagram') || store?.social?.instagram;
+  const instagram = instagramAccount(settingText(settings, 'gly_instagram') || store?.social?.instagram);
   const payments = PAYMENTS.filter(([id, , , fallback]) => settingOn(settings, id, fallback));
 
   return (
@@ -100,15 +109,24 @@ export function GlyFooter() {
                 <li>
                   <a href={whatsappGeneral} target="_blank" rel="noopener">
                     <WhatsAppIcon />
-                    <span>{t('blocks.gly.footer.whatsapp')}</span>
+                    <span className="sr-only">{t('blocks.gly.footer.whatsapp')}</span>
+                    {/* A number reads left to right in either language. */}
+                    <span dir="ltr">{displayPhone(whatsappNumber)}</span>
                   </a>
                 </li>
               )}
               {instagram && (
                 <li>
-                  <a href={instagram} target="_blank" rel="noopener">
+                  <a href={instagram.url} target="_blank" rel="noopener">
                     <InstagramIcon />
-                    <span>{t('blocks.gly.footer.instagram')}</span>
+                    {instagram.handle ? (
+                      <>
+                        <span className="sr-only">{t('blocks.gly.footer.instagram')}</span>
+                        <span dir="ltr">{instagram.handle}</span>
+                      </>
+                    ) : (
+                      <span>{t('blocks.gly.footer.instagram')}</span>
+                    )}
                   </a>
                 </li>
               )}

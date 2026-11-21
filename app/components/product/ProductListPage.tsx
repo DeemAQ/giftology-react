@@ -24,6 +24,7 @@ import type { Category, Product } from '@salla.sa/twilight-theme-engine/types';
 import { ProductCard } from './ProductCard';
 import { useAppliedFilters } from '@salla.sa/twilight-theme-engine/routes/product-listing';
 import type { ProductListFilters } from '@salla.sa/twilight-theme-engine/api/product';
+import { shownFilters, type FilterGroup, type GlySettings } from '../../lib/giftology';
 import { BlockHookSlot, BottomSheet } from '../common';
 import { SubcategoryPills } from '../giftology/SubcategoryPills';
 import { useAppSafeAreaTop } from '../../hooks/useAppSafeAreaTop';
@@ -131,7 +132,7 @@ function BrandHeader({ source }: { source: ProductListLoaderData['source'] }) {
           aspectRatio="5/3"
         />
         <div className="px-5 pt-3 rtl:text-right">
-          <h1 className="text-2xl font-bold mb-1">{brand.name}</h1>
+          <h1 className="gly-page-title mb-1">{brand.name}</h1>
           {brand.description && (
             <p
               className="text-base text-gray-500 font-medium"
@@ -428,7 +429,7 @@ export function ProductListPage({
   query,
   products,
   pagination,
-  filters,
+  filters: loadedFilters,
 }: ProductListLoaderData) {
   const { t } = useTranslation();
   const store = useStore();
@@ -453,7 +454,16 @@ export function ProductListPage({
     '0'
   );
 
-  const showFilters = !!(query.filters && store?.settings?.product?.filters);
+  // The groups the merchant switched off in the theme settings (`gly_filter_*`) are left out.
+  const filters = useMemo(
+    () =>
+      Array.isArray(loadedFilters)
+        ? (shownFilters(loadedFilters as FilterGroup[], theme?.settings as GlySettings) as typeof loadedFilters)
+        : loadedFilters,
+    [loadedFilters, theme?.settings]
+  );
+  const hasFilters = Array.isArray(filters) ? filters.length > 0 : !!filters;
+  const showFilters = !!(query.filters && store?.settings?.product?.filters && hasFilters);
   const filtersVisible = showFilters && filtersHidden === '0';
 
   // The selection made in `<salla-filters>` — re-queries the list (the route's
@@ -548,7 +558,7 @@ export function ProductListPage({
         scope={blockScope}
       />
 
-      <h1 className="font-bold text-xl mb-4" id="page-main-title">
+      <h1 className="gly-page-title mb-4" id="page-main-title">
         {isBrand ? t('common.titles.products') : page.title}
       </h1>
 
@@ -605,6 +615,16 @@ export function ProductListPage({
           title={t('pages.categories.filters', 'Filters')}
         >
           <SallaFilters id="filters-menu-mobile" filters={filters as never} />
+          {/* A filter applies as it is ticked, behind the sheet: this closes the sheet onto the result. */}
+          <div className="gly-filter-done">
+            <button
+              type="button"
+              className="gly-btn gly-btn-primary"
+              onClick={() => setFiltersOpen(false)}
+            >
+              {t('blocks.gly.filters.show_results')}
+            </button>
+          </div>
         </BottomSheet>
       )}
 

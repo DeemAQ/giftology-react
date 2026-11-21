@@ -1,19 +1,22 @@
 import { describe, it, expect } from 'vitest';
 import {
   allProductsUrl,
-  categoryIdFromUrl,
+  blockCopy,
+  settingCopy,
   categoryTiles,
+  displayPhone,
+  instagramAccount,
   fillStoreDetails,
   homeAnchor,
   resolveCategoryUrl,
   settingChoice,
-  blocksPosition,
   settingOn,
   settingText,
   storePage,
   WA_PLACEHOLDER,
   whatsappLink,
   whatsappNumber,
+  shownFilters,
 } from '../../app/lib/giftology';
 
 const t = (key: string) => `t:${key}`;
@@ -38,15 +41,29 @@ describe('setting readers', () => {
   });
 });
 
-describe('blocksPosition', () => {
-  it("reads the merchant's choice", () => {
-    expect(blocksPosition({ gly_blocks_position: 'bottom' })).toBe('bottom');
-    expect(blocksPosition({ gly_blocks_position: [{ value: 'top', label: 'Top' }] })).toBe('top');
+describe('texts in two languages', () => {
+  it('reads the Arabic box on an Arabic page and the English box on any other', () => {
+    const data = { title: 'هدايا', title_en: 'Gifts' };
+    expect(blockCopy(data, 'title', 'ar')).toBe('هدايا');
+    expect(blockCopy(data, 'title', undefined)).toBe('هدايا');
+    expect(blockCopy(data, 'title', 'en')).toBe('Gifts');
+    expect(blockCopy(data, 'title', 'fr')).toBe('Gifts');
   });
 
-  it('puts the blocks under the hero when unset or unknown', () => {
-    expect(blocksPosition({})).toBe('after_hero');
-    expect(blocksPosition({ gly_blocks_position: 'sideways' })).toBe('after_hero');
+  it("is empty when that language's box is empty, so the theme's own text shows", () => {
+    expect(blockCopy({ title: 'هدايا' }, 'title', 'en')).toBe('');
+    expect(blockCopy({ title_en: 'Gifts' }, 'title', 'ar')).toBe('');
+  });
+
+  it('reads a value Salla holds per language', () => {
+    expect(blockCopy({ title: { ar: 'هدايا', en: 'Gifts' } }, 'title', 'en')).toBe('Gifts');
+  });
+
+  it('does the same for a setting', () => {
+    const settings = { gly_footer_about: ' متجر ', gly_footer_about_en: 'A store' };
+    expect(settingCopy(settings, 'gly_footer_about', 'ar')).toBe('متجر');
+    expect(settingCopy(settings, 'gly_footer_about', 'en')).toBe('A store');
+    expect(settingCopy({ gly_footer_about: 'متجر' }, 'gly_footer_about', 'en')).toBe('');
   });
 });
 
@@ -82,13 +99,6 @@ describe('resolveCategoryUrl', () => {
 });
 
 describe('link helpers', () => {
-  it('reads the category id from a /c{id} URL', () => {
-    expect(categoryIdFromUrl('https://shop.test/ar/newborn/c1234')).toBe(1234);
-    expect(categoryIdFromUrl('https://shop.test/ar/newborn/c1234?sort=x')).toBe(1234);
-    expect(categoryIdFromUrl('https://shop.test/ar/cards')).toBeNull();
-    expect(categoryIdFromUrl(undefined)).toBeNull();
-  });
-
   it('builds a WhatsApp link, and none without a number', () => {
     expect(whatsappLink('966551234567', 'hi there')).toBe(
       'https://wa.me/966551234567?text=hi%20there'
@@ -210,5 +220,76 @@ describe('categoryTiles', () => {
 
   it('skips an enabled extra tile that has nothing to show', () => {
     expect(categoryTiles({ gly_tile7_enabled: true }, t, home, 'ar', ICONS)).toHaveLength(6);
+  });
+});
+
+describe('displayPhone', () => {
+  it('spaces a Saudi mobile the way it is read, and marks any other international number', () => {
+    expect(displayPhone('966551234567')).toBe('+966 55 123 4567');
+    expect(displayPhone('971501234567')).toBe('+971501234567');
+    // Typed in its local form: left as it is.
+    expect(displayPhone('0551234567')).toBe('0551234567');
+    expect(displayPhone('')).toBe('');
+  });
+});
+
+describe('instagramAccount', () => {
+  it('reads the handle out of a profile link', () => {
+    expect(instagramAccount('https://www.instagram.com/giftology.sa/?hl=ar')).toEqual({
+      handle: '@giftology.sa',
+      url: 'https://www.instagram.com/giftology.sa/?hl=ar',
+    });
+    expect(instagramAccount('instagram.com/giftology')).toEqual({
+      handle: '@giftology',
+      url: 'https://instagram.com/giftology',
+    });
+  });
+
+  it('takes a handle typed by itself, with or without its @', () => {
+    const account = { handle: '@giftology', url: 'https://instagram.com/giftology' };
+    expect(instagramAccount('@giftology')).toEqual(account);
+    expect(instagramAccount(' giftology ')).toEqual(account);
+  });
+
+  it('gives no handle for a link that is not a profile, and nothing for anything else', () => {
+    expect(instagramAccount('https://instagram.com/p/Cabc123/')).toEqual({
+      handle: '',
+      url: 'https://instagram.com/p/Cabc123/',
+    });
+    expect(instagramAccount('https://linktr.ee/giftology')).toEqual({ handle: '', url: 'https://linktr.ee/giftology' });
+    expect(instagramAccount('our instagram page')).toBeNull();
+    expect(instagramAccount(undefined)).toBeNull();
+  });
+});
+
+describe('shownFilters', () => {
+  const groups = [
+    { key: 'category_id', type: 'values' },
+    { key: 'brand_id', type: 'values' },
+    { key: 'اللون', type: 'variants' },
+    { key: 'price', type: 'range' },
+    { key: 'rating', type: 'values' },
+  ];
+  const keys = (settings: Record<string, unknown> | null) =>
+    shownFilters(groups, settings).map((group) => group.key);
+
+  it('keeps every group until the merchant switches one off', () => {
+    expect(keys(null)).toEqual(['category_id', 'brand_id', 'اللون', 'price', 'rating']);
+  });
+
+  it('leaves out the groups switched off, and never one it has no switch for', () => {
+    expect(keys({ gly_filter_brands: false, gly_filter_options: false })).toEqual([
+      'category_id',
+      'price',
+      'rating',
+    ]);
+    expect(
+      keys({
+        gly_filter_price: false,
+        gly_filter_categories: false,
+        gly_filter_brands: false,
+        gly_filter_options: false,
+      })
+    ).toEqual(['rating']);
   });
 });
