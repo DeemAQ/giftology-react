@@ -39,6 +39,9 @@ describe('header links', () => {
       { media: '(max-width:767px)', value: 'none' },
     ]);
     expect(find(home, '.gly-menu-btn', 'min-height')).toEqual([{ media: '', value: '44px' }]);
+    // A text button: no outline and no fill.
+    expect(find(home, '.gly-menu-btn', 'border')).toEqual([{ media: '', value: 'none' }]);
+    expect(find(home, '.gly-menu-btn', 'background')).toEqual([{ media: '', value: 'none' }]);
     expect(find(home, '.gly-menu a', 'white-space')).toContainEqual({ media: '', value: 'nowrap' });
   });
 

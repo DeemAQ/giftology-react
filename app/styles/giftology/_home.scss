@@ -73,11 +73,12 @@
 .gly-ibtn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--gly-ink);transition:.25s;position:relative;background:none;border:none}
 .gly-ibtn:hover{background:var(--gly-teal-wash);color:var(--gly-teal-ink)}
 .gly-ibtn svg{width:21px;height:21px}
-/* "الأقسام": the menu button, beside the logo on every page. It opens the store's menu on
+/* "الأقسام": the menu button, beside the logo on every page: plain text with the menu icon,
+   no outline or fill (Deem's choice: cleaner). It opens the store's menu on
    the same side. The links beside it show only when the merchant turns them on, and give
    way to the button below 1024px. */
-.gly-menu-btn{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding-block:.45rem;padding-inline:.9rem 1rem;border-radius:50px;border:1.5px solid rgba(74,63,53,.14);background:rgba(255,255,255,.55);color:var(--gly-ink);font-family:inherit;font-weight:700;font-size:1rem;cursor:pointer;transition:.25s}
-.gly-menu-btn:hover,.gly-menu-btn[aria-expanded='true']{background:var(--gly-teal-wash);border-color:transparent;color:var(--gly-teal-ink)}
+.gly-menu-btn{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:0;border:none;background:none;color:var(--gly-ink);font-family:inherit;font-weight:700;font-size:1.05rem;cursor:pointer;transition:color .25s}
+.gly-menu-btn:hover,.gly-menu-btn[aria-expanded='true']{color:var(--gly-teal-ink)}
 .gly-menu-btn svg{width:20px;height:20px;flex:0 0 auto}
 .gly-menu a{white-space:nowrap}
 /* Up to 1023px an inner page has no room for the links beside the menu button. */
