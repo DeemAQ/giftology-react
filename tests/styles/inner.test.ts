@@ -189,6 +189,10 @@ describe('category filters', () => {
     expect(find('_plist.scss', '#filters-menu', 'overflow-y')).toEqual([
       { media: '(min-width: 1024px)', value: 'auto' },
     ]);
+    // 5rem for the header above it, 6.5rem below for the floating WhatsApp button
+    expect(find('_plist.scss', '#filters-menu', 'max-height')).toEqual([
+      { media: '(min-width: 1024px)', value: 'calc(100vh - 11.5rem)' },
+    ]);
   });
 });
 
@@ -217,6 +221,6 @@ describe('this round: price once, filter spacing, the price group, the sheet but
 
   it('keeps "show results" above the bottom bar in the phone sheet', () => {
     expect(find('_plist.scss', '.gly-filter-done', 'position')).toEqual([{ media: '', value: 'sticky' }]);
-    expect(find('_plist.scss', '.gly-filter-done', 'bottom')).toEqual([{ media: '', value: '4.6rem' }]);
+    expect(find('_plist.scss', '.gly-filter-done', 'bottom')).toEqual([{ media: '', value: '0' }]);
   });
 });

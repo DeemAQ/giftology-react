@@ -59,9 +59,10 @@
 salla-filters .s-filters-widget-container:has(.s-filters-widget-plusminus-active) .s-filters-widget-content{height:auto !important}
 salla-filters .s-filters-widget-container:not(:has(.s-filters-widget-plusminus-active)) .s-filters-widget-content{height:0 !important;overflow:hidden}
 /* laptop: the filter column stays beside the products; taller than the screen, it scrolls on
-   its own instead of keeping its last groups below the screen until the list ends */
+   its own instead of keeping its last groups below the screen until the list ends. It ends
+   above the floating WhatsApp button, which sits on the same side and covered the price boxes. */
 @media (min-width:1024px){
-  #filters-menu{max-height:calc(100vh - 6.5rem);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  #filters-menu{max-height:calc(100vh - 11.5rem);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
 }
 /* an open group's sign is a dash everywhere; in the phone's sheet it came out turned, as a bar */
 salla-filters .s-filters-widget-plusminus-active{transform:none !important}
@@ -77,6 +78,7 @@ salla-filters .s-price-range-relative{flex:1 1 0;min-width:0}
 salla-filters .s-price-range-number-input{width:100%;min-width:0}
 salla-filters .s-price-range-inputs salla-button{flex:none}
 
-/* the phone's filter sheet: "show results" stays in reach above the bottom bar */
-.gly-filter-done{position:sticky;bottom:4.6rem;z-index:1;display:flex;justify-content:center;padding:.9rem 0 .2rem;background:linear-gradient(to top,#fff 70%,rgba(255,255,255,0))}
+/* the phone's filter sheet: "show results" stays in reach above the bottom bar. The sheet's
+   body already keeps 4.5rem clear for that bar, and a sticky element stops at that edge. */
+.gly-filter-done{position:sticky;bottom:0;z-index:1;display:flex;justify-content:center;padding:.9rem 0 .2rem;background:linear-gradient(to top,#fff 70%,rgba(255,255,255,0))}
 .gly-filter-done .gly-btn{width:100%;justify-content:center;min-height:48px;padding:.6rem 1.4rem;box-shadow:none}
