@@ -16,6 +16,7 @@ import {
   WA_PLACEHOLDER,
   whatsappLink,
   whatsappNumber,
+  shownFilters,
 } from '../../app/lib/giftology';
 
 const t = (key: string) => `t:${key}`;
@@ -258,5 +259,37 @@ describe('instagramAccount', () => {
     expect(instagramAccount('https://linktr.ee/giftology')).toEqual({ handle: '', url: 'https://linktr.ee/giftology' });
     expect(instagramAccount('our instagram page')).toBeNull();
     expect(instagramAccount(undefined)).toBeNull();
+  });
+});
+
+describe('shownFilters', () => {
+  const groups = [
+    { key: 'category_id', type: 'values' },
+    { key: 'brand_id', type: 'values' },
+    { key: 'اللون', type: 'variants' },
+    { key: 'price', type: 'range' },
+    { key: 'rating', type: 'values' },
+  ];
+  const keys = (settings: Record<string, unknown> | null) =>
+    shownFilters(groups, settings).map((group) => group.key);
+
+  it('keeps every group until the merchant switches one off', () => {
+    expect(keys(null)).toEqual(['category_id', 'brand_id', 'اللون', 'price', 'rating']);
+  });
+
+  it('leaves out the groups switched off, and never one it has no switch for', () => {
+    expect(keys({ gly_filter_brands: false, gly_filter_options: false })).toEqual([
+      'category_id',
+      'price',
+      'rating',
+    ]);
+    expect(
+      keys({
+        gly_filter_price: false,
+        gly_filter_categories: false,
+        gly_filter_brands: false,
+        gly_filter_options: false,
+      })
+    ).toEqual(['rating']);
   });
 });

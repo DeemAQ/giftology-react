@@ -120,6 +120,11 @@ app/assets/images/          logos, watermark pattern, category icons
   tapped; a bar that stays on screen is cream; what the starter painted grey takes `--gly-tint`.
   Do not put `bg-white` on a new section. The product page paints first from
   `critical-product.scss`, which imports `_inner.scss` for that reason.
+- The filter column of a products page is Salla's (`salla-filters`): Salla decides which groups
+  a page has, from the store's data. `gly_filter_price`, `gly_filter_categories`,
+  `gly_filter_options` and `gly_filter_brands` let the merchant leave a group out
+  (`shownFilters` in `lib/giftology.ts`, applied in `ProductListPage.tsx`). The phone's filter
+  sheet ends with a "show results" button that closes it.
 - Store pages (policies, about) can use `{store_name}`, `{commercial_number}`, `{email}` and
   `{whatsapp}` in their text; `page/PageSingle.tsx` fills them from the store's details.
 - The footer's "important links" are the store's footer menu (the pages the merchant adds in

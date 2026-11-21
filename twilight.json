@@ -731,6 +731,50 @@
         {
             "type": "boolean",
             "icon": "sicon-toggle-off",
+            "label": "إظهار تصفية «السعر» في قوائم المنتجات",
+            "description": "التصفية تظهر في صفحات التصنيفات والبحث حين تكون «تصفية المنتجات» مفعّلة في إعدادات متجرك في سلة.",
+            "id": "gly_filter_price",
+            "format": "switch",
+            "required": false,
+            "value": true,
+            "selected": true
+        },
+        {
+            "type": "boolean",
+            "icon": "sicon-toggle-off",
+            "label": "إظهار تصفية «فئات المنتجات» في قوائم المنتجات",
+            "description": "تعرض تصنيفات متجرك ليختار الزائر منها.",
+            "id": "gly_filter_categories",
+            "format": "switch",
+            "required": false,
+            "value": true,
+            "selected": true
+        },
+        {
+            "type": "boolean",
+            "icon": "sicon-toggle-off",
+            "label": "إظهار تصفية خيارات المنتجات (مثل اللون) في قوائم المنتجات",
+            "description": "تظهر تلقائياً لكل خيار أضفته لمنتجاتك، ولا تظهر إن لم تكن لمنتجاتك خيارات.",
+            "id": "gly_filter_options",
+            "format": "switch",
+            "required": false,
+            "value": true,
+            "selected": true
+        },
+        {
+            "type": "boolean",
+            "icon": "sicon-toggle-off",
+            "label": "إظهار تصفية «العلامات التجارية» في قوائم المنتجات",
+            "description": "تظهر فقط إن ربطت منتجاتك بعلامات تجارية.",
+            "id": "gly_filter_brands",
+            "format": "switch",
+            "required": false,
+            "value": true,
+            "selected": true
+        },
+        {
+            "type": "boolean",
+            "icon": "sicon-toggle-off",
             "label": "إظهار إشعار «تمت الإضافة للسلة»",
             "description": "نافذة صغيرة تظهر بعد إضافة منتج إلى السلة.",
             "id": "enable_add_product_toast",

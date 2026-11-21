@@ -204,5 +204,6 @@
   "blocks.gly.finder.custom_title": "Custom gifts",
   "blocks.gly.finder.restart": "Start over",
   "blocks.gly.finder.loading": "Finding the perfect gift…",
-  "blocks.gly.finder.progress": "Question {current} of {total}"
+  "blocks.gly.finder.progress": "Question {current} of {total}",
+  "blocks.gly.filters.show_results": "Show results"
 }

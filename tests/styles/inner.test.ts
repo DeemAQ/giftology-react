@@ -191,3 +191,32 @@ describe('category filters', () => {
     ]);
   });
 });
+
+describe('this round: price once, filter spacing, the price group, the sheet button', () => {
+  it('shows the price once on a laptop for a product without options', () => {
+    expect(find('_inner.scss', '.sticky-product-bar--no-options .price-wrapper', 'display')).toEqual([
+      { media: '(min-width: 641px)', value: 'none' },
+    ]);
+  });
+
+  it('puts air between the filter groups on a laptop', () => {
+    const next = '#filters-menu .s-filters-widget-container + .s-filters-widget-container';
+    expect(find('_plist.scss', next, 'margin-top')).toEqual([
+      { media: '(min-width: 768px)', value: '0.85rem' },
+    ]);
+  });
+
+  it("fits the price group's boxes and button inside the group", () => {
+    expect(find('_plist.scss', 'salla-filters .s-price-range-relative', 'min-width')).toEqual([
+      { media: '', value: '0' },
+    ]);
+    expect(find('_plist.scss', 'salla-filters .s-price-range-number-input', 'width')).toEqual([
+      { media: '', value: '100%' },
+    ]);
+  });
+
+  it('keeps "show results" above the bottom bar in the phone sheet', () => {
+    expect(find('_plist.scss', '.gly-filter-done', 'position')).toEqual([{ media: '', value: 'sticky' }]);
+    expect(find('_plist.scss', '.gly-filter-done', 'bottom')).toEqual([{ media: '', value: '4.6rem' }]);
+  });
+});

@@ -129,3 +129,10 @@ body .s-add-product-button-mini-checkout-content>span{transform:translateY(-1.5p
 @media (min-width:641px){
   .sticky-product-bar--sold-out .out-of-stock{display:none}
 }
+
+/* A product without options: the price beside the quantity only repeats the one under the
+   title (with its "including VAT" line), so a laptop shows it once. The phone's floating
+   block keeps its price: it floats away from the title. */
+@media (min-width:641px){
+  .sticky-product-bar--no-options .price-wrapper{display:none}
+}

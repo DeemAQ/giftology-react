@@ -65,3 +65,18 @@ salla-filters .s-filters-widget-container:not(:has(.s-filters-widget-plusminus-a
 }
 /* an open group's sign is a dash everywhere; in the phone's sheet it came out turned, as a bar */
 salla-filters .s-filters-widget-plusminus-active{transform:none !important}
+
+/* laptop: air between the filter groups, which sat almost touching */
+@media (min-width:768px){
+  #filters-menu .s-filters-widget-container+.s-filters-widget-container{margin-top:.85rem}
+}
+/* the price group: its two boxes and the apply button share the group's width; they ran past
+   its edge, cutting one box and hiding the button */
+salla-filters .s-price-range-inputs{display:flex;align-items:center;gap:6px}
+salla-filters .s-price-range-relative{flex:1 1 0;min-width:0}
+salla-filters .s-price-range-number-input{width:100%;min-width:0}
+salla-filters .s-price-range-inputs salla-button{flex:none}
+
+/* the phone's filter sheet: "show results" stays in reach above the bottom bar */
+.gly-filter-done{position:sticky;bottom:4.6rem;z-index:1;display:flex;justify-content:center;padding:.9rem 0 .2rem;background:linear-gradient(to top,#fff 70%,rgba(255,255,255,0))}
+.gly-filter-done .gly-btn{width:100%;justify-content:center;min-height:48px;padding:.6rem 1.4rem;box-shadow:none}

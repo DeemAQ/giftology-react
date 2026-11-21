@@ -21,6 +21,25 @@ export function settingOn(settings: GlySettings, id: string, fallback = true): b
   return typeof value === 'boolean' ? value : fallback;
 }
 
+/** A filter group as Salla lists it for a products page (`category_id`, `brand_id`, `price`, or a product option). */
+export interface FilterGroup {
+  key?: unknown;
+  type?: unknown;
+}
+
+/**
+ * The filter groups the merchant left on (`gly_filter_*`). Salla decides which groups a page
+ * has; a group the theme has no switch for stays as it is.
+ */
+export function shownFilters<T extends FilterGroup>(filters: readonly T[], settings: GlySettings): T[] {
+  const off = (group: T) =>
+    (group.key === 'price' && !settingOn(settings, 'gly_filter_price')) ||
+    (group.key === 'category_id' && !settingOn(settings, 'gly_filter_categories')) ||
+    (group.key === 'brand_id' && !settingOn(settings, 'gly_filter_brands')) ||
+    (group.type === 'variants' && !settingOn(settings, 'gly_filter_options'));
+  return filters.filter((group) => !off(group));
+}
+
 /** A text setting, trimmed; empty when unset. */
 export function settingText(settings: GlySettings, id: string): string {
   const value = settings?.[id];

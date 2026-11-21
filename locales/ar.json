@@ -204,5 +204,6 @@
   "blocks.gly.finder.custom_title": "هدايا مخصّصة",
   "blocks.gly.finder.restart": "ابدأ من جديد",
   "blocks.gly.finder.loading": "نبحث لك عن هدية مثالية…",
-  "blocks.gly.finder.progress": "السؤال {current} من {total}"
+  "blocks.gly.finder.progress": "السؤال {current} من {total}",
+  "blocks.gly.filters.show_results": "عرض النتائج"
 }
