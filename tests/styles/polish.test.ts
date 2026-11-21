@@ -28,11 +28,16 @@ function find(root: postcss.Root, selector: string, prop: string): Found[] {
 const home = compile('_home.scss');
 
 describe('header links', () => {
-  it('give way to the menu button below 1024px; the button stays, and phones use the bottom bar', () => {
+  it('show as many as fit on one line above phone width; the button stays, and phones use the bottom bar', () => {
     expect(find(home, '.gly-menu', 'display')).toEqual([
       { media: '', value: 'flex' },
-      { media: '(max-width:1023px)', value: 'none' },
+      { media: '(max-width:767px)', value: 'none' },
     ]);
+    // One line: a link that does not fit wraps below it and is cut off (the menu has them all).
+    expect(find(home, '.gly-menu', 'flex-wrap')).toEqual([{ media: '', value: 'wrap' }]);
+    expect(find(home, '.gly-menu', 'overflow')).toEqual([{ media: '', value: 'hidden' }]);
+    expect(find(home, '.gly-menu', 'height')).toEqual([{ media: '', value: '2.5rem' }]);
+    expect(find(home, '.gly-nav-start', 'min-width')).toEqual([{ media: '', value: '0' }]);
     // "الأقسام" beside the logo, on every page; a phone opens the menu from its bottom bar.
     expect(find(home, '.gly-menu-btn', 'display')).toEqual([
       { media: '', value: 'inline-flex' },
@@ -43,6 +48,10 @@ describe('header links', () => {
     expect(find(home, '.gly-menu-btn', 'border')).toEqual([{ media: '', value: 'none' }]);
     expect(find(home, '.gly-menu-btn', 'background')).toEqual([{ media: '', value: 'none' }]);
     expect(find(home, '.gly-menu a', 'white-space')).toContainEqual({ media: '', value: 'nowrap' });
+  });
+
+  it("keeps the menu's title modest", () => {
+    expect(find(home, '.gly-mmenu__head h2', 'font-size')).toEqual([{ media: '', value: '1.3rem' }]);
   });
 
   it('opens the menu as a side panel on the side of its button, over a dimmed page', () => {

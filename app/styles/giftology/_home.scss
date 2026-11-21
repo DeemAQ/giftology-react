@@ -84,7 +84,12 @@
 .gly-menu-btn svg{width:20px;height:20px;flex:0 0 auto}
 .gly-menu a{white-space:nowrap}
 /* Up to 1023px an inner page has no room for the links beside the menu button. */
-@media(max-width:1023px){.gly-menu{display:none}}
+/* The bar's own links (`gly_header_links`): wider than a phone, as many as fit on the bar's one
+   line. A link that does not fit wraps to a second line, which is cut off; the menu has them all.
+   They used to wait for 1024px, so the switch seemed to do nothing in the editor's narrower preview. */
+.gly-nav-start{flex:1 1 auto;min-width:0}
+.gly-menu{flex:1 1 0;min-width:0;flex-wrap:wrap;height:2.5rem;row-gap:1.5rem;overflow:hidden}
+@media(max-width:767px){.gly-menu{display:none}}
 /* style the Salla cart/user web-components to fit the icon row */
 .gly-icons salla-cart-summary,.gly-icons salla-user-menu{display:inline-flex}
 .gly-icons .sicon-shopping-bag,.gly-icons .sicon-user{font-size:21px}
@@ -119,7 +124,7 @@
 .gly-mclose{width:44px;height:44px;border-radius:50%;background:var(--gly-teal-wash);display:grid;place-items:center;border:none;color:var(--gly-teal-ink);cursor:pointer}
 .gly-mmenu__body{display:flex;flex-direction:column;gap:1.5rem}
 .gly-mmenu__head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:-.4rem}
-.gly-mmenu__head h2{font-family:var(--gly-font-display);font-weight:700;font-size:1.7rem;line-height:1.2;margin:0}
+.gly-mmenu__head h2{font-family:var(--gly-font-display);font-weight:700;font-size:1.3rem;line-height:1.2;margin:0}
 .gly-mmenu__head a{font-weight:700;font-size:.92rem;color:var(--gly-teal-ink);padding:.6rem 0;text-decoration:underline;text-decoration-color:rgba(46,119,114,.35);text-underline-offset:5px}
 /* the categories: three circles to a row, a short last row centred as on the home page */
 .gly-mcats{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:1.1rem .6rem}
